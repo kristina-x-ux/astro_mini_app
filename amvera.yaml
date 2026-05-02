@@ -1,10 +1,7 @@
-meta:
-  environment: python
-  tool: pip
-  version: 3.11
+runtime: python
 
 build:
   requirementsPath: requirements.txt
 
 run:
-  scriptName: app.py
+  command: python app.py

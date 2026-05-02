@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import telebot
 import os
-from threading import Thread
 
 app = Flask(__name__)
 
@@ -32,12 +31,10 @@ def calculate():
 @bot.message_handler(commands=["start"])
 def start(message):
     markup = telebot.types.InlineKeyboardMarkup()
-
     button = telebot.types.InlineKeyboardButton(
         text="🔮 Открыть разбор",
         url=WEBAPP_URL
     )
-
     markup.add(button)
 
     bot.send_message(
@@ -47,10 +44,14 @@ def start(message):
     )
 
 
-def run_bot():
-    bot.infinity_polling()
+@app.route("/telegram_webhook", methods=["POST"])
+def telegram_webhook():
+    update = telebot.types.Update.de_json(request.get_data().decode("utf-8"))
+    bot.process_new_updates([update])
+    return "ok", 200
 
 
 if __name__ == "__main__":
-    Thread(target=run_bot).start()
+    bot.remove_webhook()
+    bot.set_webhook(url=WEBAPP_URL.rstrip("/") + "/telegram_webhook")
     app.run(host="0.0.0.0", port=80)

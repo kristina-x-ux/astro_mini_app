@@ -1,40 +1,61 @@
-import os
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 import telebot
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
+import os
 
-TOKEN = os.getenv("BOT_TOKEN")
-
-bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-WEBAPP_URL = os.getenv("WEBAPP_URL")
+TOKEN = os.getenv("BOT_TOKEN")
+bot = telebot.TeleBot(TOKEN)
+
+# --- WEB ЧАСТЬ ---
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
-@bot.message_handler(commands=["start"])
+
+@app.route("/calculate", methods=["POST"])
+def calculate():
+    data = request.get_json()
+
+    date = data.get("date")
+    time = data.get("time")
+    city = data.get("city")
+
+    # пока тестовый ответ
+    result = f"Дата: {date}\nВремя: {time}\nГород: {city}\n\n✨ Анализ скоро будет"
+
+    return jsonify({"result": result})
+
+
+# --- БОТ ---
+
+@bot.message_handler(commands=['start'])
 def start(message):
-    markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    webapp_url = os.getenv("WEBAPP_URL")
 
-    webAppButton = KeyboardButton(
-        text="🔮 Открыть Звёздный Код",
-        web_app=WebAppInfo(WEBAPP_URL)
+    markup = telebot.types.InlineKeyboardMarkup()
+    button = telebot.types.InlineKeyboardButton(
+        text="🔮 Открыть разбор",
+        web_app=telebot.types.WebAppInfo(webapp_url)
     )
-
-    markup.add(webAppButton)
+    markup.add(button)
 
     bot.send_message(
         message.chat.id,
-        "Добро пожаловать в Звёздный Код ✨",
+        "Открой приложение и получи анализ",
         reply_markup=markup
     )
 
-def run_bot():
-    bot.infinity_polling()
+
+# --- ЗАПУСК ---
 
 if __name__ == "__main__":
-    import threading
-    threading.Thread(target=run_bot).start()
-    app.run(host="0.0.0.0", port=8080)
+    from threading import Thread
+
+    def run_bot():
+        bot.infinity_polling()
+
+    Thread(target=run_bot).start()
+
+    app.run(host="0.0.0.0", port=80)

@@ -46,6 +46,8 @@ def start(message):
 
 
 def run_bot():
+    import time
+    time.sleep(10)
     bot.remove_webhook()
     bot.infinity_polling(timeout=60, long_polling_timeout=60)
 

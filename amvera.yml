@@ -1,2 +1,10 @@
-runtime: python
-entrypoint: python app.py
+meta:
+  environment: python
+  tool: pip
+  version: 3.11
+
+build:
+  requirementsPath: requirements.txt
+
+run:
+  scriptName: app.py

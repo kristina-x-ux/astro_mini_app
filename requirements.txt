@@ -1,5 +1,1 @@
-fastapi
-uvicorn
-aiogram==3.4.1
-jinja2
-python-dotenv
+pyTelegramBotAPI

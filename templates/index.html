@@ -81,7 +81,7 @@
             return;
         }
 
-        fetch("/calculate", {
+        fetch(window.location.origin + '/calculate', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

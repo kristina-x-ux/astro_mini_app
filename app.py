@@ -51,18 +51,34 @@ def calculate():
 {chart["lagna_full_text"]}
 Накшатра: {chart["lagna_nakshatra"]}, пада {chart["lagna_pada"]}
 
+━━━━━━━━━━━━━━
+
+🏠 ДОМА:
+
+"""
+
+        for house_num, house_data in chart["houses"].items():
+            result += f"{house_num} дом — {house_data['sign']}, управитель: {house_data['lord']}\n"
+
+        result += f"""
+
+━━━━━━━━━━━━━━
+
 🌙 ЛУНА:
 {chart["moon_full_text"]}
 Накшатра: {chart["moon_nakshatra"]}, пада {chart["moon_pada"]}
+Дом: {chart["moon_house"]}
 
 ━━━━━━━━━━━━━━
 
 🪐 ПЛАНЕТЫ:
+
 """
 
         for planet, info in chart["planets"].items():
             result += f"""
 {planet}: {info["full_text"]}
+Дом: {info["house"]}
 Накшатра: {info["nakshatra"]}, пада {info["pada"]}
 """
 
@@ -75,26 +91,22 @@ def calculate():
 Это уже профессиональный джйотиш-расчёт:
 — сидерический зодиак
 — айанамша Лахири
-— UTC
-— Julian Day
 — лагна
-— планеты
-— накшатры
-— пады
-
-Следующий этап:
-— дома
+— дома по системе знак = дом
 — управители домов
+— планеты в домах
+— накшатры и пады
+
+Следующий уровень:
 — аспекты Парашары
 — Чаракараки
 — Вимшоттари Даша
-— бесплатная и платная версия разбора
+— бесплатный и платный разбор
 """
 
     except Exception as e:
         import traceback
-        error_text = traceback.format_exc()
-        print(error_text)
+        print(traceback.format_exc())
         result = f"Ошибка расчёта:\n{str(e)}"
 
     return jsonify({"result": result})

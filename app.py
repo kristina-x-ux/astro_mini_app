@@ -2,8 +2,9 @@ from flask import Flask, render_template, request, jsonify
 import telebot
 import os
 from threading import Thread
+import time
+
 from astro_engine import calculate_chart
-from analysis_engine import get_user_friendly_summary, get_technical_summary
 
 app = Flask(__name__)
 
@@ -23,112 +24,81 @@ def calculate():
     data = request.get_json() or {}
 
     date = data.get("date", "")
-    time = data.get("time", "")
+    time_birth = data.get("time", "")
     city = data.get("city", "")
+    mode = data.get("mode", "client")
 
     try:
-        chart = calculate_chart(date, time, city)
+        chart = calculate_chart(date, time_birth, city)
 
         result = f"""
 ✨ ДЖЙОТИШ-РАСЧЁТ
 
-📍 Город: {chart["city"]}
-🌍 Широта: {round(chart["lat"], 4)}
-🌍 Долгота: {round(chart["lon"], 4)}
-🕒 Часовой пояс: {chart["timezone"]}
+📍 Место рождения: {chart.get("city", city)}
+🌍 Широта: {round(chart.get("lat", 0), 4)}
+🌍 Долгота: {round(chart.get("lon", 0), 4)}
+🕘 Часовой пояс: {chart.get("timezone", "-")}
 
-🕰 UTC:
-{chart["utc"]}
+UTC:
+{chart.get("utc", "-")}
 
-📌 Julian Day:
-{round(chart["jd"], 5)}
+Julian Day:
+{round(chart.get("jd", 0), 5)}
 
-📌 Айанамша Лахири:
-{round(chart["ayanamsha"], 4)}°
+Айанамша Лахири:
+{chart.get("ayanamsha", "-")}°
 
-━━━━━━━━━━━━━━
+──────────────
 
 🌅 ЛАГНА:
-{chart["lagna_full_text"]}
-Накшатра: {chart["lagna_nakshatra"]}, пада {chart["lagna_pada"]}
+{chart.get("lagna", {}).get("sign", "-")} {chart.get("lagna", {}).get("degree", "-")}
+Накшатра: {chart.get("lagna", {}).get("nakshatra", "-")}, пада {chart.get("lagna", {}).get("pada", "-")}
 
-━━━━━━━━━━━━━━
-
-🏠 ДОМА:
-"""
-
-        for house_num, house in chart["houses"].items():
-            result += f"""
-{house_num} дом — {house["sign"]}, управитель: {house["lord"]}
-"""
-
-        result += f"""
-
-━━━━━━━━━━━━━━
+──────────────
 
 🌙 ЛУНА:
-{chart["moon_full_text"]}
-Накшатра: {chart["moon_nakshatra"]}, пада {chart["moon_pada"]}
-Дом: {chart["moon_house"]}
+{chart.get("moon", {}).get("sign", "-")} {chart.get("moon", {}).get("degree", "-")}
+Накшатра: {chart.get("moon", {}).get("nakshatra", "-")}, пада {chart.get("moon", {}).get("pada", "-")}
+Дом: {chart.get("moon", {}).get("house", "-")}
 
-━━━━━━━━━━━━━━
+──────────────
 
 🪐 ПЛАНЕТЫ:
 """
 
-        for planet, info in chart["planets"].items():
+        planets = chart.get("planets", {})
+
+        for planet, info in planets.items():
             result += f"""
-{planet}: {info["full_text"]}
-Дом: {info["house"]}
-Накшатра: {info["nakshatra"]}, пада {info["pada"]}
+
+{planet}: {info.get("sign", "-")} {info.get("degree", "-")}
+Дом: {info.get("house", "-")}
+Накшатра: {info.get("nakshatra", "-")}, пада {info.get("pada", "-")}
 """
 
-        result += """
+        if mode == "client":
+            result += """
 
-━━━━━━━━━━━━━━
+──────────────
 
+🌙 РЕЖИМ КЛИЕНТА:
+
+Это базовый персональный разбор. 
+Следующий этап — добавить интерпретацию сильных и слабых планет, жизненных сценариев и рекомендаций.
 """
-        result += get_user_friendly_summary(chart)
+        else:
+            result += """
 
-        result += """
+──────────────
 
-━━━━━━━━━━━━━━
+🧿 РЕЖИМ АСТРОЛОГА:
 
-🧠 ТЕХНИЧЕСКИЙ БЛОК:
-
-"""
-        result += get_technical_summary(chart)
-
-        result += """
-
-━━━━━━━━━━━━━━
-
-🔮 БАЗОВЫЙ ВЫВОД:
-
-Это уже профессиональный джйотиш-расчёт:
-— сидерический зодиак
-— айанамша Лахири
-— лагна
-— дома от лагны
-— управители домов
-— планеты по домам
-— накшатры
-— пады
-— первичный анализ управителей домов
-
-Следующий этап:
-— аспекты Парашары
-— Чаракараки
-— Вимшоттари Даша
-— сила и слабость планет
-— йоги
-— бесплатная и платная версия разбора
+Это технический режим для работы с картой.
+Следующий этап — добавить управителей домов, аспекты Парашары, йоги, силу планет и варги.
 """
 
     except Exception as e:
-        import traceback
-        print(traceback.format_exc())
-        result = f"Ошибка расчёта:\n{str(e)}"
+        result = f"Ошибка расчёта: {str(e)}"
 
     return jsonify({"result": result})
 
@@ -138,21 +108,38 @@ def start(message):
     markup = telebot.types.InlineKeyboardMarkup()
 
     button = telebot.types.InlineKeyboardButton(
-        text="🔮 Открыть разбор",
-        url=WEBAPP_URL
+        text="🌐 Перейти в веб-приложение",
+        web_app=telebot.types.WebAppInfo(url=WEBAPP_URL)
     )
 
     markup.add(button)
 
+    text = """
+✨ Добро пожаловать в AstroEngine
+
+AstroEngine — система джйотиш-анализа,
+которая объединяет понятный разбор для пользователя и профессиональный инструмент для астрологов.
+
+Сервис рассчитывает натальную карту и показывает:
+— структуру личности
+— сильные и слабые планеты
+— ключевые сценарии реализации
+
+Для астрологов доступен расширенный режим с детальными расчётами и параметрами карты.
+
+Введите данные рождения, чтобы получить персональный анализ.
+
+👇 Перейти в веб-приложение
+"""
+
     bot.send_message(
         message.chat.id,
-        "✨ Добро пожаловать в «Звёздный Код»\n\nНажми кнопку ниже и получи свой разбор:",
+        text,
         reply_markup=markup
     )
 
 
 def run_bot():
-    import time
     time.sleep(10)
     bot.remove_webhook()
     bot.infinity_polling(timeout=60, long_polling_timeout=60)

@@ -1,2 +1,6 @@
 flask
 pyTelegramBotAPI
+pyswisseph
+geopy
+timezonefinder
+pytz

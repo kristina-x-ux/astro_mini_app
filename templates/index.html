@@ -18,8 +18,8 @@ body {
 
     background:
         linear-gradient(
-            rgba(120, 170, 255, 0.08),
-            rgba(180, 220, 255, 0.12)
+            rgba(120,170,255,0.05),
+            rgba(180,220,255,0.08)
         ),
         url('/static/file_000000009a0072438087f62e212a4232.png');
 
@@ -52,19 +52,20 @@ body {
     opacity: 0.85;
 }
 
-/* 💎 НАСТОЯЩЕЕ СТЕКЛО */
+/* 🔥 ТЕПЕРЬ РЕАЛЬНО ПРОЗРАЧНО */
 .card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.08); /* почти невидимый */
+    backdrop-filter: none;
 
-    border: 1px solid rgba(255,255,255,0.35);
+    border: 1.5px solid rgba(255,255,255,0.45);
     border-radius: 28px;
 
     padding: 24px;
     margin-bottom: 22px;
 
-    box-shadow: 0 10px 30px rgba(0, 40, 120, 0.12);
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.08),
+        0 14px 34px rgba(0, 30, 90, 0.12);
 }
 
 .card-title {
@@ -85,7 +86,7 @@ body {
     padding: 12px;
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,0.3);
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.08);
     color: white;
     font-weight: 600;
 }
@@ -104,14 +105,13 @@ label {
 
 input {
     width: 100%;
-
     padding: 16px;
     margin-bottom: 12px;
 
     border-radius: 18px;
-    border: 1px solid rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.65);
 
-    background: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.55);
     color: #1b2d52;
 
     font-size: 16px;
@@ -120,7 +120,6 @@ input {
 /* кнопка */
 .main-btn {
     width: 100%;
-
     margin-top: 16px;
     padding: 17px;
 

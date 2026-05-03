@@ -12,6 +12,21 @@ SIGNS = [
     "Весы", "Скорпион", "Стрелец", "Козерог", "Водолей", "Рыбы"
 ]
 
+SIGN_LORDS = {
+    "Овен": "Марс",
+    "Телец": "Венера",
+    "Близнецы": "Меркурий",
+    "Рак": "Луна",
+    "Лев": "Солнце",
+    "Дева": "Меркурий",
+    "Весы": "Венера",
+    "Скорпион": "Марс",
+    "Стрелец": "Юпитер",
+    "Козерог": "Сатурн",
+    "Водолей": "Сатурн",
+    "Рыбы": "Юпитер",
+}
+
 NAKSHATRAS = [
     "Ашвини", "Бхарани", "Криттика", "Рохини", "Мригашира",
     "Ардра", "Пунарвасу", "Пушья", "Ашлеша", "Магха",
@@ -32,44 +47,26 @@ PLANETS = {
     "Раху": swe.MEAN_NODE
 }
 
-CITY_FALLBACK = {
-    "киев": (50.4501, 30.5234),
-    "київ": (50.4501, 30.5234),
-    "москва": (55.7558, 37.6173),
-    "ялта": (44.4952, 34.1663),
-    "симферополь": (44.9521, 34.1024),
-    "санкт-петербург": (59.9311, 30.3609),
-}
-
-
 def normalize_degree(degree):
     return degree % 360
 
-
 def format_degree(degree):
     deg = int(degree)
-    minute_float = (degree - deg) * 60
-    minute = int(round(minute_float))
-
-    if minute == 60:
-        deg += 1
-        minute = 0
-
-    return f"{deg}°{minute:02d}′"
-
+    minutes = int((degree - deg) * 60)
+    return f"{deg}°{minutes:02d}′"
 
 def get_sign_data(longitude):
     longitude = normalize_degree(longitude)
     sign_index = int(longitude // 30)
     degree_in_sign = longitude % 30
+    sign = SIGNS[sign_index]
 
     return {
-        "sign": SIGNS[sign_index],
-        "degree_in_sign": degree_in_sign,
+        "sign_index": sign_index,
+        "sign": sign,
         "degree_text": format_degree(degree_in_sign),
-        "full_text": f"{SIGNS[sign_index]} {format_degree(degree_in_sign)}"
+        "full_text": f"{sign} {format_degree(degree_in_sign)}"
     }
-
 
 def get_nakshatra_data(longitude):
     longitude = normalize_degree(longitude)
@@ -86,119 +83,95 @@ def get_nakshatra_data(longitude):
         "pada": pada
     }
 
-
 def get_coordinates(city):
-    key = city.strip().lower()
-
-    if key in CITY_FALLBACK:
-        return CITY_FALLBACK[key]
-
-    geolocator = Nominatim(user_agent="zvezdny_kod_bot")
-    location = geolocator.geocode(city, timeout=10)
+    geolocator = Nominatim(user_agent="astro_bot")
+    location = geolocator.geocode(city)
 
     if not location:
         raise ValueError("Город не найден")
 
     return location.latitude, location.longitude
 
-
 def get_timezone(lat, lon):
     tf = TimezoneFinder()
-    timezone_name = tf.timezone_at(lat=lat, lng=lon)
+    tz = tf.timezone_at(lat=lat, lng=lon)
 
-    if not timezone_name:
+    if not tz:
         raise ValueError("Не удалось определить часовой пояс")
 
-    return timezone_name
-
-
-def calculate_jd(dt_utc):
-    return swe.julday(
-        dt_utc.year,
-        dt_utc.month,
-        dt_utc.day,
-        dt_utc.hour + dt_utc.minute / 60 + dt_utc.second / 3600
-    )
-
+    return tz
 
 def calculate_chart(date_str, time_str, city):
     lat, lon = get_coordinates(city)
     timezone_name = get_timezone(lat, lon)
 
-    local_tz = pytz.timezone(timezone_name)
-    local_dt = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
-    localized_dt = local_tz.localize(local_dt)
+    tz = pytz.timezone(timezone_name)
+    dt_local = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+    dt_local = tz.localize(dt_local)
+    dt_utc = dt_local.astimezone(pytz.utc)
 
-    utc_dt = localized_dt.astimezone(pytz.utc)
-    jd = calculate_jd(utc_dt)
+    jd = swe.julday(
+        dt_utc.year,
+        dt_utc.month,
+        dt_utc.day,
+        dt_utc.hour + dt_utc.minute / 60
+    )
 
     ayanamsha = swe.get_ayanamsa_ut(jd)
 
     flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL
 
-    planets_result = {}
+    houses, ascmc = swe.houses_ex(jd, lat, lon, b"W")
+    lagna = normalize_degree(ascmc[0])
 
-    for name, planet_code in PLANETS.items():
-        longitude = swe.calc_ut(jd, planet_code, flags)[0][0]
-        longitude = normalize_degree(longitude)
+    lagna_sign_data = get_sign_data(lagna)
+    lagna_nak = get_nakshatra_data(lagna)
 
-        sign_data = get_sign_data(longitude)
-        nak_data = get_nakshatra_data(longitude)
+    lagna_sign_index = lagna_sign_data["sign_index"]
 
-        planets_result[name] = {
-            "longitude": round(longitude, 4),
-            "degree": round(longitude, 2),
-            "sign": sign_data["sign"],
-            "degree_text": sign_data["degree_text"],
+    planets = {}
+
+    for name, code in PLANETS.items():
+        lon_p = normalize_degree(swe.calc_ut(jd, code, flags)[0][0])
+
+        sign_data = get_sign_data(lon_p)
+        nak_data = get_nakshatra_data(lon_p)
+
+        house = ((sign_data["sign_index"] - lagna_sign_index) % 12) + 1
+
+        planets[name] = {
             "full_text": sign_data["full_text"],
             "nakshatra": nak_data["nakshatra"],
-            "pada": nak_data["pada"]
+            "pada": nak_data["pada"],
+            "house": house
         }
 
-    rahu_longitude = planets_result["Раху"]["longitude"]
-    ketu_longitude = normalize_degree(rahu_longitude + 180)
+    # Кету
+    rahu_deg = swe.calc_ut(jd, swe.MEAN_NODE)[0][0]
+    ketu_deg = normalize_degree(rahu_deg + 180)
 
-    ketu_sign_data = get_sign_data(ketu_longitude)
-    ketu_nak_data = get_nakshatra_data(ketu_longitude)
+    sign_data = get_sign_data(ketu_deg)
+    nak_data = get_nakshatra_data(ketu_deg)
 
-    planets_result["Кету"] = {
-        "longitude": round(ketu_longitude, 4),
-        "degree": round(ketu_longitude, 2),
-        "sign": ketu_sign_data["sign"],
-        "degree_text": ketu_sign_data["degree_text"],
-        "full_text": ketu_sign_data["full_text"],
-        "nakshatra": ketu_nak_data["nakshatra"],
-        "pada": ketu_nak_data["pada"]
+    house = ((sign_data["sign_index"] - lagna_sign_index) % 12) + 1
+
+    planets["Кету"] = {
+        "full_text": sign_data["full_text"],
+        "nakshatra": nak_data["nakshatra"],
+        "pada": nak_data["pada"],
+        "house": house
     }
-
-    houses, ascmc = swe.houses_ex(jd, lat, lon, b"W")
-    lagna_longitude = normalize_degree(ascmc[0])
-
-    lagna_sign_data = get_sign_data(lagna_longitude)
-    lagna_nak_data = get_nakshatra_data(lagna_longitude)
-
-    moon = planets_result["Луна"]
 
     return {
         "city": city,
         "lat": lat,
         "lon": lon,
         "timezone": timezone_name,
-        "utc": utc_dt.strftime("%Y-%m-%d %H:%M:%S"),
+        "utc": str(dt_utc),
         "jd": jd,
         "ayanamsha": ayanamsha,
-
-        "lagna": round(lagna_longitude, 4),
-        "lagna_sign": lagna_sign_data["sign"],
-        "lagna_degree_text": lagna_sign_data["degree_text"],
         "lagna_full_text": lagna_sign_data["full_text"],
-        "lagna_nakshatra": lagna_nak_data["nakshatra"],
-        "lagna_pada": lagna_nak_data["pada"],
-
-        "moon": moon["longitude"],
-        "moon_full_text": moon["full_text"],
-        "moon_nakshatra": moon["nakshatra"],
-        "moon_pada": moon["pada"],
-
-        "planets": planets_result
-    }
+        "lagna_nakshatra": lagna_nak["nakshatra"],
+        "lagna_pada": lagna_nak["pada"],
+        "planets": planets
+                                             }

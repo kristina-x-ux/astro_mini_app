@@ -28,89 +28,83 @@ def calculate():
     try:
         chart = calculate_chart(date, time, city)
 
+        # =========================
+        # 🧠 СОБИРАЕМ КАРТОЧКИ
+        # =========================
+
         result = f"""
-✨ ДЖЙОТИШ-РАСЧЁТ
+        <div class="card">
+            <h2>✨ Джйотиш-расчёт</h2>
+            <p>📍 {chart['city']}</p>
+            <p>🌍 {round(chart['lat'],4)} / {round(chart['lon'],4)}</p>
+            <p>🕒 {chart['timezone']}</p>
+        </div>
 
-📍 Город: {chart["city"]}
-🌍 Широта: {round(chart["lat"], 4)}
-🌍 Долгота: {round(chart["lon"], 4)}
-🕒 Часовой пояс: {chart["timezone"]}
+        <div class="card">
+            <h3>🌅 Лагна</h3>
+            <p>{chart['lagna_full_text']}</p>
+            <p>{chart['lagna_nakshatra']}, пада {chart['lagna_pada']}</p>
+        </div>
 
-🕰 UTC:
-{chart["utc"]}
+        <div class="card">
+            <h3>🏠 Дома</h3>
+        """
 
-📌 Julian Day:
-{round(chart["jd"], 5)}
+        for house, info in chart["houses"].items():
+            result += f"<p>{house} — {info}</p>"
 
-📌 Айанамша Лахири:
-{round(chart["ayanamsha"], 4)}°
+        result += "</div>"
 
-━━━━━━━━━━━━━━
-
-🌅 ЛАГНА:
-{chart["lagna_full_text"]}
-Накшатра: {chart["lagna_nakshatra"]}, пада {chart["lagna_pada"]}
-
-━━━━━━━━━━━━━━
-
-🏠 ДОМА:
-
-"""
-
-        for house_num, house_data in chart["houses"].items():
-            result += f"{house_num} дом — {house_data['sign']}, управитель: {house_data['lord']}\n"
-
+        # 🌙 ЛУНА
         result += f"""
+        <div class="card">
+            <h3>🌙 Луна</h3>
+            <p>{chart['moon_full_text']}</p>
+            <p>{chart['moon_nakshatra']}, пада {chart['moon_pada']}</p>
+        </div>
+        """
 
-━━━━━━━━━━━━━━
-
-🌙 ЛУНА:
-{chart["moon_full_text"]}
-Накшатра: {chart["moon_nakshatra"]}, пада {chart["moon_pada"]}
-Дом: {chart["moon_house"]}
-
-━━━━━━━━━━━━━━
-
-🪐 ПЛАНЕТЫ:
-
-"""
+        # 🪐 ПЛАНЕТЫ
+        result += """
+        <div class="card">
+            <h3>🪐 Планеты</h3>
+        """
 
         for planet, info in chart["planets"].items():
             result += f"""
-{planet}: {info["full_text"]}
-Дом: {info["house"]}
-Накшатра: {info["nakshatra"]}, пада {info["pada"]}
-"""
+            <div class="planet">
+                <b>{planet}</b><br>
+                {info['full_text']}<br>
+                Дом: {info['house']}<br>
+                Накшатра: {info['nakshatra']}, пада {info['pada']}
+            </div>
+            """
 
+        result += "</div>"
+
+        # 💰 ПРО-БЛОК
         result += """
-
-━━━━━━━━━━━━━━
-
-🔮 БАЗОВЫЙ ВЫВОД:
-
-Это уже профессиональный джйотиш-расчёт:
-— сидерический зодиак
-— айанамша Лахири
-— лагна
-— дома по системе знак = дом
-— управители домов
-— планеты в домах
-— накшатры и пады
-
-Следующий уровень:
-— аспекты Парашары
-— Чаракараки
-— Вимшоттари Даша
-— бесплатный и платный разбор
-"""
+        <div class="card pro">
+            🔒 Полный разбор:
+            <ul>
+                <li>Аспекты Парашары</li>
+                <li>Кармические задачи</li>
+                <li>Даша и периоды</li>
+                <li>Отношения и деньги</li>
+            </ul>
+            <button class="pro-btn">Открыть полный разбор</button>
+        </div>
+        """
 
     except Exception as e:
-        import traceback
-        print(traceback.format_exc())
-        result = f"Ошибка расчёта:\n{str(e)}"
+        result = f"<div class='error'>Ошибка расчёта: {str(e)}</div>"
 
     return jsonify({"result": result})
 
+
+# =========================
+# 🤖 TELEGRAM БОТ
+# =========================
 
 @bot.message_handler(commands=["start"])
 def start(message):
@@ -125,7 +119,7 @@ def start(message):
 
     bot.send_message(
         message.chat.id,
-        "✨ Добро пожаловать в «Звёздный Код»\n\nНажми кнопку ниже и получи свой разбор:",
+        "✨ Добро пожаловать в «Звёздный Код»\n\nНажми кнопку ниже 👇",
         reply_markup=markup
     )
 

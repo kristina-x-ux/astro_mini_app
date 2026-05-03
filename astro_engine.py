@@ -8,22 +8,32 @@ swe.set_ephe_path(".")
 swe.set_sid_mode(swe.SIDM_LAHIRI)
 
 ЗНАКИ = [
-    "Овен","Телец","Близнецы","Рак","Лев","Дева",
-    "Весы","Скорпион","Стрелец","Козерог","Водолей","Рыбы"
+    "Овен", "Телец", "Близнецы", "Рак", "Лев", "Дева",
+    "Весы", "Скорпион", "Стрелец", "Козерог", "Водолей", "Рыбы"
 ]
 
 SIGN_LORDS = {
-    "Овен":"Марс","Телец":"Венера","Близнецы":"Меркурий","Рак":"Луна",
-    "Лев":"Солнце","Дева":"Меркурий","Весы":"Венера","Скорпион":"Марс",
-    "Стрелец":"Юпитер","Козерог":"Сатурн","Водолей":"Сатурн","Рыбы":"Юпитер"
+    "Овен": "Марс",
+    "Телец": "Венера",
+    "Близнецы": "Меркурий",
+    "Рак": "Луна",
+    "Лев": "Солнце",
+    "Дева": "Меркурий",
+    "Весы": "Венера",
+    "Скорпион": "Марс",
+    "Стрелец": "Юпитер",
+    "Козерог": "Сатурн",
+    "Водолей": "Сатурн",
+    "Рыбы": "Юпитер",
 }
 
 НАКШАТРЫ = [
-    "Ашвини","Бхарани","Криттика","Рохини","Мригашира","Ардра",
-    "Пунарвасу","Пушья","Ашлеша","Магха","Пурва Пхалгуни","Уттара Пхалгуни",
-    "Хаста","Читра","Свати","Вишакха","Анурадха","Джйештха",
-    "Мула","Пурва Ашадха","Уттара Ашадха","Шравана","Дхаништха",
-    "Шатабхиша","Пурва Бхадрапада","Уттара Бхадрапада","Ревати"
+    "Ашвини", "Бхарани", "Криттика", "Рохини", "Мригашира", "Ардра",
+    "Пунарвасу", "Пушья", "Ашлеша", "Магха", "Пурва Пхалгуни",
+    "Уттара Пхалгуни", "Хаста", "Читра", "Свати", "Вишакха",
+    "Анурадха", "Джйештха", "Мула", "Пурва Ашадха", "Уттара Ашадха",
+    "Шравана", "Дхаништха", "Шатабхиша", "Пурва Бхадрапада",
+    "Уттара Бхадрапада", "Ревати"
 ]
 
 ПЛАНЕТЫ = {
@@ -37,27 +47,39 @@ SIGN_LORDS = {
     "Раху": swe.MEAN_NODE
 }
 
+
 def нормализовать_степень(x):
     return x % 360
 
+
 def формат_градус(x):
     град = int(x)
-    мин = int((x - град) * 60)
-    return f"{град}°{мин:02d}'"
+    мин = int(round((x - град) * 60))
+
+    if мин == 60:
+        град += 1
+        мин = 0
+
+    return f"{град}°{мин:02d}′"
+
 
 def get_sign_data(lon):
     lon = нормализовать_степень(lon)
     sign_index = int(lon // 30)
     degree = lon % 30
+    sign = ЗНАКИ[sign_index]
+
     return {
         "sign_index": sign_index,
-        "sign": ЗНАКИ[sign_index],
+        "sign": sign,
         "degree": degree,
-        "full_text": f"{ЗНАКИ[sign_index]} {формат_градус(degree)}"
+        "full_text": f"{sign} {формат_градус(degree)}"
     }
+
 
 def get_nakshatra_data(lon):
     lon = нормализовать_степень(lon)
+
     nak_size = 360 / 27
     pada_size = nak_size / 4
 
@@ -70,14 +92,16 @@ def get_nakshatra_data(lon):
         "pada": pada
     }
 
+
 def получить_координаты(город):
     geolocator = Nominatim(user_agent="astro_bot")
-    location = geolocator.geocode(город)
+    location = geolocator.geocode(город, timeout=10)
 
     if not location:
         raise ValueError("Город не найден")
 
     return location.latitude, location.longitude
+
 
 def get_timezone(lat, lon):
     tf = TimezoneFinder()
@@ -88,8 +112,8 @@ def get_timezone(lat, lon):
 
     return tz
 
-def calculate_chart(date_str, time_str, city):
 
+def calculate_chart(date_str, time_str, city):
     lat, lon = получить_координаты(city)
     timezone_name = get_timezone(lat, lon)
 
@@ -108,56 +132,68 @@ def calculate_chart(date_str, time_str, city):
 
     ayanamsha = swe.get_ayanamsa_ut(jd)
 
-    houses_data = swe.houses_ex(jd, lat, lon, b'P')
-    asc = нормализовать_степень(houses_data[0][0])
+    flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL
+
+    houses_data = swe.houses_ex(jd, lat, lon, b"P")
+    asc = нормализовать_степень(houses_data[1][0])
 
     lagna_sign = get_sign_data(asc)
     lagna_nak = get_nakshatra_data(asc)
+    lagna_sign_index = lagna_sign["sign_index"]
 
-    # 🏠 ДОМА
     houses = {}
 
     for i in range(12):
-        sign_index = (lagna_sign["sign_index"] + i) % 12
+        sign_index = (lagna_sign_index + i) % 12
         sign = ЗНАКИ[sign_index]
 
-        houses[i+1] = {
+        houses[i + 1] = {
             "sign": sign,
             "lord": SIGN_LORDS[sign]
         }
 
-    # 🪐 ПЛАНЕТЫ
     planets = {}
 
+    moon_full_text = ""
+    moon_nakshatra = ""
+    moon_pada = ""
+    moon_house = ""
+
     for name, code in ПЛАНЕТЫ.items():
-        lon_p = нормализовать_степень(swe.calc_ut(jd, code)[0][0])
+        lon_p = нормализовать_степень(swe.calc_ut(jd, code, flags)[0][0])
 
         sign_data = get_sign_data(lon_p)
         nak_data = get_nakshatra_data(lon_p)
 
-        house = ((sign_data["sign_index"] - lagna_sign["sign_index"]) % 12) + 1
+        house = ((sign_data["sign_index"] - lagna_sign_index) % 12) + 1
 
         planets[name] = {
+            "full_text": sign_data["full_text"],
             "degree": формат_градус(sign_data["degree"]),
             "nakshatra": nak_data["nakshatra"],
             "pada": nak_data["pada"],
             "house": house
         }
 
-    # КЕТУ
-    rahu_deg = planets["Раху"]
-    ketu_lon = нормализовать_степень(swe.calc_ut(jd, swe.MEAN_NODE)[0][0] + 180)
+        if name == "Луна":
+            moon_full_text = sign_data["full_text"]
+            moon_nakshatra = nak_data["nakshatra"]
+            moon_pada = nak_data["pada"]
+            moon_house = house
 
-    sign_data = get_sign_data(ketu_lon)
-    nak_data = get_nakshatra_data(ketu_lon)
+    rahu_lon = нормализовать_степень(swe.calc_ut(jd, swe.MEAN_NODE, flags)[0][0])
+    ketu_lon = нормализовать_степень(rahu_lon + 180)
 
-    house = ((sign_data["sign_index"] - lagna_sign["sign_index"]) % 12) + 1
+    ketu_sign = get_sign_data(ketu_lon)
+    ketu_nak = get_nakshatra_data(ketu_lon)
+    ketu_house = ((ketu_sign["sign_index"] - lagna_sign_index) % 12) + 1
 
     planets["Кету"] = {
-        "degree": формат_градус(sign_data["degree"]),
-        "nakshatra": nak_data["nakshatra"],
-        "pada": nak_data["pada"],
-        "house": house
+        "full_text": ketu_sign["full_text"],
+        "degree": формат_градус(ketu_sign["degree"]),
+        "nakshatra": ketu_nak["nakshatra"],
+        "pada": ketu_nak["pada"],
+        "house": ketu_house
     }
 
     return {
@@ -167,11 +203,16 @@ def calculate_chart(date_str, time_str, city):
         "timezone": timezone_name,
         "utc": str(dt_utc),
         "jd": jd,
-        "ayanamsha": round(ayanamsha, 3),
+        "ayanamsha": ayanamsha,
 
         "lagna_full_text": lagna_sign["full_text"],
         "lagna_nakshatra": lagna_nak["nakshatra"],
         "lagna_pada": lagna_nak["pada"],
+
+        "moon_full_text": moon_full_text,
+        "moon_nakshatra": moon_nakshatra,
+        "moon_pada": moon_pada,
+        "moon_house": moon_house,
 
         "houses": houses,
         "planets": planets

@@ -36,32 +36,33 @@ def calculate():
 🌍 Долгота: {round(chart["lon"], 4)}
 🕒 Часовой пояс: {chart["timezone"]}
 
-UTC:
+🕰 UTC:
 {chart["utc"]}
 
-Julian Day:
+📌 Julian Day:
 {round(chart["jd"], 5)}
 
-Айанамша Лахири:
+📌 Айанамша Лахири:
 {round(chart["ayanamsha"], 4)}°
 
 ━━━━━━━━━━━━━━
 
-🌅 Лагна:
-{round(chart["lagna"], 2)}°
+🌅 ЛАГНА:
+{chart["lagna_full_text"]}
+Накшатра: {chart["lagna_nakshatra"]}, пада {chart["lagna_pada"]}
 
-🌙 Луна:
-{round(chart["moon"], 2)}°
-Накшатра Луны: {chart["moon_nakshatra"]}, пада {chart["moon_pada"]}
+🌙 ЛУНА:
+{chart["moon_full_text"]}
+Накшатра: {chart["moon_nakshatra"]}, пада {chart["moon_pada"]}
 
 ━━━━━━━━━━━━━━
 
-🪐 Планеты:
+🪐 ПЛАНЕТЫ:
 """
 
         for planet, info in chart["planets"].items():
             result += f"""
-{planet}: {info["degree"]}°
+{planet}: {info["full_text"]}
 Накшатра: {info["nakshatra"]}, пада {info["pada"]}
 """
 
@@ -69,19 +70,32 @@ Julian Day:
 
 ━━━━━━━━━━━━━━
 
-🔮 Это базовый профессиональный расчёт.
+🔮 БАЗОВЫЙ ВЫВОД:
 
-Следующий уровень:
-— знак и градус лагны
+Это уже профессиональный джйотиш-расчёт:
+— сидерический зодиак
+— айанамша Лахири
+— UTC
+— Julian Day
+— лагна
+— планеты
+— накшатры
+— пады
+
+Следующий этап:
 — дома
 — управители домов
 — аспекты Парашары
+— Чаракараки
 — Вимшоттари Даша
-— бесплатный и платный разбор
+— бесплатная и платная версия разбора
 """
 
     except Exception as e:
-        result = f"Ошибка расчёта: {str(e)}"
+        import traceback
+        error_text = traceback.format_exc()
+        print(error_text)
+        result = f"Ошибка расчёта:\n{str(e)}"
 
     return jsonify({"result": result})
 

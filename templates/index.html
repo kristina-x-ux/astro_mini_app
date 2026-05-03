@@ -1,259 +1,127 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Звёздный Код</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Звёздный Код</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-            color: #fff;
-            background:
-                radial-gradient(circle at top left, rgba(150, 92, 255, 0.35), transparent 35%),
-                radial-gradient(circle at bottom right, rgba(255, 180, 60, 0.18), transparent 30%),
-                linear-gradient(135deg, #070716, #17133a 45%, #2b245f);
-        }
+    /* 🌌 ФОН */
+    background:
+        linear-gradient(
+            rgba(120, 170, 255, 0.35),
+            rgba(200, 220, 255, 0.4)
+        ),
+        url('/static/file_000000009a0072438087f62e212a4232.png');
 
-        .container {
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 28px 22px 40px;
-        }
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 
-        .hero {
-            text-align: center;
-            margin-bottom: 26px;
-        }
+    color: white;
+}
 
-        .hero h1 {
-            margin: 0;
-            font-size: 42px;
-            line-height: 1.1;
-            font-weight: 900;
-            letter-spacing: -1px;
-        }
+/* Контейнер */
+.container {
+    max-width: 420px;
+    margin: auto;
+    padding: 20px;
+}
 
-        .hero p {
-            margin-top: 12px;
-            font-size: 16px;
-            line-height: 1.45;
-            color: rgba(255, 255, 255, 0.78);
-        }
+/* Заголовок */
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 28px;
+}
 
-        .card {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 24px;
-            padding: 22px;
-            margin-top: 18px;
-            backdrop-filter: blur(14px);
-            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
-            animation: fadeIn 0.45s ease;
-        }
+/* Карточки */
+.card {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.2);
+}
 
-        label {
-            display: block;
-            margin: 14px 0 8px;
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.75);
-        }
+/* Поля */
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+}
 
-        input {
-            width: 100%;
-            padding: 17px 18px;
-            border: none;
-            outline: none;
-            border-radius: 16px;
-            font-size: 18px;
-            background: rgba(255, 255, 255, 0.92);
-            color: #111;
-        }
+/* Кнопка */
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    border-radius: 14px;
+    border: none;
 
-        button {
-            width: 100%;
-            margin-top: 22px;
-            padding: 18px 20px;
-            border: none;
-            border-radius: 18px;
-            font-size: 18px;
-            font-weight: 800;
-            color: #1b1230;
-            background: linear-gradient(135deg, #ffd36a, #ff8a18);
-            box-shadow: 0 12px 30px rgba(255, 138, 24, 0.35);
-            cursor: pointer;
-        }
+    background: linear-gradient(45deg, #5aa9ff, #7b61ff);
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
 
-        button:active {
-            transform: scale(0.98);
-        }
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
 
-        .note {
-            margin-top: 16px;
-            padding: 14px;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.06);
-            color: rgba(255, 255, 255, 0.72);
-            font-size: 14px;
-            line-height: 1.4;
-        }
+/* Блок результата */
+.result {
+    white-space: pre-line;
+    margin-top: 15px;
+}
+</style>
 
-        #result {
-            margin-top: 20px;
-            white-space: pre-wrap;
-            font-size: 17px;
-            line-height: 1.45;
-        }
-
-        .result-card {
-            background: linear-gradient(
-                135deg,
-                rgba(255, 215, 0, 0.08),
-                rgba(255, 255, 255, 0.03)
-            );
-            border: 1px solid rgba(255, 215, 0, 0.25);
-            border-radius: 24px;
-            padding: 22px;
-            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
-            animation: fadeIn 0.45s ease;
-        }
-
-        .premium {
-            border: 1px solid rgba(255, 211, 106, 0.55);
-            background: linear-gradient(135deg, rgba(255, 211, 106, 0.13), rgba(255, 255, 255, 0.05));
-        }
-
-        .premium h3 {
-            margin-top: 0;
-            color: #ffd36a;
-            font-size: 22px;
-        }
-
-        .premium p,
-        .premium li {
-            color: rgba(255, 255, 255, 0.82);
-            font-size: 15px;
-            line-height: 1.45;
-        }
-
-        .premium ul {
-            padding-left: 20px;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
 </head>
 
 <body>
-    <div class="container">
 
-        <div class="hero">
-            <h1>🔮 Звёздный Код</h1>
-            <p>
-                Астрологический разбор личности<br>
-                Отношения • Деньги • Предназначение
-            </p>
-        </div>
+<div class="container">
 
-        <div class="card">
-            <label>Дата рождения</label>
-            <input type="date" id="date">
+<h1>✨ Звёздный Код ✨</h1>
 
-            <label>Время рождения</label>
-            <input type="time" id="time">
+<div class="card">
+    <h3>Введите данные</h3>
 
-            <label>Город рождения</label>
-            <input type="text" id="city" placeholder="Например: Ялта">
+    <input id="date" type="date">
+    <input id="time" type="time">
+    <input id="city" placeholder="Город рождения">
 
-            <button onclick="sendData()">✨ Сделать разбор</button>
+    <button onclick="calc()">✨ Сделать разбор</button>
+</div>
 
-            <div class="note">
-                Мы не сохраняем ваши данные. Расчёт выполняется моментально.
-            </div>
-        </div>
-
-        <div id="result"></div>
-
-        <div class="card premium">
-            <h3>💎 Полный разбор карты</h3>
-
-            <p>
-                Ты сейчас видишь только базовый расчёт.
-                В полном разборе раскрываются глубокие слои карты:
-            </p>
-
-            <ul>
-                <li>✔ Управители домов</li>
-                <li>✔ Аспекты Парашары</li>
-                <li>✔ Чара Караки</li>
-                <li>✔ Вимшоттари Даша</li>
-                <li>✔ Анализ отношений, денег и предназначения</li>
-            </ul>
-
-            <button onclick="alert('Полный разбор скоро будет доступен в PRO-версии')">
-                Получить полный разбор
-            </button>
-        </div>
-
+<div class="card">
+    <h3>✨ Джйотиш-расчёт</h3>
+    <div class="result" id="result">
+        Здесь появится результат...
     </div>
+</div>
 
-    <script>
-        function sendData() {
-            const date = document.getElementById("date").value;
-            const time = document.getElementById("time").value;
-            const city = document.getElementById("city").value;
+</div>
 
-            if (!date || !time || !city) {
-                alert("Заполни все поля");
-                return;
-            }
+<script>
+function calc() {
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+    const city = document.getElementById("city").value;
 
-            document.getElementById("result").innerHTML =
-                '<div class="result-card">⏳ Выполняю расчёт...</div>';
+    document.getElementById("result").innerText =
+        "📍 Город: " + city + "\n" +
+        "📅 Дата: " + date + "\n" +
+        "⏰ Время: " + time + "\n\n" +
+        "✨ Расчёт скоро будет здесь...";
+}
+</script>
 
-            fetch("/calculate", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    date: date,
-                    time: time,
-                    city: city
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                let formatted = data.result
-                    .replace(/ЛАГНА:/g, "🌅 <b>ЛАГНА:</b>")
-                    .replace(/ЛУНА:/g, "🌙 <b>ЛУНА:</b>")
-                    .replace(/ДОМА:/g, "🏠 <b>ДОМА:</b>")
-                    .replace(/ПЛАНЕТЫ:/g, "🪐 <b>ПЛАНЕТЫ:</b>");
-
-                document.getElementById("result").innerHTML =
-                    '<div class="result-card">' + formatted + '</div>';
-            })
-            .catch(error => {
-                document.getElementById("result").innerHTML =
-                    '<div class="result-card">Ошибка соединения</div>';
-            });
-        }
-    </script>
 </body>
 </html>

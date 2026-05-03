@@ -33,6 +33,20 @@ PLANETS = {
 }
 
 
+CITY_FALLBACK = {
+    "киев": (50.4501, 30.5234, "Киев, Украина"),
+    "киев, украина": (50.4501, 30.5234, "Киев, Украина"),
+    "ялта": (44.4952, 34.1663, "Ялта, Россия"),
+    "ялта, россия": (44.4952, 34.1663, "Ялта, Россия"),
+    "москва": (55.7558, 37.6173, "Москва, Россия"),
+    "москва, россия": (55.7558, 37.6173, "Москва, Россия"),
+    "рига": (56.9496, 24.1052, "Рига, Латвия"),
+    "рига, латвия": (56.9496, 24.1052, "Рига, Латвия"),
+    "алматы": (43.2389, 76.8897, "Алматы, Казахстан"),
+    "алматы, казахстан": (43.2389, 76.8897, "Алматы, Казахстан")
+}
+
+
 def normalize_degree(deg):
     return deg % 360
 
@@ -66,16 +80,105 @@ def get_house(planet_sign_index, lagna_sign_index):
     return ((planet_sign_index - lagna_sign_index) % 12) + 1
 
 
-def get_coordinates(place):
-    place = place.strip()
+def short_place_name(location):
+    address = location.raw.get("address", {})
 
-    if not place:
-        raise ValueError("Введите место рождения")
+    city = (
+        address.get("city")
+        or address.get("town")
+        or address.get("village")
+        or address.get("municipality")
+        or address.get("county")
+        or ""
+    )
 
-    geolocator = Nominatim(user_agent="astroengine_global_search")
+    state = address.get("state") or address.get("region") or ""
+    country = address.get("country") or ""
+
+    parts = []
+
+    if city:
+        parts.append(city)
+
+    if state and state != city:
+        parts.append(state)
+
+    if country:
+        parts.append(country)
+
+    if parts:
+        return ", ".join(parts)
+
+    return location.address
+
+
+def search_places(query):
+    query = query.strip()
+
+    if len(query) < 2:
+        return []
+
+    key = query.lower()
+
+    fallback_results = []
+    for name, data in CITY_FALLBACK.items():
+        if key in name:
+            lat, lon, display = data
+            fallback_results.append({
+                "name": display,
+                "lat": lat,
+                "lon": lon
+            })
+
+    geolocator = Nominatim(user_agent="astroengine_place_search")
+
+    locations = geolocator.geocode(
+        query,
+        exactly_one=False,
+        limit=5,
+        timeout=10,
+        language="ru",
+        addressdetails=True
+    )
+
+    results = fallback_results
+
+    if locations:
+        for loc in locations:
+            results.append({
+                "name": short_place_name(loc),
+                "lat": loc.latitude,
+                "lon": loc.longitude
+            })
+
+    unique = []
+    seen = set()
+
+    for item in results:
+        key_item = (item["name"], round(item["lat"], 4), round(item["lon"], 4))
+
+        if key_item not in seen:
+            seen.add(key_item)
+            unique.append(item)
+
+    return unique[:6]
+
+
+def get_coordinates(city, lat=None, lon=None, display_name=None):
+    if lat is not None and lon is not None:
+        return float(lat), float(lon), display_name or city
+
+    city_clean = city.strip()
+    key = city_clean.lower()
+
+    if key in CITY_FALLBACK:
+        lat, lon, display = CITY_FALLBACK[key]
+        return lat, lon, display
+
+    geolocator = Nominatim(user_agent="astroengine_geocoder")
 
     location = geolocator.geocode(
-        place,
+        city_clean,
         timeout=10,
         language="ru",
         addressdetails=True
@@ -86,9 +189,7 @@ def get_coordinates(place):
             "Место не найдено. Введите подробнее, например: Киев, Украина"
         )
 
-    display_name = location.address
-
-    return location.latitude, location.longitude, display_name
+    return location.latitude, location.longitude, short_place_name(location)
 
 
 def get_timezone(lat, lon):
@@ -101,13 +202,18 @@ def get_timezone(lat, lon):
     return timezone_name
 
 
-def calculate_chart(date_str, time_str, city):
+def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=None):
     if not date_str or not time_str or not city:
         raise ValueError("Заполните дату, время и место рождения")
 
-    lat, lon, display_city = get_coordinates(city)
-    timezone_name = get_timezone(lat, lon)
+    lat, lon, display_city = get_coordinates(
+        city=city,
+        lat=lat,
+        lon=lon,
+        display_name=display_name
+    )
 
+    timezone_name = get_timezone(lat, lon)
     local_tz = pytz.timezone(timezone_name)
 
     local_dt = datetime.strptime(
@@ -146,21 +252,30 @@ def calculate_chart(date_str, time_str, city):
 
     result = {
         "city": display_city,
-        "lat": lat,
-        "lon": lon,
+        "lat": round(lat, 4),
+        "lon": round(lon, 4),
         "timezone": timezone_name,
         "utc": utc_dt.strftime("%Y-%m-%d %H:%M:%S"),
-        "jd": jd,
+        "jd": round(jd, 5),
         "ayanamsha": round(ayanamsha, 3),
         "lagna": {
             "sign": lagna_sign,
             "degree": format_degree(lagna_deg),
             "nakshatra": lagna_nak,
-            "pada": lagna_pada
+            "pada": lagna_pada,
+            "longitude": round(lagna_lon, 4)
         },
         "moon": {},
+        "houses": [],
         "planets": {}
     }
+
+    for i in range(12):
+        sign_index = (lagna_sign_index + i) % 12
+        result["houses"].append({
+            "house": i + 1,
+            "sign": SIGNS[sign_index]
+        })
 
     rahu_pos = None
 

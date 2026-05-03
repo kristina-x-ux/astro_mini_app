@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Звёздный Код</title>
+<title>AstroEngine</title>
 
 <style>
-
 * {
     box-sizing: border-box;
 }
@@ -41,21 +40,21 @@ body {
 
 .header h1 {
     margin: 0;
-    font-size: 34px;
+    font-size: 36px;
     font-weight: 800;
-    text-shadow: 0 4px 18px rgba(0,0,0,0.5);
+    text-shadow: 0 4px 18px rgba(0,0,0,0.45);
 }
 
 .subtitle {
     margin-top: 8px;
     font-size: 15px;
-    opacity: 0.85;
+    opacity: 0.9;
 }
 
-/* 🔥 ТЕПЕРЬ РЕАЛЬНО ПРОЗРАЧНО */
 .card {
-    background: rgba(0, 0, 0, 0.08); /* почти невидимый */
+    background: rgba(0, 0, 0, 0.08);
     backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 
     border: 1.5px solid rgba(255,255,255,0.45);
     border-radius: 28px;
@@ -74,7 +73,6 @@ body {
     margin-bottom: 14px;
 }
 
-/* режим */
 .mode-switch {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -92,10 +90,9 @@ body {
 }
 
 .mode-btn.active {
-    background: linear-gradient(135deg, #56b9ff, #755cff);
+    background: linear-gradient(135deg, #52b5ff, #7257ff);
 }
 
-/* поля */
 label {
     display: block;
     margin-top: 14px;
@@ -111,13 +108,13 @@ input {
     border-radius: 18px;
     border: 1px solid rgba(255,255,255,0.65);
 
-    background: rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.62);
     color: #1b2d52;
 
     font-size: 16px;
+    outline: none;
 }
 
-/* кнопка */
 .main-btn {
     width: 100%;
     margin-top: 16px;
@@ -135,7 +132,6 @@ input {
     box-shadow: 0 10px 28px rgba(60,120,255,0.35);
 }
 
-/* результат */
 .result-card {
     display: none;
 }
@@ -163,7 +159,6 @@ input {
     margin-top: 20px;
     opacity: 0.85;
 }
-
 </style>
 </head>
 
@@ -172,12 +167,12 @@ input {
 <div class="page">
 
     <div class="header">
-        <h1>✨ Звёздный Код ✨</h1>
-        <div class="subtitle">Джйотиш-расчёт по дате рождения</div>
+        <h1>AstroEngine</h1>
+        <div class="subtitle">Джйотиш-анализ личности и натальной карты</div>
     </div>
 
     <div class="card">
-        <div class="card-title">Введите данные</div>
+        <div class="card-title">Введите данные для анализа</div>
 
         <div class="mode-switch">
             <button class="mode-btn active" id="clientBtn" onclick="setMode('client')">🌙 Клиент</button>
@@ -190,25 +185,24 @@ input {
         <label>Время рождения</label>
         <input id="time" type="time">
 
-        <label>Город рождения</label>
-        <input id="city" type="text" placeholder="Ялта">
+        <label>Место рождения</label>
+        <input id="city" type="text" placeholder="Киев, Украина">
 
-        <button class="main-btn" onclick="calculate()">✨ Сделать разбор</button>
+        <button class="main-btn" onclick="calculate()">Запустить анализ</button>
     </div>
 
     <div class="card result-card" id="resultCard">
-        <div class="result-title" id="resultTitle">✨ Джйотиш-расчёт</div>
+        <div class="result-title" id="resultTitle">Джйотиш-расчёт</div>
         <div class="result" id="result"></div>
     </div>
 
     <div class="footer">
-        Ты — часть Вселенной. Звёзды раскрывают твой код.
+        AstroEngine помогает увидеть структуру карты через язык джйотиш.
     </div>
 
 </div>
 
 <script>
-
 let mode = "client";
 
 function setMode(m) {
@@ -227,14 +221,20 @@ function setMode(m) {
 async function calculate() {
     const date = document.getElementById("date").value;
     const time = document.getElementById("time").value;
-    const city = document.getElementById("city").value;
+    const city = document.getElementById("city").value.trim();
 
     const resultCard = document.getElementById("resultCard");
     const result = document.getElementById("result");
     const title = document.getElementById("resultTitle");
 
     resultCard.style.display = "block";
-    result.innerHTML = "<span class='loading'>✨ Считаю карту...</span>";
+
+    if (!date || !time || !city) {
+        result.innerText = "Пожалуйста, заполните дату, время и место рождения.";
+        return;
+    }
+
+    result.innerHTML = "<span class='loading'>Выполняю расчёт карты...</span>";
 
     try {
         const response = await fetch("/calculate", {
@@ -246,16 +246,15 @@ async function calculate() {
         const data = await response.json();
 
         title.innerText = mode === "client"
-            ? "🌙 Персональный разбор"
-            : "🧿 Технический расчёт";
+            ? "Персональный разбор"
+            : "Технический расчёт";
 
         result.innerText = data.result;
 
     } catch {
-        result.innerText = "Ошибка соединения с сервером";
+        result.innerText = "Ошибка соединения с сервером.";
     }
 }
-
 </script>
 
 </body>

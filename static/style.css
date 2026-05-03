@@ -1,0 +1,17 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+
+    background:
+        linear-gradient(
+            rgba(120, 180, 255, 0.25),
+            rgba(160, 210, 255, 0.35)
+        ),
+        url('/static/bg.jpg');
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+
+    color: white;
+}

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 import telebot
 import os
 from threading import Thread
@@ -11,63 +11,54 @@ WEBAPP_URL = os.getenv("WEBAPP_URL")
 bot = telebot.TeleBot(TOKEN)
 
 
-# 🔥 ТЕСТОВАЯ ГЛАВНАЯ СТРАНИЦА (без шаблонов)
+# 🌐 Главная страница (мини-приложение)
 @app.route("/")
 def index():
-    return """
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Звёздный Код</title>
-      </head>
-      <body style="font-family: Arial; padding: 30px;">
-        <h1>✨ Звёздный Код работает</h1>
-        <p>Если ты видишь этот текст — сервер и домен работают правильно.</p>
-      </body>
-    </html>
-    """
+    return render_template("index.html")
 
 
-# 🔮 API для расчёта
+# 🔢 Обработка расчёта
 @app.route("/calculate", methods=["POST"])
 def calculate():
-    data = request.get_json() or {}
+    data = request.get_json()
 
-    date = data.get("date", "")
-    time = data.get("time", "")
-    city = data.get("city", "")
+    date = data.get("date")
+    time = data.get("time")
+    city = data.get("city")
 
-    result = f"Дата: {date}\nВремя: {time}\nГород: {city}\n\n✨ Анализ скоро будет"
+    result = f"Дата: {date}\nВремя: {time}\nГород: {city}\n✨ Анализ выполнен!"
 
     return jsonify({"result": result})
 
 
-# 🤖 Команда /start
+# 🤖 Команда /start в боте
 @bot.message_handler(commands=["start"])
 def start(message):
     markup = telebot.types.InlineKeyboardMarkup()
+
     button = telebot.types.InlineKeyboardButton(
-        text="🔮 Открыть разбор",
-        url=WEBAPP_URL
+        text="✨ Открыть разбор",
+        web_app=telebot.types.WebAppInfo(url=WEBAPP_URL)
     )
+
     markup.add(button)
 
     bot.send_message(
         message.chat.id,
-        "✨ Добро пожаловать в «Звёздный код»\n\nНажми кнопку ниже и получи свой разбор:",
+        "✨ Добро пожаловать в Звёздный Код!\n\nНажми кнопку ниже 👇",
         reply_markup=markup
     )
 
 
-# 🔁 Запуск бота
+# 🚀 Запуск бота
 def run_bot():
+    import time
+    time.sleep(10)
     bot.remove_webhook()
     bot.infinity_polling(timeout=60, long_polling_timeout=60)
 
 
-# 🚀 Запуск всего
+# ▶️ Запуск всего
 if __name__ == "__main__":
     Thread(target=run_bot).start()
     app.run(host="0.0.0.0", port=80)

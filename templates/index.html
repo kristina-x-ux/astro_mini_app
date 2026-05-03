@@ -6,121 +6,261 @@
 <title>Звёздный Код</title>
 
 <style>
+
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: white;
 
-    /* 🌌 ФОН */
     background:
         linear-gradient(
-            rgba(120, 170, 255, 0.35),
-            rgba(200, 220, 255, 0.4)
+            rgba(120, 170, 255, 0.15),
+            rgba(180, 220, 255, 0.25)
         ),
         url('/static/file_000000009a0072438087f62e212a4232.png');
 
     background-size: cover;
-    background-position: center;
+    background-position: center top;
     background-attachment: fixed;
-
-    color: white;
 }
 
-/* Контейнер */
-.container {
-    max-width: 420px;
-    margin: auto;
-    padding: 20px;
+.page {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
 }
 
-/* Заголовок */
-h1 {
+.header {
     text-align: center;
-    margin-top: 20px;
-    font-size: 28px;
+    margin-bottom: 24px;
 }
 
-/* Карточки */
+.header h1 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 800;
+    text-shadow: 0 4px 18px rgba(0,0,0,0.4);
+}
+
+.subtitle {
+    margin-top: 8px;
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+/* 🔥 СТЕКЛО */
 .card {
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    padding: 20px;
-    margin-top: 20px;
-    box-shadow: 0 0 25px rgba(0,0,0,0.2);
+    background: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 28px;
+
+    padding: 24px;
+    margin-bottom: 22px;
+
+    box-shadow: 0 12px 35px rgba(0, 60, 140, 0.18);
 }
 
-/* Поля */
+.card-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+/* 🔘 режим */
+.mode-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.mode-btn {
+    padding: 13px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.15);
+    color: white;
+    font-weight: 600;
+}
+
+.mode-btn.active {
+    background: linear-gradient(135deg, #56b9ff, #755cff);
+    box-shadow: 0 8px 20px rgba(90,140,255,0.4);
+}
+
+/* 🧾 поля */
+label {
+    display: block;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
 input {
     width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 10px;
-    border: none;
+    max-width: 100%;
+
+    padding: 16px;
+    margin-bottom: 12px;
+
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.4);
+
+    background: rgba(255,255,255,0.85);
+    color: #1b2d52;
+
+    font-size: 16px;
     outline: none;
 }
 
-/* Кнопка */
-button {
+/* 🚀 кнопка */
+.main-btn {
     width: 100%;
-    padding: 14px;
-    margin-top: 15px;
-    border-radius: 14px;
+    max-width: 100%;
+
+    margin-top: 16px;
+    padding: 17px;
+
     border: none;
+    border-radius: 22px;
 
-    background: linear-gradient(45deg, #5aa9ff, #7b61ff);
+    background: linear-gradient(135deg, #52b5ff, #7257ff);
     color: white;
-    font-weight: bold;
-    font-size: 16px;
 
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    font-size: 18px;
+    font-weight: 800;
+
+    box-shadow: 0 10px 28px rgba(60,120,255,0.35);
 }
 
-/* Блок результата */
+/* 📊 результат */
+.result-card {
+    display: none;
+}
+
+.result-title {
+    font-size: 21px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
 .result {
     white-space: pre-line;
-    margin-top: 15px;
+    line-height: 1.5;
+    font-size: 15px;
 }
-</style>
 
+.loading {
+    opacity: 0.8;
+    font-style: italic;
+}
+
+.footer {
+    text-align: center;
+    font-size: 13px;
+    margin-top: 20px;
+    opacity: 0.85;
+}
+
+</style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="page">
 
-<h1>✨ Звёздный Код ✨</h1>
-
-<div class="card">
-    <h3>Введите данные</h3>
-
-    <input id="date" type="date">
-    <input id="time" type="time">
-    <input id="city" placeholder="Город рождения">
-
-    <button onclick="calc()">✨ Сделать разбор</button>
-</div>
-
-<div class="card">
-    <h3>✨ Джйотиш-расчёт</h3>
-    <div class="result" id="result">
-        Здесь появится результат...
+    <div class="header">
+        <h1>✨ Звёздный Код ✨</h1>
+        <div class="subtitle">Джйотиш-расчёт по дате рождения</div>
     </div>
-</div>
+
+    <div class="card">
+        <div class="card-title">Введите данные</div>
+
+        <div class="mode-switch">
+            <button class="mode-btn active" id="clientBtn" onclick="setMode('client')">🌙 Клиент</button>
+            <button class="mode-btn" id="astroBtn" onclick="setMode('astro')">🧿 Астролог</button>
+        </div>
+
+        <label>Дата рождения</label>
+        <input id="date" type="date">
+
+        <label>Время рождения</label>
+        <input id="time" type="time">
+
+        <label>Город рождения</label>
+        <input id="city" type="text" placeholder="Ялта">
+
+        <button class="main-btn" onclick="calculate()">✨ Сделать разбор</button>
+    </div>
+
+    <div class="card result-card" id="resultCard">
+        <div class="result-title" id="resultTitle">✨ Джйотиш-расчёт</div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <div class="footer">
+        Ты — часть Вселенной. Звёзды раскрывают твой код.
+    </div>
 
 </div>
 
 <script>
-function calc() {
+
+let mode = "client";
+
+function setMode(m) {
+    mode = m;
+
+    document.getElementById("clientBtn").classList.remove("active");
+    document.getElementById("astroBtn").classList.remove("active");
+
+    if (m === "client") {
+        document.getElementById("clientBtn").classList.add("active");
+    } else {
+        document.getElementById("astroBtn").classList.add("active");
+    }
+}
+
+async function calculate() {
     const date = document.getElementById("date").value;
     const time = document.getElementById("time").value;
     const city = document.getElementById("city").value;
 
-    document.getElementById("result").innerText =
-        "📍 Город: " + city + "\n" +
-        "📅 Дата: " + date + "\n" +
-        "⏰ Время: " + time + "\n\n" +
-        "✨ Расчёт скоро будет здесь...";
+    const resultCard = document.getElementById("resultCard");
+    const result = document.getElementById("result");
+    const title = document.getElementById("resultTitle");
+
+    resultCard.style.display = "block";
+    result.innerHTML = "<span class='loading'>✨ Считаю карту...</span>";
+
+    try {
+        const response = await fetch("/calculate", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ date, time, city, mode })
+        });
+
+        const data = await response.json();
+
+        title.innerText = mode === "client"
+            ? "🌙 Персональный разбор"
+            : "🧿 Технический расчёт";
+
+        result.innerText = data.result;
+
+    } catch {
+        result.innerText = "Ошибка соединения с сервером";
+    }
 }
+
 </script>
 
 </body>

@@ -4,19 +4,30 @@ import os
 from threading import Thread
 import time
 
-from astro_engine import calculate_chart
+from astro_engine import calculate_chart, search_places
 
 app = Flask(__name__)
 
 TOKEN = os.getenv("BOT_TOKEN")
 WEBAPP_URL = os.getenv("WEBAPP_URL")
 
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot(TOKEN) if TOKEN else None
 
 
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/search_place", methods=["GET"])
+def search_place():
+    query = request.args.get("q", "").strip()
+
+    try:
+        places = search_places(query)
+        return jsonify({"places": places})
+    except Exception as e:
+        return jsonify({"places": [], "error": str(e)})
 
 
 @app.route("/calculate", methods=["POST"])
@@ -28,79 +39,31 @@ def calculate():
     city = data.get("city", "")
     mode = data.get("mode", "client")
 
+    lat = data.get("lat")
+    lon = data.get("lon")
+    display_name = data.get("display_name")
+
     try:
-        chart = calculate_chart(date, time_birth, city)
+        chart = calculate_chart(
+            date_str=date,
+            time_str=time_birth,
+            city=city,
+            lat=lat,
+            lon=lon,
+            display_name=display_name
+        )
 
-        result = f"""
-✨ ДЖЙОТИШ-РАСЧЁТ
-
-📍 Место рождения: {chart.get("city", city)}
-🌍 Широта: {round(chart.get("lat", 0), 4)}
-🌍 Долгота: {round(chart.get("lon", 0), 4)}
-🕘 Часовой пояс: {chart.get("timezone", "-")}
-
-UTC:
-{chart.get("utc", "-")}
-
-Julian Day:
-{round(chart.get("jd", 0), 5)}
-
-Айанамша Лахири:
-{chart.get("ayanamsha", "-")}°
-
-──────────────
-
-🌅 ЛАГНА:
-{chart.get("lagna", {}).get("sign", "-")} {chart.get("lagna", {}).get("degree", "-")}
-Накшатра: {chart.get("lagna", {}).get("nakshatra", "-")}, пада {chart.get("lagna", {}).get("pada", "-")}
-
-──────────────
-
-🌙 ЛУНА:
-{chart.get("moon", {}).get("sign", "-")} {chart.get("moon", {}).get("degree", "-")}
-Накшатра: {chart.get("moon", {}).get("nakshatra", "-")}, пада {chart.get("moon", {}).get("pada", "-")}
-Дом: {chart.get("moon", {}).get("house", "-")}
-
-──────────────
-
-🪐 ПЛАНЕТЫ:
-"""
-
-        planets = chart.get("planets", {})
-
-        for planet, info in planets.items():
-            result += f"""
-
-{planet}: {info.get("sign", "-")} {info.get("degree", "-")}
-Дом: {info.get("house", "-")}
-Накшатра: {info.get("nakshatra", "-")}, пада {info.get("pada", "-")}
-"""
-
-        if mode == "client":
-            result += """
-
-──────────────
-
-🌙 РЕЖИМ КЛИЕНТА:
-
-Это базовый персональный разбор. 
-Следующий этап — добавить интерпретацию сильных и слабых планет, жизненных сценариев и рекомендаций.
-"""
-        else:
-            result += """
-
-──────────────
-
-🧿 РЕЖИМ АСТРОЛОГА:
-
-Это технический режим для работы с картой.
-Следующий этап — добавить управителей домов, аспекты Парашары, йоги, силу планет и варги.
-"""
+        return jsonify({
+            "success": True,
+            "mode": mode,
+            "chart": chart
+        })
 
     except Exception as e:
-        result = f"Ошибка расчёта: {str(e)}"
-
-    return jsonify({"result": result})
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        })
 
 
 @bot.message_handler(commands=["start"])
@@ -140,6 +103,9 @@ AstroEngine — система джйотиш-анализа,
 
 
 def run_bot():
+    if not bot:
+        return
+
     time.sleep(10)
     bot.remove_webhook()
     bot.infinity_polling(timeout=60, long_polling_timeout=60)

@@ -3,6 +3,7 @@ import telebot
 import os
 from threading import Thread
 from astro_engine import calculate_chart
+from analysis_engine import get_user_friendly_summary, get_technical_summary
 
 app = Flask(__name__)
 
@@ -28,83 +29,109 @@ def calculate():
     try:
         chart = calculate_chart(date, time, city)
 
-        # =========================
-        # 🧠 СОБИРАЕМ КАРТОЧКИ
-        # =========================
-
         result = f"""
-        <div class="card">
-            <h2>✨ Джйотиш-расчёт</h2>
-            <p>📍 {chart['city']}</p>
-            <p>🌍 {round(chart['lat'],4)} / {round(chart['lon'],4)}</p>
-            <p>🕒 {chart['timezone']}</p>
-        </div>
+✨ ДЖЙОТИШ-РАСЧЁТ
 
-        <div class="card">
-            <h3>🌅 Лагна</h3>
-            <p>{chart['lagna_full_text']}</p>
-            <p>{chart['lagna_nakshatra']}, пада {chart['lagna_pada']}</p>
-        </div>
+📍 Город: {chart["city"]}
+🌍 Широта: {round(chart["lat"], 4)}
+🌍 Долгота: {round(chart["lon"], 4)}
+🕒 Часовой пояс: {chart["timezone"]}
 
-        <div class="card">
-            <h3>🏠 Дома</h3>
-        """
+🕰 UTC:
+{chart["utc"]}
 
-        for house, info in chart["houses"].items():
-            result += f"<p>{house} — {info}</p>"
+📌 Julian Day:
+{round(chart["jd"], 5)}
 
-        result += "</div>"
+📌 Айанамша Лахири:
+{round(chart["ayanamsha"], 4)}°
 
-        # 🌙 ЛУНА
+━━━━━━━━━━━━━━
+
+🌅 ЛАГНА:
+{chart["lagna_full_text"]}
+Накшатра: {chart["lagna_nakshatra"]}, пада {chart["lagna_pada"]}
+
+━━━━━━━━━━━━━━
+
+🏠 ДОМА:
+"""
+
+        for house_num, house in chart["houses"].items():
+            result += f"""
+{house_num} дом — {house["sign"]}, управитель: {house["lord"]}
+"""
+
         result += f"""
-        <div class="card">
-            <h3>🌙 Луна</h3>
-            <p>{chart['moon_full_text']}</p>
-            <p>{chart['moon_nakshatra']}, пада {chart['moon_pada']}</p>
-        </div>
-        """
 
-        # 🪐 ПЛАНЕТЫ
-        result += """
-        <div class="card">
-            <h3>🪐 Планеты</h3>
-        """
+━━━━━━━━━━━━━━
+
+🌙 ЛУНА:
+{chart["moon_full_text"]}
+Накшатра: {chart["moon_nakshatra"]}, пада {chart["moon_pada"]}
+Дом: {chart["moon_house"]}
+
+━━━━━━━━━━━━━━
+
+🪐 ПЛАНЕТЫ:
+"""
 
         for planet, info in chart["planets"].items():
             result += f"""
-            <div class="planet">
-                <b>{planet}</b><br>
-                {info['full_text']}<br>
-                Дом: {info['house']}<br>
-                Накшатра: {info['nakshatra']}, пада {info['pada']}
-            </div>
-            """
+{planet}: {info["full_text"]}
+Дом: {info["house"]}
+Накшатра: {info["nakshatra"]}, пада {info["pada"]}
+"""
 
-        result += "</div>"
-
-        # 💰 ПРО-БЛОК
         result += """
-        <div class="card pro">
-            🔒 Полный разбор:
-            <ul>
-                <li>Аспекты Парашары</li>
-                <li>Кармические задачи</li>
-                <li>Даша и периоды</li>
-                <li>Отношения и деньги</li>
-            </ul>
-            <button class="pro-btn">Открыть полный разбор</button>
-        </div>
-        """
+
+━━━━━━━━━━━━━━
+
+"""
+        result += get_user_friendly_summary(chart)
+
+        result += """
+
+━━━━━━━━━━━━━━
+
+🧠 ТЕХНИЧЕСКИЙ БЛОК:
+
+"""
+        result += get_technical_summary(chart)
+
+        result += """
+
+━━━━━━━━━━━━━━
+
+🔮 БАЗОВЫЙ ВЫВОД:
+
+Это уже профессиональный джйотиш-расчёт:
+— сидерический зодиак
+— айанамша Лахири
+— лагна
+— дома от лагны
+— управители домов
+— планеты по домам
+— накшатры
+— пады
+— первичный анализ управителей домов
+
+Следующий этап:
+— аспекты Парашары
+— Чаракараки
+— Вимшоттари Даша
+— сила и слабость планет
+— йоги
+— бесплатная и платная версия разбора
+"""
 
     except Exception as e:
-        result = f"<div class='error'>Ошибка расчёта: {str(e)}</div>"
+        import traceback
+        print(traceback.format_exc())
+        result = f"Ошибка расчёта:\n{str(e)}"
 
     return jsonify({"result": result})
 
-
-# =========================
-# 🤖 TELEGRAM БОТ
-# =========================
 
 @bot.message_handler(commands=["start"])
 def start(message):
@@ -119,7 +146,7 @@ def start(message):
 
     bot.send_message(
         message.chat.id,
-        "✨ Добро пожаловать в «Звёздный Код»\n\nНажми кнопку ниже 👇",
+        "✨ Добро пожаловать в «Звёздный Код»\n\nНажми кнопку ниже и получи свой разбор:",
         reply_markup=markup
     )
 

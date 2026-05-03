@@ -37,13 +37,14 @@
             margin: 0;
             font-size: 42px;
             line-height: 1.1;
-            font-weight: 800;
+            font-weight: 900;
             letter-spacing: -1px;
         }
 
         .hero p {
             margin-top: 12px;
-            font-size: 18px;
+            font-size: 16px;
+            line-height: 1.45;
             color: rgba(255, 255, 255, 0.78);
         }
 
@@ -94,14 +95,14 @@
             transform: scale(0.98);
         }
 
-        .premium {
-            border: 1px solid rgba(255, 211, 106, 0.55);
-            background: linear-gradient(135deg, rgba(255, 211, 106, 0.13), rgba(255, 255, 255, 0.05));
-        }
-
-        .premium h3 {
-            margin-top: 0;
-            color: #ffd36a;
+        .note {
+            margin-top: 16px;
+            padding: 14px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 14px;
+            line-height: 1.4;
         }
 
         #result {
@@ -112,22 +113,38 @@
         }
 
         .result-card {
-            background: rgba(5, 5, 18, 0.45);
-            border: 1px solid rgba(255, 211, 106, 0.22);
+            background: linear-gradient(
+                135deg,
+                rgba(255, 215, 0, 0.08),
+                rgba(255, 255, 255, 0.03)
+            );
+            border: 1px solid rgba(255, 215, 0, 0.25);
             border-radius: 24px;
             padding: 22px;
             box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
             animation: fadeIn 0.45s ease;
         }
 
-        .note {
-            margin-top: 16px;
-            padding: 14px;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.06);
-            color: rgba(255, 255, 255, 0.72);
-            font-size: 14px;
-            line-height: 1.4;
+        .premium {
+            border: 1px solid rgba(255, 211, 106, 0.55);
+            background: linear-gradient(135deg, rgba(255, 211, 106, 0.13), rgba(255, 255, 255, 0.05));
+        }
+
+        .premium h3 {
+            margin-top: 0;
+            color: #ffd36a;
+            font-size: 22px;
+        }
+
+        .premium p,
+        .premium li {
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 15px;
+            line-height: 1.45;
+        }
+
+        .premium ul {
+            padding-left: 20px;
         }
 
         @keyframes fadeIn {
@@ -148,7 +165,10 @@
 
         <div class="hero">
             <h1>🔮 Звёздный Код</h1>
-            <p>Твоя карта. Твоя логика. Твой путь.</p>
+            <p>
+                Астрологический разбор личности<br>
+                Отношения • Деньги • Предназначение
+            </p>
         </div>
 
         <div class="card">
@@ -171,9 +191,24 @@
         <div id="result"></div>
 
         <div class="card premium">
-            <h3>💎 Премиум разбор</h3>
-            <p>Дома, управители, аспекты Парашары, Чара Караки, Вимшоттари Даша и глубокая интерпретация карты.</p>
-            <button>Получить полный разбор</button>
+            <h3>💎 Полный разбор карты</h3>
+
+            <p>
+                Ты сейчас видишь только базовый расчёт.
+                В полном разборе раскрываются глубокие слои карты:
+            </p>
+
+            <ul>
+                <li>✔ Управители домов</li>
+                <li>✔ Аспекты Парашары</li>
+                <li>✔ Чара Караки</li>
+                <li>✔ Вимшоттари Даша</li>
+                <li>✔ Анализ отношений, денег и предназначения</li>
+            </ul>
+
+            <button onclick="alert('Полный разбор скоро будет доступен в PRO-версии')">
+                Получить полный разбор
+            </button>
         </div>
 
     </div>
@@ -205,8 +240,14 @@
             })
             .then(response => response.json())
             .then(data => {
+                let formatted = data.result
+                    .replace(/ЛАГНА:/g, "🌅 <b>ЛАГНА:</b>")
+                    .replace(/ЛУНА:/g, "🌙 <b>ЛУНА:</b>")
+                    .replace(/ДОМА:/g, "🏠 <b>ДОМА:</b>")
+                    .replace(/ПЛАНЕТЫ:/g, "🪐 <b>ПЛАНЕТЫ:</b>");
+
                 document.getElementById("result").innerHTML =
-                    '<div class="result-card">' + data.result + '</div>';
+                    '<div class="result-card">' + formatted + '</div>';
             })
             .catch(error => {
                 document.getElementById("result").innerHTML =

@@ -3,806 +3,173 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>AstroEngine</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
-
 body {
     margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: Arial;
     color: white;
-    background:
-        linear-gradient(rgba(15, 30, 95, 0.12), rgba(15, 30, 95, 0.18)),
-        url('/static/file_000000009a0072438087f62e212a4232.png');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+    background: linear-gradient(180deg, #0d1b2a, #1b263b);
 }
 
-.page {
-    max-width: 620px;
-    margin: 0 auto;
-    padding: 22px 16px 44px;
+.container {
+    padding: 20px;
+    max-width: 500px;
+    margin: auto;
 }
 
-.screen {
-    display: none;
+.title {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
-.screen.active {
-    display: block;
-}
-
-.header {
-    text-align: center;
-    margin-bottom: 24px;
-}
-
-.header h1 {
-    margin: 0;
-    font-size: 38px;
-    font-weight: 850;
-    text-shadow: 0 4px 20px rgba(0,0,0,0.45);
-}
-
-.subtitle {
-    margin-top: 8px;
-    font-size: 15px;
-    opacity: 0.9;
-}
-
-.card {
-    background: rgba(0, 20, 70, 0.24);
-    border: 1.5px solid rgba(255,255,255,0.45);
-    border-radius: 30px;
-    padding: 22px;
-    margin-bottom: 22px;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    box-shadow:
-        0 0 0 1px rgba(255,255,255,0.10),
-        0 18px 45px rgba(0, 40, 120, 0.22);
-}
-
-.card-title {
-    font-size: 22px;
-    font-weight: 800;
-    margin-bottom: 16px;
-}
-
-.mode-switch {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 18px;
-}
-
-.mode-btn {
-    padding: 13px;
-    border-radius: 18px;
-    border: 1px solid rgba(255,255,255,0.35);
-    background: rgba(255,255,255,0.08);
-    color: white;
-    font-weight: 700;
-    font-size: 15px;
-}
-
-.mode-btn.active {
-    background: linear-gradient(135deg, #52b5ff, #7257ff);
-}
-
-label {
-    display: block;
-    margin-top: 15px;
-    margin-bottom: 7px;
-    font-size: 15px;
-    font-weight: 600;
-}
-
-input {
+.input {
     width: 100%;
-    padding: 16px;
-    margin-bottom: 12px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.65);
-    background: rgba(255,255,255,0.68);
-    color: #1b2d52;
-    font-size: 18px;
-    outline: none;
-}
-
-input::placeholder {
-    color: rgba(27,45,82,0.65);
-}
-
-.main-btn {
-    width: 100%;
-    margin-top: 18px;
-    padding: 18px;
-    border: none;
-    border-radius: 26px;
-    background: linear-gradient(135deg, #4cc3ff, #6b5cff);
-    color: white;
-    font-size: 20px;
-    font-weight: 800;
-    box-shadow:
-        0 10px 28px rgba(60,120,255,0.35),
-        inset 0 1px 0 rgba(255,255,255,0.3);
-}
-
-.secondary-btn {
-    width: 100%;
-    margin-top: 12px;
     padding: 15px;
-    border-radius: 22px;
-    border: 1.5px solid rgba(255,255,255,0.55);
-    background: rgba(255,255,255,0.08);
+    margin-top: 10px;
+    border-radius: 15px;
+    border: none;
+    font-size: 18px;
+    background: rgba(255,255,255,0.15);
     color: white;
-    font-size: 16px;
-    font-weight: 700;
+}
+
+.input::placeholder {
+    color: rgba(255,255,255,0.6);
+}
+
+.label {
+    margin-top: 20px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.btn {
+    margin-top: 30px;
+    padding: 16px;
+    width: 100%;
+    border: none;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    color: white;
 }
 
 .suggestions {
-    display: none;
-    margin-top: -6px;
-    margin-bottom: 10px;
-    border-radius: 18px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.35);
-    background: rgba(5, 22, 65, 0.92);
+    background: #1b263b;
+    border-radius: 10px;
+    margin-top: 5px;
 }
 
-.suggestion-item {
-    padding: 13px 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.12);
-    font-size: 15px;
-    line-height: 1.35;
-}
-
-.time-help {
-    font-size: 13px;
-    opacity: 0.85;
-    margin-top: -4px;
-    margin-bottom: 8px;
-}
-
-.top-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-.back-btn {
-    width: 46px;
-    height: 46px;
-    border: none;
-    border-radius: 16px;
-    background: rgba(255,255,255,0.16);
-    color: white;
-    font-size: 24px;
-}
-
-.result-heading {
-    font-size: 30px;
-    font-weight: 850;
-    line-height: 1.15;
-}
-
-.tabs {
-    display: flex;
-    gap: 8px;
-    margin: 14px 0 18px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-}
-
-.tab {
-    padding: 10px 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.35);
-    background: rgba(255,255,255,0.08);
-    color: white;
-    font-weight: 750;
-    white-space: nowrap;
-}
-
-.tab.active {
-    background: linear-gradient(135deg, #52b5ff, #7257ff);
-}
-
-.section {
-    display: none;
-}
-
-.section.active {
-    display: block;
-}
-
-.settings-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 10px 0 16px;
-}
-
-.select-box {
-    background: white;
-    color: #111;
-    border-radius: 18px;
-    padding: 12px;
-    font-size: 15px;
-    border: none;
-    width: 100%;
-}
-
-.chart-wrap {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background: #eeefff;
-    border-radius: 22px;
-    overflow: hidden;
-    position: relative;
-    color: #2c2c5f;
-    box-shadow: inset 0 0 35px rgba(60, 80, 160, 0.16);
-}
-
-.chart-cell {
-    position: absolute;
-    font-weight: 750;
-    text-align: center;
-    font-size: 13px;
-    line-height: 1.25;
-}
-
-.chart-house-num {
-    font-size: 14px;
-    opacity: 0.65;
-    font-weight: 850;
-}
-
-.chart-planets {
-    font-size: 12px;
-    margin-top: 3px;
-    color: #303060;
-}
-
-.chart-lines svg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.info-line {
-    padding: 13px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.23);
-    font-size: 16px;
-    line-height: 1.45;
-}
-
-.planet-table {
-    width: 100%;
-    border-collapse: collapse;
-    overflow: hidden;
-    border-radius: 18px;
-    margin-top: 12px;
-    background: rgba(22, 12, 74, 0.72);
-}
-
-.planet-table th,
-.planet-table td {
-    padding: 12px 8px;
-    border-bottom: 1px solid rgba(255,255,255,0.12);
-    text-align: left;
-    font-size: 14px;
-}
-
-.planet-table th {
-    font-size: 13px;
-    font-weight: 850;
-    background: rgba(255,255,255,0.08);
-}
-
-.planet-table tr:nth-child(even) {
-    background: rgba(255,255,255,0.06);
-}
-
-.house-list {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
-}
-
-.house-item {
-    padding: 12px 14px;
-    border-radius: 16px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.18);
-}
-
-.client-box {
-    padding: 16px;
-    margin-top: 12px;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.24);
-    line-height: 1.5;
-}
-
-.dasha-node {
-    margin-bottom: 6px;
-}
-
-.dasha-row {
-    width: 100%;
-    padding: 12px 10px;
-    border: none;
-    color: white;
-    display: grid;
-    grid-template-columns: 24px 1fr auto;
-    gap: 8px;
-    align-items: center;
-    background: rgba(31, 18, 88, 0.82);
-    font-size: 14px;
-    text-align: left;
-}
-
-.dasha-row.current {
-    background: #d2ffff;
-    color: #233247;
-    font-weight: 850;
-}
-
-.dasha-children {
-    display: none;
-}
-
-.dasha-children.open {
-    display: block;
-}
-
-.level-2 .dasha-row {
-    padding-left: 22px;
-    background: rgba(82, 62, 145, 0.82);
-}
-
-.level-3 .dasha-row {
-    padding-left: 38px;
-    background: rgba(120, 105, 175, 0.7);
-}
-
-.level-4 .dasha-row {
-    padding-left: 54px;
-    background: rgba(160, 230, 235, 0.75);
-    color: #233247;
-}
-
-.error {
-    padding: 14px;
-    border-radius: 18px;
-    background: rgba(255, 80, 80, 0.20);
-    border: 1px solid rgba(255,255,255,0.25);
-    line-height: 1.4;
-}
-
-.loader {
-    width: 42px;
-    height: 42px;
-    border: 4px solid rgba(255,255,255,0.3);
-    border-top: 4px solid white;
-    border-radius: 50%;
-    margin: 0 auto 16px;
-    animation: spin 1s linear infinite;
-}
-
-.loading-box {
-    text-align: center;
-    padding: 30px;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+.suggestion {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 </style>
 </head>
 
 <body>
 
-<div class="page">
+<div class="container">
 
-    <div id="inputScreen" class="screen active">
+<div class="title">✨ AstroEngine</div>
 
-        <div class="header">
-            <h1>AstroEngine</h1>
-            <div class="subtitle">Джйотиш-анализ личности и натальной карты</div>
-        </div>
+<div class="label">Дата рождения</div>
+<input id="date" class="input" placeholder="16.05.1987">
 
-        <div class="card">
-            <div class="card-title">Введите данные для анализа</div>
+<div class="label">Время рождения</div>
+<input id="time" class="input" placeholder="12:50:00">
 
-            <div class="mode-switch">
-                <button class="mode-btn active" id="clientBtn" onclick="setMode('client')">🌙 Клиент</button>
-                <button class="mode-btn" id="astroBtn" onclick="setMode('astro')">🧿 Астролог</button>
-            </div>
+<div class="label">Место рождения</div>
+<input id="city" class="input" placeholder="Киев">
+<div id="suggestions" class="suggestions"></div>
 
-            <label>Дата рождения</label>
-            <input id="date" type="text" inputmode="numeric" maxlength="10" placeholder="16.05.1987" oninput="formatDateInput(this)">
-
-            <label>Время рождения</label>
-            <input id="time" type="text" inputmode="numeric" maxlength="8" placeholder="12:50:00" oninput="formatTimeInput(this)">
-            <div class="time-help">Введите время цифрами, например 125000 → 12:50:00</div>
-
-            <label>Место рождения</label>
-            <input id="city" type="text" placeholder="Киев, Украина" autocomplete="off" oninput="handlePlaceInput()">
-
-            <div class="suggestions" id="suggestions"></div>
-
-            <button class="main-btn" onclick="calculate()">Запустить анализ</button>
-        </div>
-
-    </div>
-
-    <div id="resultScreen" class="screen">
-
-        <div class="top-bar">
-            <button class="back-btn" onclick="goBack()">‹</button>
-            <div class="result-heading" id="resultHeading">Персональный разбор</div>
-        </div>
-
-        <div class="tabs">
-            <button class="tab active" onclick="openTab(event, 'summary')">Карта</button>
-            <button class="tab" onclick="openTab(event, 'planets')">Планеты</button>
-            <button class="tab" onclick="openTab(event, 'houses')">Дома</button>
-            <button class="tab" onclick="openTab(event, 'dashas')">Периоды</button>
-            <button class="tab" onclick="openTab(event, 'aspects')">Аспекты</button>
-            <button class="tab" onclick="openTab(event, 'analysis')">Разбор</button>
-        </div>
-
-        <div class="card">
-            <div id="summary" class="section active"></div>
-            <div id="planets" class="section"></div>
-            <div id="houses" class="section"></div>
-            <div id="dashas" class="section"></div>
-            <div id="aspects" class="section"></div>
-            <div id="analysis" class="section"></div>
-        </div>
-
-        <button class="secondary-btn" onclick="goBack()">Изменить данные</button>
-
-    </div>
+<button class="btn" onclick="start()">Запустить анализ</button>
 
 </div>
 
 <script>
-let mode = "client";
-let selectedPlace = null;
-let placeTimer = null;
-let currentChart = null;
-let chartStyle = "north";
 
-function setMode(m) {
-    mode = m;
-    document.getElementById("clientBtn").classList.remove("active");
-    document.getElementById("astroBtn").classList.remove("active");
+// --- ГОРОДА (чтобы не ломалось) ---
+const cities = ["Киев", "Москва", "Сочи", "Ялта", "Минск", "Алматы"];
 
-    if (m === "client") document.getElementById("clientBtn").classList.add("active");
-    else document.getElementById("astroBtn").classList.add("active");
-}
+document.getElementById("city").addEventListener("input", function() {
+    let val = this.value.toLowerCase();
+    let list = document.getElementById("suggestions");
+    list.innerHTML = "";
 
-function formatDateInput(input) {
-    let value = input.value.replace(/\D/g, "");
-    if (value.length > 8) value = value.slice(0, 8);
-
-    if (value.length >= 5) {
-        value = value.slice(0, 2) + "." + value.slice(2, 4) + "." + value.slice(4);
-    } else if (value.length >= 3) {
-        value = value.slice(0, 2) + "." + value.slice(2);
-    }
-
-    input.value = value;
-}
-
-function formatTimeInput(input) {
-    let value = input.value.replace(/\D/g, "");
-    if (value.length > 6) value = value.slice(0, 6);
-
-    if (value.length >= 5) {
-        value = value.slice(0, 2) + ":" + value.slice(2, 4) + ":" + value.slice(4);
-    } else if (value.length >= 3) {
-        value = value.slice(0, 2) + ":" + value.slice(2);
-    }
-
-    input.value = value;
-}
-
-function isValidDate(value) {
-    return /^\d{2}\.\d{2}\.\d{4}$/.test(value);
-}
-
-function isValidTime(value) {
-    const parts = value.split(":");
-    if (parts.length !== 3) return false;
-
-    const h = Number(parts[0]);
-    const m = Number(parts[1]);
-    const s = Number(parts[2]);
-
-    return h >= 0 && h <= 23 && m >= 0 && m <= 59 && s >= 0 && s <= 59;
-}
-
-function handlePlaceInput() {
-    selectedPlace = null;
-    clearTimeout(placeTimer);
-
-    const query = document.getElementById("city").value.trim();
-    const box = document.getElementById("suggestions");
-
-    if (query.length < 2) {
-        box.style.display = "none";
-        box.innerHTML = "";
-        return;
-    }
-
-    placeTimer = setTimeout(() => searchPlaces(query), 450);
-}
-
-async function searchPlaces(query) {
-    const box = document.getElementById("suggestions");
-
-    try {
-        const response = await fetch(`/search_place?q=${encodeURIComponent(query)}`);
-        const data = await response.json();
-
-        if (!data.places || data.places.length === 0) {
-            box.style.display = "none";
-            box.innerHTML = "";
-            return;
-        }
-
-        box.innerHTML = "";
-
-        data.places.forEach(place => {
-            const item = document.createElement("div");
-            item.className = "suggestion-item";
-            item.innerText = "📍 " + place.name;
-
-            item.onclick = () => {
-                selectedPlace = place;
-                document.getElementById("city").value = place.name;
-                box.style.display = "none";
-                box.innerHTML = "";
+    cities.forEach(c => {
+        if (c.toLowerCase().includes(val) && val.length > 0) {
+            let div = document.createElement("div");
+            div.className = "suggestion";
+            div.innerText = c;
+            div.onclick = () => {
+                document.getElementById("city").value = c;
+                list.innerHTML = "";
             };
+            list.appendChild(div);
+        }
+    });
+});
 
-            box.appendChild(item);
-        });
-
-        box.style.display = "block";
-
-    } catch {
-        box.style.display = "none";
-    }
+// --- ПРОВЕРКА ДАТЫ ---
+function validDate(date) {
+    return /^\d{2}\.\d{2}\.\d{4}$/.test(date);
 }
 
-async function calculate() {
-    const date = document.getElementById("date").value;
-    const time = document.getElementById("time").value;
-    const city = document.getElementById("city").value.trim();
+// --- ПРОВЕРКА ВРЕМЕНИ ---
+function validTime(time) {
+    return /^\d{2}:\d{2}:\d{2}$/.test(time);
+}
 
-    if (!date || !time || !city) {
-        alert("Заполните дату, время и место рождения.");
+// --- ЗАПУСК ---
+function start() {
+    let date = document.getElementById("date").value;
+    let time = document.getElementById("time").value;
+    let city = document.getElementById("city").value;
+
+    if (!validDate(date)) {
+        alert("Дата должна быть в формате 16.05.1987");
         return;
     }
 
-    if (!isValidDate(date)) {
-        alert("Введите дату в формате 16.05.1987.");
+    if (!validTime(time)) {
+        alert("Время должно быть в формате 12:50:00");
         return;
     }
 
-    if (!isValidTime(time)) {
-        alert("Введите время в формате 12:50:00.");
+    if (!city) {
+        alert("Введите город");
         return;
     }
 
-    showResultLoading();
-
-    try {
-        const payload = {
+    fetch("/calculate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
             date: date,
             time: time,
-            city: city,
-            mode: mode,
-            display_name: city
-        };
-
-        if (selectedPlace) {
-            payload.lat = selectedPlace.lat;
-            payload.lon = selectedPlace.lon;
-            payload.display_name = selectedPlace.name;
-        }
-
-        const response = await fetch("/calculate", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-
-        if (!data.success) {
-            showError(data.error || "Ошибка расчёта.");
-            return;
-        }
-
-        currentChart = data.chart;
-        renderResult(currentChart);
-
-    } catch {
-        showError("Ошибка соединения с сервером.");
-    }
-}
-
-function showResultLoading() {
-    document.getElementById("inputScreen").classList.remove("active");
-    document.getElementById("resultScreen").classList.add("active");
-
-    document.getElementById("summary").innerHTML = `
-        <div class="loading-box">
-            <div class="loader"></div>
-            Выполняю расчёт карты...
-        </div>
-    `;
-}
-
-function showError(message) {
-    document.getElementById("summary").innerHTML = `<div class="error">${message}</div>`;
-}
-
-function goBack() {
-    document.getElementById("resultScreen").classList.remove("active");
-    document.getElementById("inputScreen").classList.add("active");
-}
-
-function openTab(event, id) {
-    document.querySelectorAll(".section").forEach(el => el.classList.remove("active"));
-    document.querySelectorAll(".tab").forEach(el => el.classList.remove("active"));
-
-    document.getElementById(id).classList.add("active");
-    event.target.classList.add("active");
-}
-
-function renderResult(chart) {
-    renderSummary(chart);
-    renderPlanets(chart);
-    renderHouses(chart);
-    renderDashas(chart);
-    renderAspects(chart);
-    renderAnalysis(chart);
-}
-
-function changeChartStyle(value) {
-    chartStyle = value;
-    renderChartBlock();
-}
-
-function renderSummary(chart) {
-    document.getElementById("summary").innerHTML = `
-        <div class="settings-row">
-            <select class="select-box" onchange="changeChartStyle(this.value)">
-                <option value="north">Северо-индийская</option>
-                <option value="table">Табличная</option>
-            </select>
-
-            <select class="select-box">
-                <option>D-1 Натальная</option>
-                <option disabled>D-9 Навамша позже</option>
-                <option disabled>D-10 Дашамша позже</option>
-            </select>
-        </div>
-
-        <div id="chartBlock"></div>
-
-        <div class="info-line">📍 ${chart.city}</div>
-        <div class="info-line">Дата: ${chart.input_date} | Время: ${chart.input_time}</div>
-        <div class="info-line">Координаты: ${chart.lat}, ${chart.lon}</div>
-        <div class="info-line">Часовой пояс: ${chart.utc_offset}</div>
-        <div class="info-line">Айанамша Лахири: ${chart.ayanamsha}°</div>
-        <div class="info-line">🌅 Лагна: <b>${chart.lagna.sign} ${chart.lagna.degree}</b><br>${chart.lagna.nakshatra}, пада ${chart.lagna.pada}</div>
-        <div class="info-line">🌙 Луна: <b>${chart.moon.sign} ${chart.moon.degree}</b><br>${chart.moon.nakshatra}, пада ${chart.moon.pada}</div>
-    `;
-
-    renderChartBlock();
-}
-
-function renderChartBlock() {
-    if (!currentChart) return;
-
-    const block = document.getElementById("chartBlock");
-
-    if (chartStyle === "table") {
-        let html = `<div class="house-list">`;
-        currentChart.chart_view.forEach(h => {
-            html += `<div class="house-item">${h.house} дом — ${h.sign_full}<br>${h.planets.join(", ") || "—"}</div>`;
-        });
-        html += `</div>`;
-        block.innerHTML = html;
-        return;
-    }
-
-    const positions = [
-        [42, 8], [67, 18], [82, 42], [67, 68],
-        [42, 82], [18, 68], [6, 42], [18, 18],
-        [42, 30], [58, 42], [42, 58], [28, 42]
-    ];
-
-    let cells = "";
-
-    currentChart.chart_view.forEach((h, index) => {
-        const pos = positions[index];
-        cells += `
-            <div class="chart-cell" style="left:${pos[0]}%;top:${pos[1]}%;transform:translate(-50%,-50%);">
-                <div class="chart-house-num">${h.house} / ${h.sign}</div>
-                <div class="chart-planets">${h.planets.join("<br>")}</div>
-            </div>
-        `;
+            city: city
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        window.location.href = "/result";
+    })
+    .catch(err => {
+        alert("Ошибка сервера");
+        console.log(err);
     });
-
-    block.innerHTML = `
-        <div class="chart-wrap">
-            <div class="chart-lines">
-                <svg viewBox="0 0 100 100">
-                    <rect x="0" y="0" width="100" height="100" fill="none" stroke="rgba(60,60,110,.22)" stroke-width="1"/>
-                    <line x1="0" y1="0" x2="100" y2="100" stroke="rgba(60,60,110,.22)" />
-                    <line x1="100" y1="0" x2="0" y2="100" stroke="rgba(60,60,110,.22)" />
-                    <polygon points="50,0 100,50 50,100 0,50" fill="none" stroke="rgba(60,60,110,.22)" />
-                    <line x1="0" y1="50" x2="50" y2="0" stroke="rgba(60,60,110,.22)" />
-                    <line x1="50" y1="0" x2="100" y2="50" stroke="rgba(60,60,110,.22)" />
-                    <line x1="100" y1="50" x2="50" y2="100" stroke="rgba(60,60,110,.22)" />
-                    <line x1="50" y1="100" x2="0" y2="50" stroke="rgba(60,60,110,.22)" />
-                </svg>
-            </div>
-            ${cells}
-        </div>
-    `;
 }
 
-function renderPlanets(chart) {
-    let html = `
-        <table class="planet-table">
-            <tr>
-                <th>Планета</th>
-                <th>Знак</th>
-                <th>Градусы</th>
-                <th>Накшатра</th>
-            </tr>
-    `;
+</script>
 
-    Object.entries(chart.planets).forEach(([name, p]) => {
-        const karaka = p.karaka ? `<b>${p.karaka}</b> ` : "";
-        html += `
-            <tr>
-                <td>${karaka}${name}</td>
-                <td>${p.sign}<br>дом ${p.house}</td>
-                <td>${p.degree}</td>
-                <td>${p.nakshatra}<br>пада ${p.pada}</td>
-            </tr>
-        `;
-    });
-
-    html += "</table>";
-    document.getElementById("planets").innerHTML = html;
-}
-
-function renderHouses(chart) {
-    let html = `<div class="house-list">`;
-
-    chart.houses.forEach(h => {
-        html += `<div class="house-item">${h.house} дом — ${h.sign}</div>`;
-    });
-
-    html += `</div>`;
-    document.
+</body>
+</html>

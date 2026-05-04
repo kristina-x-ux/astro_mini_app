@@ -14,14 +14,9 @@ body {
     margin: 0;
     font-family: 'Segoe UI', Arial, sans-serif;
     color: white;
-
     background:
-        linear-gradient(
-            rgba(20, 60, 120, 0.08),
-            rgba(20, 60, 120, 0.12)
-        ),
+        linear-gradient(rgba(15, 30, 95, 0.12), rgba(15, 30, 95, 0.18)),
         url('/static/file_000000009a0072438087f62e212a4232.png');
-
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -30,7 +25,7 @@ body {
 .page {
     max-width: 620px;
     margin: 0 auto;
-    padding: 24px 16px 44px;
+    padding: 22px 16px 44px;
 }
 
 .screen {
@@ -49,7 +44,7 @@ body {
 .header h1 {
     margin: 0;
     font-size: 38px;
-    font-weight: 800;
+    font-weight: 850;
     text-shadow: 0 4px 20px rgba(0,0,0,0.45);
 }
 
@@ -60,18 +55,16 @@ body {
 }
 
 .card {
-    background: rgba(0, 10, 40, 0.25);
-    border: 1.5px solid rgba(255,255,255,0.55);
-    border-radius: 28px;
-    padding: 24px;
+    background: rgba(0, 20, 70, 0.24);
+    border: 1.5px solid rgba(255,255,255,0.45);
+    border-radius: 30px;
+    padding: 22px;
     margin-bottom: 22px;
-
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
-
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     box-shadow:
-        0 0 0 1px rgba(255,255,255,0.12),
-        0 20px 50px rgba(0, 40, 120, 0.25);
+        0 0 0 1px rgba(255,255,255,0.10),
+        0 18px 45px rgba(0, 40, 120, 0.22);
 }
 
 .card-title {
@@ -113,13 +106,10 @@ input {
     width: 100%;
     padding: 16px;
     margin-bottom: 12px;
-
     border-radius: 20px;
     border: 1px solid rgba(255,255,255,0.65);
-
-    background: rgba(255,255,255,0.62);
+    background: rgba(255,255,255,0.68);
     color: #1b2d52;
-
     font-size: 18px;
     outline: none;
 }
@@ -132,38 +122,25 @@ input::placeholder {
     width: 100%;
     margin-top: 18px;
     padding: 18px;
-
     border: none;
     border-radius: 26px;
-
     background: linear-gradient(135deg, #4cc3ff, #6b5cff);
     color: white;
-
     font-size: 20px;
     font-weight: 800;
-
     box-shadow:
         0 10px 28px rgba(60,120,255,0.35),
         inset 0 1px 0 rgba(255,255,255,0.3);
-
-    transition: all 0.2s ease;
-}
-
-.main-btn:active {
-    transform: scale(0.97);
 }
 
 .secondary-btn {
     width: 100%;
     margin-top: 12px;
     padding: 15px;
-
     border-radius: 22px;
     border: 1.5px solid rgba(255,255,255,0.55);
-
     background: rgba(255,255,255,0.08);
     color: white;
-
     font-size: 16px;
     font-weight: 700;
 }
@@ -172,7 +149,6 @@ input::placeholder {
     display: none;
     margin-top: -6px;
     margin-bottom: 10px;
-
     border-radius: 18px;
     overflow: hidden;
     border: 1px solid rgba(255,255,255,0.35);
@@ -197,7 +173,7 @@ input::placeholder {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
 }
 
 .back-btn {
@@ -219,8 +195,9 @@ input::placeholder {
 .tabs {
     display: flex;
     gap: 8px;
-    margin: 18px 0;
+    margin: 14px 0 18px;
     overflow-x: auto;
+    padding-bottom: 4px;
 }
 
 .tab {
@@ -229,7 +206,7 @@ input::placeholder {
     border: 1px solid rgba(255,255,255,0.35);
     background: rgba(255,255,255,0.08);
     color: white;
-    font-weight: 700;
+    font-weight: 750;
     white-space: nowrap;
 }
 
@@ -245,6 +222,61 @@ input::placeholder {
     display: block;
 }
 
+.settings-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px 0 16px;
+}
+
+.select-box {
+    background: white;
+    color: #111;
+    border-radius: 18px;
+    padding: 12px;
+    font-size: 15px;
+    border: none;
+    width: 100%;
+}
+
+.chart-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #eeefff;
+    border-radius: 22px;
+    overflow: hidden;
+    position: relative;
+    color: #2c2c5f;
+    box-shadow: inset 0 0 35px rgba(60, 80, 160, 0.16);
+}
+
+.chart-cell {
+    position: absolute;
+    font-weight: 750;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.25;
+}
+
+.chart-house-num {
+    font-size: 14px;
+    opacity: 0.65;
+    font-weight: 850;
+}
+
+.chart-planets {
+    font-size: 12px;
+    margin-top: 3px;
+    color: #303060;
+}
+
+.chart-lines svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
 .info-line {
     padding: 13px 0;
     border-bottom: 1px solid rgba(255,255,255,0.23);
@@ -252,33 +284,37 @@ input::placeholder {
     line-height: 1.45;
 }
 
-.table {
+.planet-table {
     width: 100%;
     border-collapse: collapse;
     overflow: hidden;
     border-radius: 18px;
     margin-top: 12px;
-    background: rgba(0,0,0,0.10);
+    background: rgba(22, 12, 74, 0.72);
 }
 
-.table th,
-.table td {
-    padding: 12px 9px;
-    border-bottom: 1px solid rgba(255,255,255,0.18);
+.planet-table th,
+.planet-table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
     text-align: left;
     font-size: 14px;
 }
 
-.table th {
+.planet-table th {
     font-size: 13px;
-    opacity: 0.9;
+    font-weight: 850;
+    background: rgba(255,255,255,0.08);
+}
+
+.planet-table tr:nth-child(even) {
+    background: rgba(255,255,255,0.06);
 }
 
 .house-list {
     display: grid;
     grid-template-columns: 1fr;
     gap: 8px;
-    margin-top: 12px;
 }
 
 .house-item {
@@ -297,37 +333,52 @@ input::placeholder {
     line-height: 1.5;
 }
 
-.current-period {
-    padding: 16px;
-    margin-bottom: 16px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, rgba(82,181,255,0.55), rgba(114,87,255,0.55));
-    border: 1px solid rgba(255,255,255,0.5);
-    font-weight: 800;
+.dasha-node {
+    margin-bottom: 6px;
 }
 
-.period-row {
-    padding: 13px 14px;
-    margin-bottom: 8px;
-    border-radius: 16px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.18);
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
+.dasha-row {
+    width: 100%;
+    padding: 12px 10px;
+    border: none;
+    color: white;
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    gap: 8px;
+    align-items: center;
+    background: rgba(31, 18, 88, 0.82);
+    font-size: 14px;
+    text-align: left;
 }
 
-.period-row.active {
-    background: rgba(190, 255, 255, 0.75);
-    color: #1b2d52;
-    font-weight: 800;
+.dasha-row.current {
+    background: #d2ffff;
+    color: #233247;
+    font-weight: 850;
 }
 
-.footer {
-    text-align: center;
-    font-size: 13px;
-    margin-top: 20px;
-    opacity: 0.82;
+.dasha-children {
+    display: none;
+}
+
+.dasha-children.open {
+    display: block;
+}
+
+.level-2 .dasha-row {
+    padding-left: 22px;
+    background: rgba(82, 62, 145, 0.82);
+}
+
+.level-3 .dasha-row {
+    padding-left: 38px;
+    background: rgba(120, 105, 175, 0.7);
+}
+
+.level-4 .dasha-row {
+    padding-left: 54px;
+    background: rgba(160, 230, 235, 0.75);
+    color: #233247;
 }
 
 .error {
@@ -336,11 +387,6 @@ input::placeholder {
     background: rgba(255, 80, 80, 0.20);
     border: 1px solid rgba(255,255,255,0.25);
     line-height: 1.4;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
 }
 
 .loader {
@@ -356,6 +402,11 @@ input::placeholder {
 .loading-box {
     text-align: center;
     padding: 30px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 </style>
 </head>
@@ -380,42 +431,18 @@ input::placeholder {
             </div>
 
             <label>Дата рождения</label>
-            <input
-                id="date"
-                type="text"
-                inputmode="numeric"
-                maxlength="10"
-                placeholder="16.05.1987"
-                oninput="formatDateInput(this)"
-            >
+            <input id="date" type="text" inputmode="numeric" maxlength="10" placeholder="16.05.1987" oninput="formatDateInput(this)">
 
             <label>Время рождения</label>
-            <input
-                id="time"
-                type="text"
-                inputmode="numeric"
-                maxlength="8"
-                placeholder="12:50:00"
-                oninput="formatTimeInput(this)"
-            >
+            <input id="time" type="text" inputmode="numeric" maxlength="8" placeholder="12:50:00" oninput="formatTimeInput(this)">
             <div class="time-help">Введите время цифрами, например 125000 → 12:50:00</div>
 
             <label>Место рождения</label>
-            <input
-                id="city"
-                type="text"
-                placeholder="Киев, Украина"
-                autocomplete="off"
-                oninput="handlePlaceInput()"
-            >
+            <input id="city" type="text" placeholder="Киев, Украина" autocomplete="off" oninput="handlePlaceInput()">
 
             <div class="suggestions" id="suggestions"></div>
 
             <button class="main-btn" onclick="calculate()">Запустить анализ</button>
-        </div>
-
-        <div class="footer">
-            AstroEngine помогает увидеть структуру карты через язык джйотиш.
         </div>
 
     </div>
@@ -424,7 +451,7 @@ input::placeholder {
 
         <div class="top-bar">
             <button class="back-btn" onclick="goBack()">‹</button>
-            <div class="result-heading" id="resultHeading">Результат</div>
+            <div class="result-heading" id="resultHeading">Персональный разбор</div>
         </div>
 
         <div class="tabs">
@@ -432,6 +459,7 @@ input::placeholder {
             <button class="tab" onclick="openTab(event, 'planets')">Планеты</button>
             <button class="tab" onclick="openTab(event, 'houses')">Дома</button>
             <button class="tab" onclick="openTab(event, 'dashas')">Периоды</button>
+            <button class="tab" onclick="openTab(event, 'aspects')">Аспекты</button>
             <button class="tab" onclick="openTab(event, 'analysis')">Разбор</button>
         </div>
 
@@ -440,6 +468,7 @@ input::placeholder {
             <div id="planets" class="section"></div>
             <div id="houses" class="section"></div>
             <div id="dashas" class="section"></div>
+            <div id="aspects" class="section"></div>
             <div id="analysis" class="section"></div>
         </div>
 
@@ -454,24 +483,19 @@ let mode = "client";
 let selectedPlace = null;
 let placeTimer = null;
 let currentChart = null;
-let activeDashaTab = "maha";
+let chartStyle = "north";
 
 function setMode(m) {
     mode = m;
-
     document.getElementById("clientBtn").classList.remove("active");
     document.getElementById("astroBtn").classList.remove("active");
 
-    if (m === "client") {
-        document.getElementById("clientBtn").classList.add("active");
-    } else {
-        document.getElementById("astroBtn").classList.add("active");
-    }
+    if (m === "client") document.getElementById("clientBtn").classList.add("active");
+    else document.getElementById("astroBtn").classList.add("active");
 }
 
 function formatDateInput(input) {
     let value = input.value.replace(/\D/g, "");
-
     if (value.length > 8) value = value.slice(0, 8);
 
     if (value.length >= 5) {
@@ -485,7 +509,6 @@ function formatDateInput(input) {
 
 function formatTimeInput(input) {
     let value = input.value.replace(/\D/g, "");
-
     if (value.length > 6) value = value.slice(0, 6);
 
     if (value.length >= 5) {
@@ -503,7 +526,6 @@ function isValidDate(value) {
 
 function isValidTime(value) {
     const parts = value.split(":");
-
     if (parts.length !== 3) return false;
 
     const h = Number(parts[0]);
@@ -515,7 +537,6 @@ function isValidTime(value) {
 
 function handlePlaceInput() {
     selectedPlace = null;
-
     clearTimeout(placeTimer);
 
     const query = document.getElementById("city").value.trim();
@@ -527,9 +548,7 @@ function handlePlaceInput() {
         return;
     }
 
-    placeTimer = setTimeout(() => {
-        searchPlaces(query);
-    }, 450);
+    placeTimer = setTimeout(() => searchPlaces(query), 450);
 }
 
 async function searchPlaces(query) {
@@ -631,24 +650,16 @@ function showResultLoading() {
     document.getElementById("inputScreen").classList.remove("active");
     document.getElementById("resultScreen").classList.add("active");
 
-    document.getElementById("resultHeading").innerText =
-        mode === "client" ? "Персональный разбор" : "Технический расчёт";
-
     document.getElementById("summary").innerHTML = `
         <div class="loading-box">
             <div class="loader"></div>
             Выполняю расчёт карты...
         </div>
     `;
-    document.getElementById("planets").innerHTML = "";
-    document.getElementById("houses").innerHTML = "";
-    document.getElementById("dashas").innerHTML = "";
-    document.getElementById("analysis").innerHTML = "";
 }
 
 function showError(message) {
-    document.getElementById("summary").innerHTML =
-        `<div class="error">${message}</div>`;
+    document.getElementById("summary").innerHTML = `<div class="error">${message}</div>`;
 }
 
 function goBack() {
@@ -669,47 +680,120 @@ function renderResult(chart) {
     renderPlanets(chart);
     renderHouses(chart);
     renderDashas(chart);
+    renderAspects(chart);
     renderAnalysis(chart);
+}
+
+function changeChartStyle(value) {
+    chartStyle = value;
+    renderChartBlock();
 }
 
 function renderSummary(chart) {
     document.getElementById("summary").innerHTML = `
-        <div class="info-line">📍 Место рождения: <b>${chart.city}</b></div>
-        <div class="info-line">🌍 Широта: ${chart.lat}</div>
-        <div class="info-line">🌍 Долгота: ${chart.lon}</div>
-        <div class="info-line">🕘 Часовой пояс: ${chart.utc_offset}</div>
-        <div class="info-line">UTC: ${chart.utc}</div>
-        <div class="info-line">Julian Day: ${chart.jd}</div>
+        <div class="settings-row">
+            <select class="select-box" onchange="changeChartStyle(this.value)">
+                <option value="north">Северо-индийская</option>
+                <option value="table">Табличная</option>
+            </select>
+
+            <select class="select-box">
+                <option>D-1 Натальная</option>
+                <option disabled>D-9 Навамша позже</option>
+                <option disabled>D-10 Дашамша позже</option>
+            </select>
+        </div>
+
+        <div id="chartBlock"></div>
+
+        <div class="info-line">📍 ${chart.city}</div>
+        <div class="info-line">Дата: ${chart.input_date} | Время: ${chart.input_time}</div>
+        <div class="info-line">Координаты: ${chart.lat}, ${chart.lon}</div>
+        <div class="info-line">Часовой пояс: ${chart.utc_offset}</div>
         <div class="info-line">Айанамша Лахири: ${chart.ayanamsha}°</div>
-        <div class="info-line">🌅 Лагна: <b>${chart.lagna.sign} ${chart.lagna.degree}</b><br>Накшатра: ${chart.lagna.nakshatra}, пада ${chart.lagna.pada}</div>
-        <div class="info-line">🌙 Луна: <b>${chart.moon.sign} ${chart.moon.degree}</b><br>Дом: ${chart.moon.house}<br>Накшатра: ${chart.moon.nakshatra}, пада ${chart.moon.pada}</div>
+        <div class="info-line">🌅 Лагна: <b>${chart.lagna.sign} ${chart.lagna.degree}</b><br>${chart.lagna.nakshatra}, пада ${chart.lagna.pada}</div>
+        <div class="info-line">🌙 Луна: <b>${chart.moon.sign} ${chart.moon.degree}</b><br>${chart.moon.nakshatra}, пада ${chart.moon.pada}</div>
+    `;
+
+    renderChartBlock();
+}
+
+function renderChartBlock() {
+    if (!currentChart) return;
+
+    const block = document.getElementById("chartBlock");
+
+    if (chartStyle === "table") {
+        let html = `<div class="house-list">`;
+        currentChart.chart_view.forEach(h => {
+            html += `<div class="house-item">${h.house} дом — ${h.sign_full}<br>${h.planets.join(", ") || "—"}</div>`;
+        });
+        html += `</div>`;
+        block.innerHTML = html;
+        return;
+    }
+
+    const positions = [
+        [42, 8], [67, 18], [82, 42], [67, 68],
+        [42, 82], [18, 68], [6, 42], [18, 18],
+        [42, 30], [58, 42], [42, 58], [28, 42]
+    ];
+
+    let cells = "";
+
+    currentChart.chart_view.forEach((h, index) => {
+        const pos = positions[index];
+        cells += `
+            <div class="chart-cell" style="left:${pos[0]}%;top:${pos[1]}%;transform:translate(-50%,-50%);">
+                <div class="chart-house-num">${h.house} / ${h.sign}</div>
+                <div class="chart-planets">${h.planets.join("<br>")}</div>
+            </div>
+        `;
+    });
+
+    block.innerHTML = `
+        <div class="chart-wrap">
+            <div class="chart-lines">
+                <svg viewBox="0 0 100 100">
+                    <rect x="0" y="0" width="100" height="100" fill="none" stroke="rgba(60,60,110,.22)" stroke-width="1"/>
+                    <line x1="0" y1="0" x2="100" y2="100" stroke="rgba(60,60,110,.22)" />
+                    <line x1="100" y1="0" x2="0" y2="100" stroke="rgba(60,60,110,.22)" />
+                    <polygon points="50,0 100,50 50,100 0,50" fill="none" stroke="rgba(60,60,110,.22)" />
+                    <line x1="0" y1="50" x2="50" y2="0" stroke="rgba(60,60,110,.22)" />
+                    <line x1="50" y1="0" x2="100" y2="50" stroke="rgba(60,60,110,.22)" />
+                    <line x1="100" y1="50" x2="50" y2="100" stroke="rgba(60,60,110,.22)" />
+                    <line x1="50" y1="100" x2="0" y2="50" stroke="rgba(60,60,110,.22)" />
+                </svg>
+            </div>
+            ${cells}
+        </div>
     `;
 }
 
 function renderPlanets(chart) {
     let html = `
-        <table class="table">
+        <table class="planet-table">
             <tr>
                 <th>Планета</th>
                 <th>Знак</th>
-                <th>Дом</th>
+                <th>Градусы</th>
                 <th>Накшатра</th>
             </tr>
     `;
 
     Object.entries(chart.planets).forEach(([name, p]) => {
+        const karaka = p.karaka ? `<b>${p.karaka}</b> ` : "";
         html += `
             <tr>
-                <td>${name}</td>
-                <td>${p.sign}<br>${p.degree}</td>
-                <td>${p.house}</td>
+                <td>${karaka}${name}</td>
+                <td>${p.sign}<br>дом ${p.house}</td>
+                <td>${p.degree}</td>
                 <td>${p.nakshatra}<br>пада ${p.pada}</td>
             </tr>
         `;
     });
 
     html += "</table>";
-
     document.getElementById("planets").innerHTML = html;
 }
 
@@ -717,103 +801,8 @@ function renderHouses(chart) {
     let html = `<div class="house-list">`;
 
     chart.houses.forEach(h => {
-        html += `
-            <div class="house-item">
-                ${h.house} дом — ${h.sign}
-            </div>
-        `;
+        html += `<div class="house-item">${h.house} дом — ${h.sign}</div>`;
     });
 
     html += `</div>`;
-
-    document.getElementById("houses").innerHTML = html;
-}
-
-function renderDashas(chart) {
-    const d = chart.dashas;
-
-    let html = `
-        <div class="current-period">
-            Действующий период:<br>
-            ${d.current_maha.lord} / ${d.current_antar.lord} / ${d.current_pratyantar.lord}
-        </div>
-
-        <div class="tabs">
-            <button class="tab active" onclick="renderDashaList('maha')">Маха</button>
-            <button class="tab" onclick="renderDashaList('antar')">Антар</button>
-            <button class="tab" onclick="renderDashaList('pratyantar')">Пратья</button>
-        </div>
-
-        <div id="dashaList"></div>
-    `;
-
-    document.getElementById("dashas").innerHTML = html;
-    renderDashaList("maha");
-}
-
-function renderDashaList(type) {
-    const d = currentChart.dashas;
-    let list = [];
-
-    if (type === "maha") list = d.mahadashas;
-    if (type === "antar") list = d.antardashas;
-    if (type === "pratyantar") list = d.pratyantardashas;
-
-    let html = "";
-
-    const current = list.find(p => p.is_current);
-    if (current) {
-        html += `
-            <div class="period-row active">
-                <div>${current.lord}</div>
-                <div>${current.start} — ${current.end}</div>
-            </div>
-        `;
-    }
-
-    list.forEach(p => {
-        if (p.is_current) return;
-
-        html += `
-            <div class="period-row">
-                <div>${p.lord}</div>
-                <div>${p.start} — ${p.end}</div>
-            </div>
-        `;
-    });
-
-    document.getElementById("dashaList").innerHTML = html;
-}
-
-function renderAnalysis(chart) {
-    if (mode === "astro") {
-        document.getElementById("analysis").innerHTML = `
-            <div class="client-box">
-                🧿 Это режим астролога. Здесь будут добавлены:
-                <br><br>
-                — варги D-1 / D-9 / D-10<br>
-                — управители домов<br>
-                — аспекты Парашары<br>
-                — йоги<br>
-                — сила планет<br>
-                — Вимшоттари Даша
-            </div>
-        `;
-    } else {
-        document.getElementById("analysis").innerHTML = `
-            <div class="client-box">
-                🌙 Это клиентский режим. Здесь будет понятный разбор:
-                <br><br>
-                — сильные и слабые планеты<br>
-                — как они проявляются в жизни<br>
-                — какие сферы требуют внимания<br>
-                — как усилить планеты<br>
-                — жизненные сценарии по карте
-            </div>
-        `;
-    }
-}
-</script>
-
-</body>
-</html>
+    document.

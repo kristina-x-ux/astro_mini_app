@@ -186,10 +186,6 @@ input::placeholder {
     line-height: 1.35;
 }
 
-.suggestion-item:last-child {
-    border-bottom: none;
-}
-
 .time-help {
     font-size: 13px;
     opacity: 0.85;
@@ -249,12 +245,6 @@ input::placeholder {
     display: block;
 }
 
-.info-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-}
-
 .info-line {
     padding: 13px 0;
     border-bottom: 1px solid rgba(255,255,255,0.23);
@@ -305,6 +295,32 @@ input::placeholder {
     background: rgba(255,255,255,0.10);
     border: 1px solid rgba(255,255,255,0.24);
     line-height: 1.5;
+}
+
+.current-period {
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(82,181,255,0.55), rgba(114,87,255,0.55));
+    border: 1px solid rgba(255,255,255,0.5);
+    font-weight: 800;
+}
+
+.period-row {
+    padding: 13px 14px;
+    margin-bottom: 8px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.period-row.active {
+    background: rgba(190, 255, 255, 0.75);
+    color: #1b2d52;
+    font-weight: 800;
 }
 
 .footer {
@@ -364,18 +380,25 @@ input::placeholder {
             </div>
 
             <label>Дата рождения</label>
-            <input id="date" type="date">
+            <input
+                id="date"
+                type="text"
+                inputmode="numeric"
+                maxlength="10"
+                placeholder="16.05.1987"
+                oninput="formatDateInput(this)"
+            >
 
             <label>Время рождения</label>
             <input
                 id="time"
                 type="text"
                 inputmode="numeric"
-                maxlength="5"
-                placeholder="12:50"
+                maxlength="8"
+                placeholder="12:50:00"
                 oninput="formatTimeInput(this)"
             >
-            <div class="time-help">Введите время цифрами, например 1250 → 12:50</div>
+            <div class="time-help">Введите время цифрами, например 125000 → 12:50:00</div>
 
             <label>Место рождения</label>
             <input
@@ -408,6 +431,7 @@ input::placeholder {
             <button class="tab active" onclick="openTab(event, 'summary')">Карта</button>
             <button class="tab" onclick="openTab(event, 'planets')">Планеты</button>
             <button class="tab" onclick="openTab(event, 'houses')">Дома</button>
+            <button class="tab" onclick="openTab(event, 'dashas')">Периоды</button>
             <button class="tab" onclick="openTab(event, 'analysis')">Разбор</button>
         </div>
 
@@ -415,6 +439,7 @@ input::placeholder {
             <div id="summary" class="section active"></div>
             <div id="planets" class="section"></div>
             <div id="houses" class="section"></div>
+            <div id="dashas" class="section"></div>
             <div id="analysis" class="section"></div>
         </div>
 
@@ -429,6 +454,7 @@ let mode = "client";
 let selectedPlace = null;
 let placeTimer = null;
 let currentChart = null;
+let activeDashaTab = "maha";
 
 function setMode(m) {
     mode = m;
@@ -443,43 +469,48 @@ function setMode(m) {
     }
 }
 
+function formatDateInput(input) {
+    let value = input.value.replace(/\D/g, "");
+
+    if (value.length > 8) value = value.slice(0, 8);
+
+    if (value.length >= 5) {
+        value = value.slice(0, 2) + "." + value.slice(2, 4) + "." + value.slice(4);
+    } else if (value.length >= 3) {
+        value = value.slice(0, 2) + "." + value.slice(2);
+    }
+
+    input.value = value;
+}
+
 function formatTimeInput(input) {
     let value = input.value.replace(/\D/g, "");
 
-    if (value.length > 4) {
-        value = value.slice(0, 4);
-    }
+    if (value.length > 6) value = value.slice(0, 6);
 
-    if (value.length >= 3) {
+    if (value.length >= 5) {
+        value = value.slice(0, 2) + ":" + value.slice(2, 4) + ":" + value.slice(4);
+    } else if (value.length >= 3) {
         value = value.slice(0, 2) + ":" + value.slice(2);
     }
 
     input.value = value;
+}
 
-    if (value.length === 5) {
-        const parts = value.split(":");
-        let h = parseInt(parts[0]) || 0;
-        let m = parseInt(parts[1]) || 0;
-
-        if (h > 23) h = 23;
-        if (m > 59) m = 59;
-
-        input.value =
-            String(h).padStart(2, "0") +
-            ":" +
-            String(m).padStart(2, "0");
-    }
+function isValidDate(value) {
+    return /^\d{2}\.\d{2}\.\d{4}$/.test(value);
 }
 
 function isValidTime(value) {
     const parts = value.split(":");
 
-    if (parts.length !== 2) return false;
+    if (parts.length !== 3) return false;
 
     const h = Number(parts[0]);
     const m = Number(parts[1]);
+    const s = Number(parts[2]);
 
-    return h >= 0 && h <= 23 && m >= 0 && m <= 59;
+    return h >= 0 && h <= 23 && m >= 0 && m <= 59 && s >= 0 && s <= 59;
 }
 
 function handlePlaceInput() {
@@ -548,8 +579,13 @@ async function calculate() {
         return;
     }
 
+    if (!isValidDate(date)) {
+        alert("Введите дату в формате 16.05.1987.");
+        return;
+    }
+
     if (!isValidTime(time)) {
-        alert("Введите время в формате 12:50.");
+        alert("Введите время в формате 12:50:00.");
         return;
     }
 
@@ -606,6 +642,7 @@ function showResultLoading() {
     `;
     document.getElementById("planets").innerHTML = "";
     document.getElementById("houses").innerHTML = "";
+    document.getElementById("dashas").innerHTML = "";
     document.getElementById("analysis").innerHTML = "";
 }
 
@@ -631,22 +668,21 @@ function renderResult(chart) {
     renderSummary(chart);
     renderPlanets(chart);
     renderHouses(chart);
+    renderDashas(chart);
     renderAnalysis(chart);
 }
 
 function renderSummary(chart) {
     document.getElementById("summary").innerHTML = `
-        <div class="info-grid">
-            <div class="info-line">📍 Место рождения: <b>${chart.city}</b></div>
-            <div class="info-line">🌍 Широта: ${chart.lat}</div>
-            <div class="info-line">🌍 Долгота: ${chart.lon}</div>
-            <div class="info-line">🕘 Часовой пояс: ${chart.timezone}</div>
-            <div class="info-line">UTC: ${chart.utc}</div>
-            <div class="info-line">Julian Day: ${chart.jd}</div>
-            <div class="info-line">Айанамша Лахири: ${chart.ayanamsha}°</div>
-            <div class="info-line">🌅 Лагна: <b>${chart.lagna.sign} ${chart.lagna.degree}</b><br>Накшатра: ${chart.lagna.nakshatra}, пада ${chart.lagna.pada}</div>
-            <div class="info-line">🌙 Луна: <b>${chart.moon.sign} ${chart.moon.degree}</b><br>Дом: ${chart.moon.house}<br>Накшатра: ${chart.moon.nakshatra}, пада ${chart.moon.pada}</div>
-        </div>
+        <div class="info-line">📍 Место рождения: <b>${chart.city}</b></div>
+        <div class="info-line">🌍 Широта: ${chart.lat}</div>
+        <div class="info-line">🌍 Долгота: ${chart.lon}</div>
+        <div class="info-line">🕘 Часовой пояс: ${chart.utc_offset}</div>
+        <div class="info-line">UTC: ${chart.utc}</div>
+        <div class="info-line">Julian Day: ${chart.jd}</div>
+        <div class="info-line">Айанамша Лахири: ${chart.ayanamsha}°</div>
+        <div class="info-line">🌅 Лагна: <b>${chart.lagna.sign} ${chart.lagna.degree}</b><br>Накшатра: ${chart.lagna.nakshatra}, пада ${chart.lagna.pada}</div>
+        <div class="info-line">🌙 Луна: <b>${chart.moon.sign} ${chart.moon.degree}</b><br>Дом: ${chart.moon.house}<br>Накшатра: ${chart.moon.nakshatra}, пада ${chart.moon.pada}</div>
     `;
 }
 
@@ -691,6 +727,62 @@ function renderHouses(chart) {
     html += `</div>`;
 
     document.getElementById("houses").innerHTML = html;
+}
+
+function renderDashas(chart) {
+    const d = chart.dashas;
+
+    let html = `
+        <div class="current-period">
+            Действующий период:<br>
+            ${d.current_maha.lord} / ${d.current_antar.lord} / ${d.current_pratyantar.lord}
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="renderDashaList('maha')">Маха</button>
+            <button class="tab" onclick="renderDashaList('antar')">Антар</button>
+            <button class="tab" onclick="renderDashaList('pratyantar')">Пратья</button>
+        </div>
+
+        <div id="dashaList"></div>
+    `;
+
+    document.getElementById("dashas").innerHTML = html;
+    renderDashaList("maha");
+}
+
+function renderDashaList(type) {
+    const d = currentChart.dashas;
+    let list = [];
+
+    if (type === "maha") list = d.mahadashas;
+    if (type === "antar") list = d.antardashas;
+    if (type === "pratyantar") list = d.pratyantardashas;
+
+    let html = "";
+
+    const current = list.find(p => p.is_current);
+    if (current) {
+        html += `
+            <div class="period-row active">
+                <div>${current.lord}</div>
+                <div>${current.start} — ${current.end}</div>
+            </div>
+        `;
+    }
+
+    list.forEach(p => {
+        if (p.is_current) return;
+
+        html += `
+            <div class="period-row">
+                <div>${p.lord}</div>
+                <div>${p.start} — ${p.end}</div>
+            </div>
+        `;
+    });
+
+    document.getElementById("dashaList").innerHTML = html;
 }
 
 function renderAnalysis(chart) {

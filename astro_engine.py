@@ -1,7 +1,7 @@
 import swisseph as swe
 from geopy.geocoders import Nominatim
 from timezonefinder import TimezoneFinder
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 import pytz
 
 
@@ -9,6 +9,12 @@ SIGNS = [
     "Овен", "Телец", "Близнецы", "Рак",
     "Лев", "Дева", "Весы", "Скорпион",
     "Стрелец", "Козерог", "Водолей", "Рыбы"
+]
+
+SIGN_SHORT = [
+    "Ов", "Тел", "Бл", "Рак",
+    "Лев", "Дев", "Вес", "Ско",
+    "Стр", "Коз", "Вод", "Рыб"
 ]
 
 NAKSHATRAS = [
@@ -52,6 +58,20 @@ PLANETS = {
     "Раху": swe.MEAN_NODE
 }
 
+PLANET_SHORT = {
+    "Солнце": "Со",
+    "Луна": "Лу",
+    "Марс": "Ма",
+    "Меркурий": "Ме",
+    "Юпитер": "Юп",
+    "Венера": "Ве",
+    "Сатурн": "Са",
+    "Раху": "Ра",
+    "Кету": "Ке"
+}
+
+KARAKA_NAMES = ["АК", "АмК", "БК", "МК", "ПК", "ГК", "ДК"]
+
 CITY_FALLBACK = {
     "киев": (50.4501, 30.5234, "Киев, Украина"),
     "киев, украина": (50.4501, 30.5234, "Киев, Украина"),
@@ -72,29 +92,22 @@ def normalize_degree(deg):
 
 def parse_date(date_str):
     date_str = date_str.strip()
-
     if "." in date_str:
         return datetime.strptime(date_str, "%d.%m.%Y").date()
-
     return datetime.strptime(date_str, "%Y-%m-%d").date()
 
 
 def parse_time(time_str):
     time_str = time_str.strip()
-
-    if len(time_str.split(":")) == 2:
+    parts = time_str.split(":")
+    if len(parts) == 2:
         return datetime.strptime(time_str, "%H:%M").time()
-
     return datetime.strptime(time_str, "%H:%M:%S").time()
 
 
-def format_date_ru(dt):
+def format_date(dt):
     if isinstance(dt, datetime):
-        dt = dt.date()
-    return dt.strftime("%d.%m.%Y")
-
-
-def format_datetime_ru(dt):
+        return dt.strftime("%d.%m.%Y")
     return dt.strftime("%d.%m.%Y")
 
 
@@ -109,11 +122,9 @@ def get_nakshatra(lon):
     lon = normalize_degree(lon)
     nak_size = 360 / 27
     pada_size = nak_size / 4
-
     nak_index = int(lon // nak_size)
     degree_in_nak = lon % nak_size
     pada = int(degree_in_nak // pada_size) + 1
-
     return NAKSHATRAS[nak_index], pada, nak_index
 
 
@@ -129,7 +140,6 @@ def get_house(planet_sign_index, lagna_sign_index):
 
 def short_place_name(location):
     address = location.raw.get("address", {})
-
     city = (
         address.get("city")
         or address.get("town")
@@ -138,44 +148,32 @@ def short_place_name(location):
         or address.get("county")
         or ""
     )
-
     state = address.get("state") or address.get("region") or ""
     country = address.get("country") or ""
 
     parts = []
-
     if city:
         parts.append(city)
-
     if state and state != city:
         parts.append(state)
-
     if country:
         parts.append(country)
 
-    if parts:
-        return ", ".join(parts)
-
-    return location.address
+    return ", ".join(parts) if parts else location.address
 
 
 def search_places(query):
     query = query.strip()
-
     if len(query) < 2:
         return []
 
     key = query.lower()
-
     fallback_results = []
+
     for name, data in CITY_FALLBACK.items():
         if key in name:
             lat, lon, display = data
-            fallback_results.append({
-                "name": display,
-                "lat": lat,
-                "lon": lon
-            })
+            fallback_results.append({"name": display, "lat": lat, "lon": lon})
 
     geolocator = Nominatim(user_agent="astroengine_place_search")
 
@@ -203,7 +201,6 @@ def search_places(query):
 
     for item in results:
         key_item = (item["name"], round(item["lat"], 4), round(item["lon"], 4))
-
         if key_item not in seen:
             seen.add(key_item)
             unique.append(item)
@@ -249,7 +246,6 @@ def get_timezone(lat, lon):
 
 def get_utc_offset_string(local_dt):
     offset = local_dt.utcoffset()
-
     if offset is None:
         return "UTC 0"
 
@@ -258,7 +254,6 @@ def get_utc_offset_string(local_dt):
 
     if hours >= 0:
         return f"UTC +{hours}"
-
     return f"UTC {hours}"
 
 
@@ -270,48 +265,79 @@ def add_days(dt, days):
     return dt + timedelta(days=days)
 
 
-def next_lord(lord):
-    index = DASHA_ORDER.index(lord)
-    return DASHA_ORDER[(index + 1) % len(DASHA_ORDER)]
-
-
 def ordered_lords_from(start_lord):
     start_index = DASHA_ORDER.index(start_lord)
     return DASHA_ORDER[start_index:] + DASHA_ORDER[:start_index]
 
 
-def is_current_period(start_dt, end_dt):
-    today = datetime.utcnow()
-    return start_dt <= today < end_dt
+def period_is_current(start_dt, end_dt):
+    now = datetime.utcnow()
+    return start_dt <= now < end_dt
 
 
-def build_sub_periods(parent_start, parent_end, parent_lord, level):
+def make_period_node(lord, start_dt, end_dt, level, path):
+    return {
+        "lord": lord,
+        "start": format_date(start_dt),
+        "end": format_date(end_dt),
+        "is_current": period_is_current(start_dt, end_dt),
+        "level": level,
+        "path": path,
+        "children": []
+    }
+
+
+def build_children(parent_start, parent_end, parent_lord, level, path, max_depth):
     total_days = (parent_end - parent_start).total_seconds() / 86400
-    periods = []
+    children = []
     current_start = parent_start
 
     for lord in ordered_lords_from(parent_lord):
-        portion = DASHA_YEARS[lord] / 120
-        duration_days = total_days * portion
+        duration_days = total_days * (DASHA_YEARS[lord] / 120)
         current_end = add_days(current_start, duration_days)
 
-        periods.append({
-            "lord": lord,
-            "start": format_datetime_ru(current_start),
-            "end": format_datetime_ru(current_end),
-            "is_current": is_current_period(current_start, current_end),
-            "level": level
-        })
+        child_path = path + [lord]
+        node = make_period_node(lord, current_start, current_end, level, child_path)
 
+        if level < max_depth:
+            node["children"] = build_children(
+                current_start,
+                current_end,
+                lord,
+                level + 1,
+                child_path,
+                max_depth
+            )
+
+        children.append(node)
         current_start = current_end
 
-    return periods
+    return children
+
+
+def next_lord(lord):
+    index = DASHA_ORDER.index(lord)
+    return DASHA_ORDER[(index + 1) % len(DASHA_ORDER)]
+
+
+def find_current_path(nodes):
+    for node in nodes:
+        if node.get("is_current"):
+            return node["path"]
+
+        child_path = find_current_path(node.get("children", []))
+        if child_path:
+            return child_path
+
+    return []
 
 
 def calculate_vimshottari_dashas(birth_dt, moon_longitude):
     nak_size = 360 / 27
-    nak_index = int(normalize_degree(moon_longitude) // nak_size)
-    degree_in_nak = normalize_degree(moon_longitude) % nak_size
+    moon_longitude = normalize_degree(moon_longitude)
+
+    nak_index = int(moon_longitude // nak_size)
+    degree_in_nak = moon_longitude % nak_size
 
     birth_lord = NAKSHATRA_LORDS[nak_index]
     completed_fraction = degree_in_nak / nak_size
@@ -324,13 +350,22 @@ def calculate_vimshottari_dashas(birth_dt, moon_longitude):
     current_start = birth_dt
     current_end = add_days(current_start, years_to_days(first_md_years_remaining))
 
-    mahadashas.append({
-        "lord": birth_lord,
-        "start": format_datetime_ru(current_start),
-        "end": format_datetime_ru(current_end),
-        "is_current": is_current_period(current_start, current_end),
-        "level": "maha"
-    })
+    first_node = make_period_node(
+        birth_lord,
+        current_start,
+        current_end,
+        1,
+        [birth_lord]
+    )
+    first_node["children"] = build_children(
+        current_start,
+        current_end,
+        birth_lord,
+        2,
+        [birth_lord],
+        4
+    )
+    mahadashas.append(first_node)
 
     current_lord = next_lord(birth_lord)
     current_start = current_end
@@ -339,53 +374,121 @@ def calculate_vimshottari_dashas(birth_dt, moon_longitude):
         years = DASHA_YEARS[current_lord]
         current_end = add_days(current_start, years_to_days(years))
 
-        mahadashas.append({
-            "lord": current_lord,
-            "start": format_datetime_ru(current_start),
-            "end": format_datetime_ru(current_end),
-            "is_current": is_current_period(current_start, current_end),
-            "level": "maha"
-        })
+        node = make_period_node(
+            current_lord,
+            current_start,
+            current_end,
+            1,
+            [current_lord]
+        )
+
+        node["children"] = build_children(
+            current_start,
+            current_end,
+            current_lord,
+            2,
+            [current_lord],
+            4
+        )
+
+        mahadashas.append(node)
 
         current_lord = next_lord(current_lord)
         current_start = current_end
 
-    current_maha = next((p for p in mahadashas if p["is_current"]), mahadashas[0])
-
-    md_start = datetime.strptime(current_maha["start"], "%d.%m.%Y")
-    md_end = datetime.strptime(current_maha["end"], "%d.%m.%Y")
-
-    antardashas = build_sub_periods(
-        md_start,
-        md_end,
-        current_maha["lord"],
-        "antar"
-    )
-
-    current_antar = next((p for p in antardashas if p["is_current"]), antardashas[0])
-
-    ad_start = datetime.strptime(current_antar["start"], "%d.%m.%Y")
-    ad_end = datetime.strptime(current_antar["end"], "%d.%m.%Y")
-
-    pratyantardashas = build_sub_periods(
-        ad_start,
-        ad_end,
-        current_antar["lord"],
-        "pratyantar"
-    )
-
     return {
         "birth_lord": birth_lord,
-        "current_maha": current_maha,
-        "current_antar": current_antar,
-        "current_pratyantar": next(
-            (p for p in pratyantardashas if p["is_current"]),
-            pratyantardashas[0]
-        ),
-        "mahadashas": mahadashas,
-        "antardashas": antardashas,
-        "pratyantardashas": pratyantardashas
+        "tree": mahadashas,
+        "current_path": find_current_path(mahadashas)
     }
+
+
+def calculate_chara_karakas(planets):
+    main_planets = [
+        "Солнце", "Луна", "Марс", "Меркурий",
+        "Юпитер", "Венера", "Сатурн"
+    ]
+
+    sortable = []
+
+    for name in main_planets:
+        longitude = planets[name]["longitude"]
+        degree_in_sign = longitude % 30
+        sortable.append((name, degree_in_sign))
+
+    sortable.sort(key=lambda x: x[1], reverse=True)
+
+    karakas = {}
+
+    for index, item in enumerate(sortable):
+        planet_name = item[0]
+        karakas[planet_name] = KARAKA_NAMES[index]
+
+    return karakas
+
+
+def calculate_parashara_aspects(planets):
+    aspects = []
+
+    for name, p in planets.items():
+        from_house = p["house"]
+        aspect_houses = []
+
+        if name in ["Солнце", "Луна", "Меркурий", "Венера", "Раху", "Кету"]:
+            aspect_houses.append(((from_house + 6 - 1) % 12) + 1)
+
+        if name == "Марс":
+            aspect_houses.extend([
+                ((from_house + 3 - 1) % 12) + 1,
+                ((from_house + 6 - 1) % 12) + 1,
+                ((from_house + 7 - 1) % 12) + 1
+            ])
+
+        if name == "Юпитер":
+            aspect_houses.extend([
+                ((from_house + 4 - 1) % 12) + 1,
+                ((from_house + 6 - 1) % 12) + 1,
+                ((from_house + 8 - 1) % 12) + 1
+            ])
+
+        if name == "Сатурн":
+            aspect_houses.extend([
+                ((from_house + 2 - 1) % 12) + 1,
+                ((from_house + 6 - 1) % 12) + 1,
+                ((from_house + 9 - 1) % 12) + 1
+            ])
+
+        aspects.append({
+            "planet": name,
+            "from_house": from_house,
+            "aspects_houses": sorted(list(set(aspect_houses)))
+        })
+
+    return aspects
+
+
+def build_north_indian_chart(lagna_sign_index, planets):
+    houses = []
+
+    for house in range(1, 13):
+        sign_index = (lagna_sign_index + house - 1) % 12
+        house_planets = []
+
+        for planet_name, p in planets.items():
+            if p["house"] == house:
+                short = PLANET_SHORT.get(planet_name, planet_name)
+                karaka = p.get("karaka", "")
+                label = f"{short} {karaka}".strip()
+                house_planets.append(label)
+
+        houses.append({
+            "house": house,
+            "sign": SIGN_SHORT[sign_index],
+            "sign_full": SIGNS[sign_index],
+            "planets": house_planets
+        })
+
+    return houses
 
 
 def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=None):
@@ -461,14 +564,17 @@ def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=N
         "moon": {},
         "houses": [],
         "planets": {},
-        "dashas": {}
+        "dashas": {},
+        "chart_view": [],
+        "aspects": []
     }
 
     for i in range(12):
         sign_index = (lagna_sign_index + i) % 12
         result["houses"].append({
             "house": i + 1,
-            "sign": SIGNS[sign_index]
+            "sign": SIGNS[sign_index],
+            "sign_short": SIGN_SHORT[sign_index]
         })
 
     rahu_pos = None
@@ -488,10 +594,12 @@ def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=N
         planet_data = {
             "sign": sign,
             "degree": format_degree(deg_in_sign),
+            "degree_float": round(deg_in_sign, 4),
             "nakshatra": nak,
             "pada": pada,
             "house": house,
-            "longitude": round(pos, 4)
+            "longitude": round(pos, 4),
+            "karaka": ""
         }
 
         if planet_name == "Луна":
@@ -507,11 +615,25 @@ def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=N
     result["planets"]["Кету"] = {
         "sign": ketu_sign,
         "degree": format_degree(ketu_deg),
+        "degree_float": round(ketu_deg, 4),
         "nakshatra": ketu_nak,
         "pada": ketu_pada,
         "house": get_house(ketu_sign_index, lagna_sign_index),
-        "longitude": round(ketu_pos, 4)
+        "longitude": round(ketu_pos, 4),
+        "karaka": ""
     }
+
+    karakas = calculate_chara_karakas(result["planets"])
+
+    for planet_name, karaka in karakas.items():
+        result["planets"][planet_name]["karaka"] = karaka
+
+    result["aspects"] = calculate_parashara_aspects(result["planets"])
+
+    result["chart_view"] = build_north_indian_chart(
+        lagna_sign_index,
+        result["planets"]
+    )
 
     result["dashas"] = calculate_vimshottari_dashas(
         birth_dt=local_dt.replace(tzinfo=None),

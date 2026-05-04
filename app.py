@@ -66,18 +66,19 @@ def calculate():
         })
 
 
-@bot.message_handler(commands=["start"])
-def start(message):
-    markup = telebot.types.InlineKeyboardMarkup()
+if bot:
+    @bot.message_handler(commands=["start"])
+    def start(message):
+        markup = telebot.types.InlineKeyboardMarkup()
 
-    button = telebot.types.InlineKeyboardButton(
-        text="🌐 Перейти в веб-приложение",
-        web_app=telebot.types.WebAppInfo(url=WEBAPP_URL)
-    )
+        button = telebot.types.InlineKeyboardButton(
+            text="🌐 Перейти в веб-приложение",
+            web_app=telebot.types.WebAppInfo(url=WEBAPP_URL)
+        )
 
-    markup.add(button)
+        markup.add(button)
 
-    text = """
+        text = """
 ✨ Добро пожаловать в AstroEngine
 
 AstroEngine — система джйотиш-анализа,
@@ -95,11 +96,11 @@ AstroEngine — система джйотиш-анализа,
 👇 Перейти в веб-приложение
 """
 
-    bot.send_message(
-        message.chat.id,
-        text,
-        reply_markup=markup
-    )
+        bot.send_message(
+            message.chat.id,
+            text,
+            reply_markup=markup
+        )
 
 
 def run_bot():

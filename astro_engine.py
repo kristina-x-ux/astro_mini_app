@@ -1,7 +1,7 @@
 import swisseph as swe
 from geopy.geocoders import Nominatim
 from timezonefinder import TimezoneFinder
-from datetime import datetime
+from datetime import datetime, timedelta, date
 import pytz
 
 
@@ -20,6 +20,26 @@ NAKSHATRAS = [
     "Уттара Ашадха", "Шравана", "Дхаништха", "Шатабхиша",
     "Пурва Бхадрапада", "Уттара Бхадрапада", "Ревати"
 ]
+
+NAKSHATRA_LORDS = [
+    "Кету", "Венера", "Солнце", "Луна", "Марс", "Раху", "Юпитер", "Сатурн", "Меркурий",
+    "Кету", "Венера", "Солнце", "Луна", "Марс", "Раху", "Юпитер", "Сатурн", "Меркурий",
+    "Кету", "Венера", "Солнце", "Луна", "Марс", "Раху", "Юпитер", "Сатурн", "Меркурий"
+]
+
+DASHA_ORDER = ["Кету", "Венера", "Солнце", "Луна", "Марс", "Раху", "Юпитер", "Сатурн", "Меркурий"]
+
+DASHA_YEARS = {
+    "Кету": 7,
+    "Венера": 20,
+    "Солнце": 6,
+    "Луна": 10,
+    "Марс": 7,
+    "Раху": 18,
+    "Юпитер": 16,
+    "Сатурн": 19,
+    "Меркурий": 17
+}
 
 PLANETS = {
     "Солнце": swe.SUN,
@@ -50,6 +70,34 @@ def normalize_degree(deg):
     return deg % 360
 
 
+def parse_date(date_str):
+    date_str = date_str.strip()
+
+    if "." in date_str:
+        return datetime.strptime(date_str, "%d.%m.%Y").date()
+
+    return datetime.strptime(date_str, "%Y-%m-%d").date()
+
+
+def parse_time(time_str):
+    time_str = time_str.strip()
+
+    if len(time_str.split(":")) == 2:
+        return datetime.strptime(time_str, "%H:%M").time()
+
+    return datetime.strptime(time_str, "%H:%M:%S").time()
+
+
+def format_date_ru(dt):
+    if isinstance(dt, datetime):
+        dt = dt.date()
+    return dt.strftime("%d.%m.%Y")
+
+
+def format_datetime_ru(dt):
+    return dt.strftime("%d.%m.%Y")
+
+
 def get_sign_and_degree(lon):
     lon = normalize_degree(lon)
     sign_index = int(lon // 30)
@@ -66,7 +114,7 @@ def get_nakshatra(lon):
     degree_in_nak = lon % nak_size
     pada = int(degree_in_nak // pada_size) + 1
 
-    return NAKSHATRAS[nak_index], pada
+    return NAKSHATRAS[nak_index], pada, nak_index
 
 
 def format_degree(deg):
@@ -184,9 +232,7 @@ def get_coordinates(city, lat=None, lon=None, display_name=None):
     )
 
     if not location:
-        raise ValueError(
-            "Место не найдено. Введите подробнее, например: Киев, Украина"
-        )
+        raise ValueError("Место не найдено. Введите подробнее, например: Киев, Украина")
 
     return location.latitude, location.longitude, short_place_name(location)
 
@@ -201,9 +247,153 @@ def get_timezone(lat, lon):
     return timezone_name
 
 
+def get_utc_offset_string(local_dt):
+    offset = local_dt.utcoffset()
+
+    if offset is None:
+        return "UTC 0"
+
+    total_seconds = int(offset.total_seconds())
+    hours = total_seconds // 3600
+
+    if hours >= 0:
+        return f"UTC +{hours}"
+
+    return f"UTC {hours}"
+
+
+def years_to_days(years):
+    return years * 365.2425
+
+
+def add_days(dt, days):
+    return dt + timedelta(days=days)
+
+
+def next_lord(lord):
+    index = DASHA_ORDER.index(lord)
+    return DASHA_ORDER[(index + 1) % len(DASHA_ORDER)]
+
+
+def ordered_lords_from(start_lord):
+    start_index = DASHA_ORDER.index(start_lord)
+    return DASHA_ORDER[start_index:] + DASHA_ORDER[:start_index]
+
+
+def is_current_period(start_dt, end_dt):
+    today = datetime.utcnow()
+    return start_dt <= today < end_dt
+
+
+def build_sub_periods(parent_start, parent_end, parent_lord, level):
+    total_days = (parent_end - parent_start).total_seconds() / 86400
+    periods = []
+    current_start = parent_start
+
+    for lord in ordered_lords_from(parent_lord):
+        portion = DASHA_YEARS[lord] / 120
+        duration_days = total_days * portion
+        current_end = add_days(current_start, duration_days)
+
+        periods.append({
+            "lord": lord,
+            "start": format_datetime_ru(current_start),
+            "end": format_datetime_ru(current_end),
+            "is_current": is_current_period(current_start, current_end),
+            "level": level
+        })
+
+        current_start = current_end
+
+    return periods
+
+
+def calculate_vimshottari_dashas(birth_dt, moon_longitude):
+    nak_size = 360 / 27
+    nak_index = int(normalize_degree(moon_longitude) // nak_size)
+    degree_in_nak = normalize_degree(moon_longitude) % nak_size
+
+    birth_lord = NAKSHATRA_LORDS[nak_index]
+    completed_fraction = degree_in_nak / nak_size
+    remaining_fraction = 1 - completed_fraction
+
+    first_md_years_remaining = DASHA_YEARS[birth_lord] * remaining_fraction
+
+    mahadashas = []
+
+    current_start = birth_dt
+    current_end = add_days(current_start, years_to_days(first_md_years_remaining))
+
+    mahadashas.append({
+        "lord": birth_lord,
+        "start": format_datetime_ru(current_start),
+        "end": format_datetime_ru(current_end),
+        "is_current": is_current_period(current_start, current_end),
+        "level": "maha"
+    })
+
+    current_lord = next_lord(birth_lord)
+    current_start = current_end
+
+    for _ in range(20):
+        years = DASHA_YEARS[current_lord]
+        current_end = add_days(current_start, years_to_days(years))
+
+        mahadashas.append({
+            "lord": current_lord,
+            "start": format_datetime_ru(current_start),
+            "end": format_datetime_ru(current_end),
+            "is_current": is_current_period(current_start, current_end),
+            "level": "maha"
+        })
+
+        current_lord = next_lord(current_lord)
+        current_start = current_end
+
+    current_maha = next((p for p in mahadashas if p["is_current"]), mahadashas[0])
+
+    md_start = datetime.strptime(current_maha["start"], "%d.%m.%Y")
+    md_end = datetime.strptime(current_maha["end"], "%d.%m.%Y")
+
+    antardashas = build_sub_periods(
+        md_start,
+        md_end,
+        current_maha["lord"],
+        "antar"
+    )
+
+    current_antar = next((p for p in antardashas if p["is_current"]), antardashas[0])
+
+    ad_start = datetime.strptime(current_antar["start"], "%d.%m.%Y")
+    ad_end = datetime.strptime(current_antar["end"], "%d.%m.%Y")
+
+    pratyantardashas = build_sub_periods(
+        ad_start,
+        ad_end,
+        current_antar["lord"],
+        "pratyantar"
+    )
+
+    return {
+        "birth_lord": birth_lord,
+        "current_maha": current_maha,
+        "current_antar": current_antar,
+        "current_pratyantar": next(
+            (p for p in pratyantardashas if p["is_current"]),
+            pratyantardashas[0]
+        ),
+        "mahadashas": mahadashas,
+        "antardashas": antardashas,
+        "pratyantardashas": pratyantardashas
+    }
+
+
 def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=None):
     if not date_str or not time_str or not city:
         raise ValueError("Заполните дату, время и место рождения")
+
+    birth_date = parse_date(date_str)
+    birth_time = parse_time(time_str)
 
     lat, lon, display_city = get_coordinates(
         city=city,
@@ -215,15 +405,16 @@ def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=N
     timezone_name = get_timezone(lat, lon)
     local_tz = pytz.timezone(timezone_name)
 
-    local_dt = datetime.strptime(
-        f"{date_str} {time_str}",
-        "%Y-%m-%d %H:%M"
-    )
-
+    local_dt = datetime.combine(birth_date, birth_time)
     local_dt = local_tz.localize(local_dt)
+
     utc_dt = local_dt.astimezone(pytz.utc)
 
-    hour_decimal = utc_dt.hour + utc_dt.minute / 60 + utc_dt.second / 3600
+    hour_decimal = (
+        utc_dt.hour
+        + utc_dt.minute / 60
+        + utc_dt.second / 3600
+    )
 
     jd = swe.julday(
         utc_dt.year,
@@ -247,13 +438,16 @@ def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=N
 
     lagna_lon = normalize_degree(ascmc[0])
     lagna_sign, lagna_deg, lagna_sign_index = get_sign_and_degree(lagna_lon)
-    lagna_nak, lagna_pada = get_nakshatra(lagna_lon)
+    lagna_nak, lagna_pada, lagna_nak_index = get_nakshatra(lagna_lon)
 
     result = {
+        "input_date": birth_date.strftime("%d.%m.%Y"),
+        "input_time": birth_time.strftime("%H:%M:%S"),
         "city": display_city,
         "lat": round(lat, 4),
         "lon": round(lon, 4),
         "timezone": timezone_name,
+        "utc_offset": get_utc_offset_string(local_dt),
         "utc": utc_dt.strftime("%Y-%m-%d %H:%M:%S"),
         "jd": round(jd, 5),
         "ayanamsha": round(ayanamsha, 3),
@@ -266,7 +460,8 @@ def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=N
         },
         "moon": {},
         "houses": [],
-        "planets": {}
+        "planets": {},
+        "dashas": {}
     }
 
     for i in range(12):
@@ -277,6 +472,7 @@ def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=N
         })
 
     rahu_pos = None
+    moon_longitude = None
 
     for planet_name, planet_id in PLANETS.items():
         pos = swe.calc_ut(jd, planet_id, flags)[0][0]
@@ -286,7 +482,7 @@ def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=N
             rahu_pos = pos
 
         sign, deg_in_sign, sign_index = get_sign_and_degree(pos)
-        nak, pada = get_nakshatra(pos)
+        nak, pada, nak_index = get_nakshatra(pos)
         house = get_house(sign_index, lagna_sign_index)
 
         planet_data = {
@@ -299,13 +495,14 @@ def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=N
         }
 
         if planet_name == "Луна":
+            moon_longitude = pos
             result["moon"] = planet_data
 
         result["planets"][planet_name] = planet_data
 
     ketu_pos = normalize_degree(rahu_pos + 180)
     ketu_sign, ketu_deg, ketu_sign_index = get_sign_and_degree(ketu_pos)
-    ketu_nak, ketu_pada = get_nakshatra(ketu_pos)
+    ketu_nak, ketu_pada, ketu_nak_index = get_nakshatra(ketu_pos)
 
     result["planets"]["Кету"] = {
         "sign": ketu_sign,
@@ -315,5 +512,10 @@ def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=N
         "house": get_house(ketu_sign_index, lagna_sign_index),
         "longitude": round(ketu_pos, 4)
     }
+
+    result["dashas"] = calculate_vimshottari_dashas(
+        birth_dt=local_dt.replace(tzinfo=None),
+        moon_longitude=moon_longitude
+    )
 
     return result

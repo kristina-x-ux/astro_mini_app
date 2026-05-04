@@ -107,16 +107,10 @@ def save_chart_route():
             comment=comment
         )
 
-        return jsonify({
-            "success": True,
-            "chart": saved
-        })
+        return jsonify({"success": True, "chart": saved})
 
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        })
+        return jsonify({"success": False, "error": str(e)})
 
 
 @app.route("/saved_charts", methods=["GET"])
@@ -125,17 +119,10 @@ def saved_charts_route():
 
     try:
         charts = get_saved_charts(telegram_user_id)
-        return jsonify({
-            "success": True,
-            "charts": charts
-        })
+        return jsonify({"success": True, "charts": charts})
 
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "charts": [],
-            "error": str(e)
-        })
+        return jsonify({"success": False, "charts": [], "error": str(e)})
 
 
 @app.route("/open_chart/<int:chart_id>", methods=["GET"])
@@ -144,10 +131,7 @@ def open_chart_route(chart_id):
         saved = get_saved_chart(chart_id)
 
         if not saved:
-            return jsonify({
-                "success": False,
-                "error": "Карта не найдена"
-            })
+            return jsonify({"success": False, "error": "Карта не найдена"})
 
         chart = calculate_chart(
             date_str=saved["birth_date"],
@@ -165,10 +149,7 @@ def open_chart_route(chart_id):
         })
 
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        })
+        return jsonify({"success": False, "error": str(e)})
 
 
 @app.route("/delete_chart/<int:chart_id>", methods=["DELETE"])
@@ -177,20 +158,12 @@ def delete_chart_route(chart_id):
         deleted = delete_saved_chart(chart_id)
 
         if not deleted:
-            return jsonify({
-                "success": False,
-                "error": "Карта не найдена"
-            })
+            return jsonify({"success": False, "error": "Карта не найдена"})
 
-        return jsonify({
-            "success": True
-        })
+        return jsonify({"success": True})
 
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        })
+        return jsonify({"success": False, "error": str(e)})
 
 
 if bot:
@@ -223,11 +196,7 @@ AstroEngine — система джйотиш-анализа,
 👇 Перейти в веб-приложение
 """
 
-        bot.send_message(
-            message.chat.id,
-            text,
-            reply_markup=markup
-        )
+        bot.send_message(message.chat.id, text, reply_markup=markup)
 
 
 def run_bot():

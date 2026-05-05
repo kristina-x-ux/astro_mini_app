@@ -1,66 +1,62 @@
-from datetime import datetime
 import swisseph as swe
-import pytz
-from timezonefinder import TimezoneFinder
 from geopy.geocoders import Nominatim
-
-swe.set_ephe_path('.')
-
-# ---------------------------
-# 🌍 Получение координат
-# ---------------------------
-def get_coordinates(city):
-    geolocator = Nominatim(user_agent="astro_app")
-    location = geolocator.geocode(city)
-
-    if not location:
-        raise Exception("Город не найден")
-
-    return location.latitude, location.longitude
+from timezonefinder import TimezoneFinder
+from datetime import datetime, timedelta
+import pytz
 
 
-# ---------------------------
-# 🕒 Определение часового пояса
-# ---------------------------
-def get_timezone(lat, lon):
-    tf = TimezoneFinder()
-    return tf.timezone_at(lat=lat, lng=lon)
-
-
-# ---------------------------
-# 🧮 Julian Day
-# ---------------------------
-def calculate_jd(dt_utc):
-    return swe.julday(
-        dt_utc.year,
-        dt_utc.month,
-        dt_utc.day,
-        dt_utc.hour + dt_utc.minute / 60
-    )
-
-
-# ---------------------------
-# 🌙 Накшатра
-# ---------------------------
-nakshatras = [
-    "Ашвини", "Бхарани", "Криттика", "Рохини", "Мригашира",
-    "Ардра", "Пунарвасу", "Пушья", "Ашлеша", "Магха",
-    "Пурва Пхалгуни", "Уттара Пхалгуни", "Хаста", "Читра",
-    "Свати", "Вишакха", "Анурадха", "Джйештха", "Мула",
-    "Пурва Ашадха", "Уттара Ашадха", "Шравана", "Дхаништха",
-    "Шатабхиша", "Пурва Бхадрапада", "Уттара Бхадрапада", "Ревати"
+SIGNS = [
+    "Овен", "Телец", "Близнецы", "Рак",
+    "Лев", "Дева", "Весы", "Скорпион",
+    "Стрелец", "Козерог", "Водолей", "Рыбы"
 ]
 
-def get_nakshatra(deg):
-    nak = int(deg / (360 / 27))
-    pada = int((deg % (360 / 27)) / (360 / 108)) + 1
-    return nakshatras[nak], pada
+SIGN_NUMBERS = {
+    "Овен": 1,
+    "Телец": 2,
+    "Близнецы": 3,
+    "Рак": 4,
+    "Лев": 5,
+    "Дева": 6,
+    "Весы": 7,
+    "Скорпион": 8,
+    "Стрелец": 9,
+    "Козерог": 10,
+    "Водолей": 11,
+    "Рыбы": 12
+}
 
+NAKSHATRAS = [
+    "Ашвини", "Бхарани", "Криттика", "Рохини",
+    "Мригашира", "Ардра", "Пунарвасу", "Пушья",
+    "Ашлеша", "Магха", "Пурва Пхалгуни", "Уттара Пхалгуни",
+    "Хаста", "Читра", "Свати", "Вишакха",
+    "Анурадха", "Джйештха", "Мула", "Пурва Ашадха",
+    "Уттара Ашадха", "Шравана", "Дхаништха", "Шатабхиша",
+    "Пурва Бхадрапада", "Уттара Бхадрапада", "Ревати"
+]
 
-# ---------------------------
-# 🪐 Планеты
-# ---------------------------
-planets = {
+NAKSHATRA_LORDS = [
+    "Кету", "Венера", "Солнце", "Луна", "Марс", "Раху", "Юпитер", "Сатурн", "Меркурий",
+    "Кету", "Венера", "Солнце", "Луна", "Марс", "Раху", "Юпитер", "Сатурн", "Меркурий",
+    "Кету", "Венера", "Солнце", "Луна", "Марс", "Раху", "Юпитер", "Сатурн", "Меркурий"
+]
+
+DASHA_ORDER = ["Кету", "Венера", "Солнце", "Луна", "Марс", "Раху", "Юпитер", "Сатурн", "Меркурий"]
+
+DASHA_YEARS = {
+    "Кету": 7,
+    "Венера": 20,
+    "Солнце": 6,
+    "Луна": 10,
+    "Марс": 7,
+    "Раху": 18,
+    "Юпитер": 16,
+    "Сатурн": 19,
+    "Меркурий": 17
+}
+
+PLANETS = {
     "Солнце": swe.SUN,
     "Луна": swe.MOON,
     "Марс": swe.MARS,
@@ -71,77 +67,685 @@ planets = {
     "Раху": swe.MEAN_NODE
 }
 
+PLANET_SHORT = {
+    "Солнце": "Со",
+    "Луна": "Лу",
+    "Марс": "Ма",
+    "Меркурий": "Ме",
+    "Юпитер": "Юп",
+    "Венера": "Ве",
+    "Сатурн": "Са",
+    "Раху": "Ра",
+    "Кету": "Ке"
+}
 
-# ---------------------------
-# 🔮 Главная функция
-# ---------------------------
-def calculate_chart(date_str, time_str, city):
+KARAKA_NAMES = ["АК", "АмК", "БК", "МК", "ПК", "ГК", "ДК"]
 
-    # 📅 Парсим дату
-    dt_local = datetime.strptime(
-        f"{date_str} {time_str}",
-        "%Y-%m-%d %H:%M"
+VARGAS = {
+    "D1": 1,
+    "Moon": 1,
+    "D2": 2,
+    "D3": 3,
+    "D5": 5,
+    "D6": 6,
+    "D7": 7,
+    "D8": 8,
+    "D9": 9,
+    "D10": 10,
+    "D11": 11,
+    "D12": 12,
+    "D16": 16,
+    "D24": 24,
+    "D30": 30,
+    "D60": 60,
+    "D81": 81
+}
+
+CITY_FALLBACK = {
+    "киев": (50.4501, 30.5234, "Киев, Украина"),
+    "киев, украина": (50.4501, 30.5234, "Киев, Украина"),
+    "ялта": (44.4952, 34.1663, "Ялта, Россия"),
+    "ялта, россия": (44.4952, 34.1663, "Ялта, Россия"),
+    "москва": (55.7558, 37.6173, "Москва, Россия"),
+    "москва, россия": (55.7558, 37.6173, "Москва, Россия"),
+    "рига": (56.9496, 24.1052, "Рига, Латвия"),
+    "рига, латвия": (56.9496, 24.1052, "Рига, Латвия"),
+    "алматы": (43.2389, 76.8897, "Алматы, Казахстан"),
+    "алматы, казахстан": (43.2389, 76.8897, "Алматы, Казахстан")
+}
+
+
+def normalize_degree(deg):
+    return deg % 360
+
+
+def parse_date(date_str):
+    date_str = date_str.strip()
+    if "." in date_str:
+        return datetime.strptime(date_str, "%d.%m.%Y").date()
+    return datetime.strptime(date_str, "%Y-%m-%d").date()
+
+
+def parse_time(time_str):
+    time_str = time_str.strip()
+    parts = time_str.split(":")
+    if len(parts) == 2:
+        return datetime.strptime(time_str, "%H:%M").time()
+    return datetime.strptime(time_str, "%H:%M:%S").time()
+
+
+def format_date(dt):
+    if isinstance(dt, datetime):
+        return dt.strftime("%d.%m.%Y")
+    return dt.strftime("%d.%m.%Y")
+
+
+def get_sign_and_degree(lon):
+    lon = normalize_degree(lon)
+    sign_index = int(lon // 30)
+    degree_in_sign = lon % 30
+    return SIGNS[sign_index], degree_in_sign, sign_index
+
+
+def get_nakshatra(lon):
+    lon = normalize_degree(lon)
+    nak_size = 360 / 27
+    pada_size = nak_size / 4
+    nak_index = int(lon // nak_size)
+    degree_in_nak = lon % nak_size
+    pada = int(degree_in_nak // pada_size) + 1
+    return NAKSHATRAS[nak_index], pada, nak_index
+
+
+def format_degree(deg):
+    degree = int(deg)
+    minute = int((deg - degree) * 60)
+    return f"{degree}°{minute:02d}'"
+
+
+def get_house(planet_sign_index, lagna_sign_index):
+    return ((planet_sign_index - lagna_sign_index) % 12) + 1
+
+
+def short_place_name(location):
+    address = location.raw.get("address", {})
+    city = (
+        address.get("city")
+        or address.get("town")
+        or address.get("village")
+        or address.get("municipality")
+        or address.get("county")
+        or ""
+    )
+    state = address.get("state") or address.get("region") or ""
+    country = address.get("country") or ""
+
+    parts = []
+    if city:
+        parts.append(city)
+    if state and state != city:
+        parts.append(state)
+    if country:
+        parts.append(country)
+
+    return ", ".join(parts) if parts else location.address
+
+
+def search_places(query):
+    query = query.strip()
+
+    if len(query) < 2:
+        return []
+
+    key = query.lower()
+    fallback_results = []
+
+    for name, data in CITY_FALLBACK.items():
+        if key in name:
+            lat, lon, display = data
+            fallback_results.append({"name": display, "lat": lat, "lon": lon})
+
+    geolocator = Nominatim(user_agent="astroengine_place_search")
+
+    locations = geolocator.geocode(
+        query,
+        exactly_one=False,
+        limit=5,
+        timeout=10,
+        language="ru",
+        addressdetails=True
     )
 
-    # 🌍 координаты
-    lat, lon = get_coordinates(city)
+    results = fallback_results
 
-    # 🕒 часовой пояс
-    tz_name = get_timezone(lat, lon)
-    tz = pytz.timezone(tz_name)
+    if locations:
+        for loc in locations:
+            results.append({
+                "name": short_place_name(loc),
+                "lat": loc.latitude,
+                "lon": loc.longitude
+            })
 
-    dt_local = tz.localize(dt_local)
-    dt_utc = dt_local.astimezone(pytz.utc)
+    unique = []
+    seen = set()
 
-    # 🧮 JD
-    jd = calculate_jd(dt_utc)
+    for item in results:
+        key_item = (item["name"], round(item["lat"], 4), round(item["lon"], 4))
+        if key_item not in seen:
+            seen.add(key_item)
+            unique.append(item)
 
-    # 🌌 Аянамша
-    swe.set_sid_mode(swe.SIDM_LAHIRI)
-    ayanamsha = swe.get_ayanamsa(jd)
+    return unique[:6]
 
-    # 🌅 Лагна
-    houses, ascmc = swe.houses(jd, lat, lon)
-    lagna = ascmc[0]
 
-    # 🌙 Луна
-    moon = swe.calc_ut(jd, swe.MOON)[0][0]
+def get_coordinates(city, lat=None, lon=None, display_name=None):
+    if lat is not None and lon is not None:
+        return float(lat), float(lon), display_name or city
 
-    # 🪐 Планеты
-    result_planets = {}
-    for name, code in planets.items():
-        pos = swe.calc_ut(jd, code)[0][0]
-        nak, pada = get_nakshatra(pos)
-        result_planets[name] = {
-            "degree": round(pos, 2),
-            "nakshatra": nak,
-            "pada": pada
-        }
+    city_clean = city.strip()
+    key = city_clean.lower()
 
-    # ☊ Кету
-    ketu_deg = (result_planets["Раху"]["degree"] + 180) % 360
-    nak, pada = get_nakshatra(ketu_deg)
+    if key in CITY_FALLBACK:
+        lat, lon, display = CITY_FALLBACK[key]
+        return lat, lon, display
 
-    result_planets["Кету"] = {
-        "degree": round(ketu_deg, 2),
-        "nakshatra": nak,
-        "pada": pada
+    geolocator = Nominatim(user_agent="astroengine_geocoder")
+
+    location = geolocator.geocode(
+        city_clean,
+        timeout=10,
+        language="ru",
+        addressdetails=True
+    )
+
+    if not location:
+        raise ValueError("Место не найдено. Введите подробнее, например: Киев, Украина")
+
+    return location.latitude, location.longitude, short_place_name(location)
+
+
+def get_timezone(lat, lon):
+    tf = TimezoneFinder()
+    timezone_name = tf.timezone_at(lat=lat, lng=lon)
+
+    if not timezone_name:
+        raise ValueError("Не удалось определить часовой пояс")
+
+    return timezone_name
+
+
+def get_utc_offset_string(local_dt):
+    offset = local_dt.utcoffset()
+
+    if offset is None:
+        return "UTC 0"
+
+    total_seconds = int(offset.total_seconds())
+    hours = total_seconds // 3600
+
+    if hours >= 0:
+        return f"UTC +{hours}"
+
+    return f"UTC {hours}"
+
+
+def years_to_days(years):
+    return years * 365.2425
+
+
+def add_days(dt, days):
+    return dt + timedelta(days=days)
+
+
+def ordered_lords_from(start_lord):
+    start_index = DASHA_ORDER.index(start_lord)
+    return DASHA_ORDER[start_index:] + DASHA_ORDER[:start_index]
+
+
+def period_is_current(start_dt, end_dt):
+    now = datetime.utcnow()
+    return start_dt <= now < end_dt
+
+
+def make_period_node(lord, start_dt, end_dt, level, path):
+    return {
+        "lord": lord,
+        "start": format_date(start_dt),
+        "end": format_date(end_dt),
+        "is_current": period_is_current(start_dt, end_dt),
+        "level": level,
+        "path": path,
+        "children": []
     }
 
-    # 🌙 Накшатра Луны
-    moon_nak, moon_pada = get_nakshatra(moon)
+
+def build_children(parent_start, parent_end, parent_lord, level, path, max_depth):
+    total_days = (parent_end - parent_start).total_seconds() / 86400
+    children = []
+    current_start = parent_start
+
+    for lord in ordered_lords_from(parent_lord):
+        duration_days = total_days * (DASHA_YEARS[lord] / 120)
+        current_end = add_days(current_start, duration_days)
+        child_path = path + [lord]
+
+        node = make_period_node(
+            lord,
+            current_start,
+            current_end,
+            level,
+            child_path
+        )
+
+        if level < max_depth:
+            node["children"] = build_children(
+                current_start,
+                current_end,
+                lord,
+                level + 1,
+                child_path,
+                max_depth
+            )
+
+        children.append(node)
+        current_start = current_end
+
+    return children
+
+
+def next_lord(lord):
+    index = DASHA_ORDER.index(lord)
+    return DASHA_ORDER[(index + 1) % len(DASHA_ORDER)]
+
+
+def find_current_path(nodes):
+    for node in nodes:
+        if node.get("is_current"):
+            return node["path"]
+
+        child_path = find_current_path(node.get("children", []))
+        if child_path:
+            return child_path
+
+    return []
+
+
+def calculate_vimshottari_dashas(birth_dt, moon_longitude):
+    nak_size = 360 / 27
+    moon_longitude = normalize_degree(moon_longitude)
+
+    nak_index = int(moon_longitude // nak_size)
+    degree_in_nak = moon_longitude % nak_size
+
+    birth_lord = NAKSHATRA_LORDS[nak_index]
+    completed_fraction = degree_in_nak / nak_size
+    remaining_fraction = 1 - completed_fraction
+    first_md_years_remaining = DASHA_YEARS[birth_lord] * remaining_fraction
+
+    mahadashas = []
+
+    current_start = birth_dt
+    current_end = add_days(current_start, years_to_days(first_md_years_remaining))
+
+    first_node = make_period_node(
+        birth_lord,
+        current_start,
+        current_end,
+        1,
+        [birth_lord]
+    )
+
+    first_node["children"] = build_children(
+        current_start,
+        current_end,
+        birth_lord,
+        2,
+        [birth_lord],
+        4
+    )
+
+    mahadashas.append(first_node)
+
+    current_lord = next_lord(birth_lord)
+    current_start = current_end
+
+    for _ in range(20):
+        years = DASHA_YEARS[current_lord]
+        current_end = add_days(current_start, years_to_days(years))
+
+        node = make_period_node(
+            current_lord,
+            current_start,
+            current_end,
+            1,
+            [current_lord]
+        )
+
+        node["children"] = build_children(
+            current_start,
+            current_end,
+            current_lord,
+            2,
+            [current_lord],
+            4
+        )
+
+        mahadashas.append(node)
+
+        current_lord = next_lord(current_lord)
+        current_start = current_end
 
     return {
-        "city": city,
-        "lat": lat,
-        "lon": lon,
-        "timezone": tz_name,
-        "utc": str(dt_utc),
-        "jd": jd,
-        "ayanamsha": ayanamsha,
-        "lagna": lagna,
-        "moon": moon,
-        "moon_nakshatra": moon_nak,
-        "moon_pada": moon_pada,
-        "planets": result_planets
+        "birth_lord": birth_lord,
+        "tree": mahadashas,
+        "current_path": find_current_path(mahadashas)
     }
+
+
+def calculate_chara_karakas(planets):
+    main_planets = [
+        "Солнце", "Луна", "Марс", "Меркурий",
+        "Юпитер", "Венера", "Сатурн"
+    ]
+
+    sortable = []
+
+    for name in main_planets:
+        longitude = planets[name]["longitude"]
+        degree_in_sign = longitude % 30
+        sortable.append((name, degree_in_sign))
+
+    sortable.sort(key=lambda x: x[1], reverse=True)
+
+    karakas = {}
+
+    for index, item in enumerate(sortable):
+        planet_name = item[0]
+        karakas[planet_name] = KARAKA_NAMES[index]
+
+    return karakas
+
+
+def calculate_parashara_aspects(planets):
+    aspects = []
+
+    for name, p in planets.items():
+        from_house = p["house"]
+        aspect_houses = []
+
+        if name in ["Солнце", "Луна", "Меркурий", "Венера"]:
+            aspect_houses.append(((from_house + 6 - 1) % 12) + 1)
+
+        if name == "Марс":
+            aspect_houses.extend([
+                ((from_house + 3 - 1) % 12) + 1,
+                ((from_house + 6 - 1) % 12) + 1,
+                ((from_house + 7 - 1) % 12) + 1
+            ])
+
+        if name == "Юпитер":
+            aspect_houses.extend([
+                ((from_house + 4 - 1) % 12) + 1,
+                ((from_house + 6 - 1) % 12) + 1,
+                ((from_house + 8 - 1) % 12) + 1
+            ])
+
+        if name == "Сатурн":
+            aspect_houses.extend([
+                ((from_house + 2 - 1) % 12) + 1,
+                ((from_house + 6 - 1) % 12) + 1,
+                ((from_house + 9 - 1) % 12) + 1
+            ])
+
+        if name in ["Раху", "Кету"]:
+            aspect_houses.extend([
+                ((from_house + 4 - 1) % 12) + 1,
+                ((from_house + 6 - 1) % 12) + 1,
+                ((from_house + 8 - 1) % 12) + 1
+            ])
+
+        aspects.append({
+            "planet": name,
+            "from_house": from_house,
+            "aspects_houses": sorted(list(set(aspect_houses)))
+        })
+
+    return aspects
+
+
+def get_varga_sign_index(longitude, division):
+    longitude = normalize_degree(longitude)
+
+    if division == 1:
+        return int(longitude // 30)
+
+    part_size = 30 / division
+    sign_index = int(longitude // 30)
+    degree_in_sign = longitude % 30
+    part_index = int(degree_in_sign // part_size)
+
+    return int((sign_index * division + part_index) % 12)
+
+
+def build_chart_view(lagna_sign_index, planets, chart_type="D1"):
+    houses = []
+
+    for house in range(1, 13):
+        sign_index = (lagna_sign_index + house - 1) % 12
+        sign_name = SIGNS[sign_index]
+        sign_number = SIGN_NUMBERS[sign_name]
+        house_planets = []
+
+        for planet_name, p in planets.items():
+            if p["house"] == house:
+                short = PLANET_SHORT.get(planet_name, planet_name)
+                karaka = p.get("karaka", "")
+                label = f"{short} {karaka}".strip()
+                house_planets.append(label)
+
+        houses.append({
+            "house": house,
+            "sign": sign_number,
+            "sign_name": sign_name,
+            "planets": house_planets
+        })
+
+    return houses
+
+
+def build_varga_chart(varga_name, division, base_planets, lagna_longitude, moon_longitude):
+    if varga_name == "Moon":
+        _, _, lagna_sign_index = get_sign_and_degree(moon_longitude)
+    else:
+        lagna_sign_index = get_varga_sign_index(lagna_longitude, division)
+
+    varga_planets = {}
+
+    for planet_name, p in base_planets.items():
+        sign_index = get_varga_sign_index(p["longitude"], division)
+        sign_name = SIGNS[sign_index]
+        house = get_house(sign_index, lagna_sign_index)
+
+        varga_planets[planet_name] = {
+            "sign": sign_name,
+            "sign_number": SIGN_NUMBERS[sign_name],
+            "house": house,
+            "longitude": p["longitude"],
+            "karaka": p.get("karaka", "")
+        }
+
+    return {
+        "name": varga_name,
+        "division": division,
+        "lagna_sign": SIGNS[lagna_sign_index],
+        "lagna_sign_number": SIGN_NUMBERS[SIGNS[lagna_sign_index]],
+        "chart_view": build_chart_view(lagna_sign_index, varga_planets, varga_name),
+        "planets": varga_planets
+    }
+
+
+def calculate_chart(date_str, time_str, city, lat=None, lon=None, display_name=None):
+    if not date_str or not time_str or not city:
+        raise ValueError("Заполните дату, время и место рождения")
+
+    birth_date = parse_date(date_str)
+    birth_time = parse_time(time_str)
+
+    lat, lon, display_city = get_coordinates(
+        city=city,
+        lat=lat,
+        lon=lon,
+        display_name=display_name
+    )
+
+    timezone_name = get_timezone(lat, lon)
+    local_tz = pytz.timezone(timezone_name)
+
+    local_dt = datetime.combine(birth_date, birth_time)
+    local_dt = local_tz.localize(local_dt)
+
+    utc_dt = local_dt.astimezone(pytz.utc)
+
+    hour_decimal = (
+        utc_dt.hour
+        + utc_dt.minute / 60
+        + utc_dt.second / 3600
+    )
+
+    jd = swe.julday(
+        utc_dt.year,
+        utc_dt.month,
+        utc_dt.day,
+        hour_decimal
+    )
+
+    swe.set_sid_mode(swe.SIDM_LAHIRI)
+    ayanamsha = swe.get_ayanamsa_ut(jd)
+
+    flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL
+
+    houses, ascmc = swe.houses_ex(
+        jd,
+        lat,
+        lon,
+        b'P',
+        flags
+    )
+
+    lagna_lon = normalize_degree(ascmc[0])
+    lagna_sign, lagna_deg, lagna_sign_index = get_sign_and_degree(lagna_lon)
+    lagna_nak, lagna_pada, lagna_nak_index = get_nakshatra(lagna_lon)
+
+    result = {
+        "input_date": birth_date.strftime("%d.%m.%Y"),
+        "input_time": birth_time.strftime("%H:%M:%S"),
+        "city": display_city,
+        "lat": round(lat, 4),
+        "lon": round(lon, 4),
+        "timezone": timezone_name,
+        "utc_offset": get_utc_offset_string(local_dt),
+        "utc": utc_dt.strftime("%Y-%m-%d %H:%M:%S"),
+        "jd": round(jd, 5),
+        "ayanamsha": round(ayanamsha, 3),
+        "lagna": {
+            "sign": lagna_sign,
+            "sign_number": SIGN_NUMBERS[lagna_sign],
+            "degree": format_degree(lagna_deg),
+            "nakshatra": lagna_nak,
+            "pada": lagna_pada,
+            "longitude": round(lagna_lon, 4)
+        },
+        "moon": {},
+        "houses": [],
+        "planets": {},
+        "dashas": {},
+        "chart_view": [],
+        "aspects": [],
+        "vargas": {}
+    }
+
+    for i in range(12):
+        sign_index = (lagna_sign_index + i) % 12
+        sign_name = SIGNS[sign_index]
+        result["houses"].append({
+            "house": i + 1,
+            "sign": sign_name,
+            "sign_number": SIGN_NUMBERS[sign_name]
+        })
+
+    rahu_pos = None
+    moon_longitude = None
+
+    for planet_name, planet_id in PLANETS.items():
+        pos = swe.calc_ut(jd, planet_id, flags)[0][0]
+        pos = normalize_degree(pos)
+
+        if planet_name == "Раху":
+            rahu_pos = pos
+
+        sign, deg_in_sign, sign_index = get_sign_and_degree(pos)
+        nak, pada, nak_index = get_nakshatra(pos)
+        house = get_house(sign_index, lagna_sign_index)
+
+        planet_data = {
+            "sign": sign,
+            "sign_number": SIGN_NUMBERS[sign],
+            "degree": format_degree(deg_in_sign),
+            "degree_float": round(deg_in_sign, 4),
+            "nakshatra": nak,
+            "pada": pada,
+            "house": house,
+            "longitude": round(pos, 4),
+            "karaka": ""
+        }
+
+        if planet_name == "Луна":
+            moon_longitude = pos
+            result["moon"] = planet_data
+
+        result["planets"][planet_name] = planet_data
+
+    ketu_pos = normalize_degree(rahu_pos + 180)
+    ketu_sign, ketu_deg, ketu_sign_index = get_sign_and_degree(ketu_pos)
+    ketu_nak, ketu_pada, ketu_nak_index = get_nakshatra(ketu_pos)
+
+    result["planets"]["Кету"] = {
+        "sign": ketu_sign,
+        "sign_number": SIGN_NUMBERS[ketu_sign],
+        "degree": format_degree(ketu_deg),
+        "degree_float": round(ketu_deg, 4),
+        "nakshatra": ketu_nak,
+        "pada": ketu_pada,
+        "house": get_house(ketu_sign_index, lagna_sign_index),
+        "longitude": round(ketu_pos, 4),
+        "karaka": ""
+    }
+
+    karakas = calculate_chara_karakas(result["planets"])
+
+    for planet_name, karaka in karakas.items():
+        result["planets"][planet_name]["karaka"] = karaka
+
+    result["aspects"] = calculate_parashara_aspects(result["planets"])
+
+    result["chart_view"] = build_chart_view(
+        lagna_sign_index,
+        result["planets"],
+        "D1"
+    )
+
+    result["dashas"] = calculate_vimshottari_dashas(
+        birth_dt=local_dt.replace(tzinfo=None),
+        moon_longitude=moon_longitude
+    )
+
+    for varga_name, division in VARGAS.items():
+        result["vargas"][varga_name] = build_varga_chart(
+            varga_name=varga_name,
+            division=division,
+            base_planets=result["planets"],
+            lagna_longitude=lagna_lon,
+            moon_longitude=moon_longitude
+        )
+
+    return result

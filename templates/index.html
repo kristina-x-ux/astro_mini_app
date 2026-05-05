@@ -23,9 +23,9 @@ body {
 }
 
 .page {
-    max-width: 620px;
+    max-width: 680px;
     margin: 0 auto;
-    padding: 22px 16px 44px;
+    padding: 18px 12px 44px;
 }
 
 .screen {
@@ -38,7 +38,7 @@ body {
 
 .header {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 22px;
 }
 
 .header h1 {
@@ -58,8 +58,8 @@ body {
     background: rgba(0, 20, 70, 0.24);
     border: 1.5px solid rgba(255,255,255,0.45);
     border-radius: 30px;
-    padding: 22px;
-    margin-bottom: 22px;
+    padding: 18px;
+    margin-bottom: 18px;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     box-shadow:
@@ -188,15 +188,25 @@ input::placeholder {
 }
 
 .result-heading {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 850;
     line-height: 1.15;
 }
 
 .info-line {
-    padding: 13px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.23);
-    font-size: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.20);
+    font-size: 15px;
+    line-height: 1.45;
+}
+
+.compact-data {
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.20);
+    font-size: 14px;
     line-height: 1.45;
 }
 
@@ -204,7 +214,14 @@ input::placeholder {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin: 8px 0 16px;
+    margin: 8px 0 14px;
+}
+
+.action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px 0 14px;
 }
 
 .select-box {
@@ -216,6 +233,21 @@ input::placeholder {
     border: none;
     width: 100%;
     outline: none;
+}
+
+.small-btn {
+    padding: 12px;
+    border: none;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.13);
+    color: white;
+    font-weight: 800;
+    font-size: 14px;
+    border: 1px solid rgba(255,255,255,0.22);
+}
+
+.small-btn.active {
+    background: linear-gradient(135deg, #52b5ff, #7257ff);
 }
 
 .drawer {
@@ -242,7 +274,7 @@ input::placeholder {
 
 .drawer-body {
     display: none;
-    padding: 16px;
+    padding: 14px;
 }
 
 .drawer.open .drawer-body {
@@ -268,7 +300,7 @@ input::placeholder {
     box-shadow:
         inset 0 0 35px rgba(60, 80, 160, 0.16),
         0 14px 30px rgba(0, 20, 80, 0.18);
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .chart-lines svg {
@@ -282,8 +314,8 @@ input::placeholder {
     position: absolute;
     transform: translate(-50%, -50%);
     text-align: center;
-    min-width: 42px;
-    max-width: 74px;
+    min-width: 46px;
+    max-width: 86px;
     overflow: hidden;
 }
 
@@ -303,11 +335,17 @@ input::placeholder {
     white-space: nowrap;
 }
 
-.aspect-mark {
-    display: inline-block;
-    margin-left: 2px;
-    color: #8f2cff;
+.chart-aspects {
     font-size: 10px;
+    margin-top: 1px;
+    color: rgba(35, 35, 50, 0.52);
+    font-weight: 800;
+    line-height: 1.05;
+    white-space: nowrap;
+}
+
+.transit-planet {
+    color: #0477ff;
 }
 
 .south-grid {
@@ -340,15 +378,15 @@ input::placeholder {
 
 .planet-table th,
 .planet-table td {
-    padding: 11px 7px;
+    padding: 10px 6px;
     border-bottom: 1px solid rgba(255,255,255,0.12);
     text-align: left;
-    font-size: 13px;
+    font-size: 12.5px;
     vertical-align: top;
 }
 
 .planet-table th {
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 850;
     background: rgba(255,255,255,0.08);
 }
@@ -425,6 +463,36 @@ input::placeholder {
     padding-left: 54px;
     background: rgba(160, 230, 235, 0.78);
     color: #233247;
+}
+
+.chara-row {
+    padding: 11px 12px;
+    margin-bottom: 6px;
+    border-radius: 14px;
+    background: rgba(31, 18, 88, 0.82);
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.chara-row.current {
+    background: #d2ffff;
+    color: #233247;
+    font-weight: 850;
+}
+
+.transit-panel {
+    display: none;
+    padding: 12px;
+    margin-bottom: 14px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.09);
+    border: 1px solid rgba(255,255,255,0.20);
+}
+
+.transit-panel.active {
+    display: block;
 }
 
 .error {
@@ -528,11 +596,11 @@ input::placeholder {
                 <div class="drawer-body" id="dashasSection"></div>
             </div>
 
-            <div class="drawer" id="drawerAspects">
-                <button class="drawer-head" onclick="toggleDrawer('drawerAspects')">
-                    <span>Аспекты Парашары</span><span class="drawer-arrow">›</span>
+            <div class="drawer" id="drawerCharaDashas">
+                <button class="drawer-head" onclick="toggleDrawer('drawerCharaDashas')">
+                    <span>Чара Даша К.Н. Рао</span><span class="drawer-arrow">›</span>
                 </button>
-                <div class="drawer-body" id="aspectsSection"></div>
+                <div class="drawer-body" id="charaDashasSection"></div>
             </div>
 
             <div class="drawer" id="drawerAnalysis">
@@ -552,9 +620,13 @@ input::placeholder {
 let mode = "client";
 let selectedPlace = null;
 let placeTimer = null;
+
 let currentChart = null;
+let transitChart = null;
+
 let chartStyle = "north";
 let currentVarga = "D1";
+let viewMode = "natal";
 
 const VARGA_LABELS = {
     "D1": "D-1 Натальная",
@@ -574,6 +646,23 @@ const VARGA_LABELS = {
     "D30": "D-30 Тримшамша",
     "D60": "D-60 Шаштьямша",
     "D81": "D-81"
+};
+
+const PLANET_SHORT = {
+    "Солнце": "Со",
+    "Луна": "Лу",
+    "Марс": "Ма",
+    "Меркурий": "Ме",
+    "Юпитер": "Юп",
+    "Венера": "Ве",
+    "Сатурн": "Са",
+    "Уран": "Ур",
+    "Нептун": "Не",
+    "Плутон": "Пл",
+    "Раху": "Ра",
+    "Кету": "Ке",
+    "Манди": "Мн",
+    "Гулика": "Гу"
 };
 
 function setMode(m) {
@@ -752,8 +841,10 @@ async function calculate() {
         }
 
         currentChart = data.chart;
+        transitChart = null;
         currentVarga = "D1";
         chartStyle = "north";
+        viewMode = "natal";
         renderResult(currentChart);
 
     } catch {
@@ -793,20 +884,22 @@ function toggleDrawer(id) {
 function renderResult(chart) {
     renderSummary(chart);
     renderChartSection(chart);
-    renderPlanets(chart);
+    renderPlanets();
     renderHouses(chart);
     renderDashas(chart);
-    renderAspects(chart);
+    renderCharaDashas(chart);
     renderAnalysis(chart);
 }
 
 function renderSummary(chart) {
+    const compact = `${chart.input_date} ${chart.input_time} ${chart.utc_offset}, ${chart.lat}, ${chart.lon}`;
+
     document.getElementById("summaryBlock").innerHTML = `
-        <div class="info-line">📍 ${chart.city}</div>
-        <div class="info-line">Дата: ${chart.input_date} | Время: ${chart.input_time}</div>
-        <div class="info-line">Координаты: ${chart.lat}, ${chart.lon}</div>
-        <div class="info-line">Часовой пояс: ${chart.utc_offset}</div>
-        <div class="info-line">Айанамша Лахири: ${chart.ayanamsha}°</div>
+        <div class="compact-data">
+            <b>${chart.city}</b><br>
+            ${compact}<br>
+            Айанамша Лахири: ${chart.ayanamsha}°
+        </div>
     `;
 }
 
@@ -828,10 +921,37 @@ function renderChartSection(chart) {
             </select>
         </div>
 
-        <div id="chartBlock"></div>
+        <div class="action-row">
+            <button class="small-btn active" id="natalBtn" onclick="setViewMode('natal')">Натал</button>
+            <button class="small-btn" id="overlayBtn" onclick="setViewMode('overlay')">Наложение</button>
+        </div>
 
-        <div class="info-line">🌅 Лагна D-1: <b>${chart.lagna.sign_number}</b> (${chart.lagna.sign}) ${chart.lagna.degree}<br>${chart.lagna.nakshatra}, пада ${chart.lagna.pada}</div>
-        <div class="info-line">🌙 Луна D-1: <b>${chart.moon.sign_number}</b> (${chart.moon.sign}) ${chart.moon.degree}<br>${chart.moon.nakshatra}, пада ${chart.moon.pada}</div>
+        <div class="action-row">
+            <button class="small-btn" onclick="toggleTransitPanel('transit')">Транзиты</button>
+            <button class="small-btn" onclick="toggleTransitPanel('rectification')">Ректификация</button>
+        </div>
+
+        <div id="transitPanel" class="transit-panel">
+            <label>Дата транзита</label>
+            <input id="transitDate" type="tel" inputmode="numeric" maxlength="10" placeholder="00.00.0000" oninput="formatDateInput(this)">
+
+            <label>Время транзита</label>
+            <input id="transitTime" type="tel" inputmode="numeric" maxlength="8" placeholder="00:00:00" oninput="formatTimeInput(this)">
+
+            <label>Место транзита</label>
+            <input id="transitCity" type="text" placeholder="Город, страна">
+
+            <button class="main-btn" onclick="calculateTransit()">Рассчитать транзит</button>
+        </div>
+
+        <div id="rectificationPanel" class="transit-panel">
+            <label>Новое время рождения</label>
+            <input id="rectTime" type="tel" inputmode="numeric" maxlength="8" placeholder="00:00:00" oninput="formatTimeInput(this)">
+
+            <button class="main-btn" onclick="calculateRectification()">Пересчитать карту</button>
+        </div>
+
+        <div id="chartBlock"></div>
     `;
 
     renderChartBlock();
@@ -840,35 +960,93 @@ function renderChartSection(chart) {
 function changeChartStyle(value) {
     chartStyle = value;
     renderChartSection(currentChart);
+    renderPlanets();
 }
 
 function changeVarga(value) {
     currentVarga = value;
     renderChartSection(currentChart);
+    renderPlanets();
 }
 
-function getActiveChartView() {
-    if (!currentChart) return [];
+function setViewMode(value) {
+    viewMode = value;
+
+    document.getElementById("natalBtn").classList.remove("active");
+    document.getElementById("overlayBtn").classList.remove("active");
+
+    if (value === "natal") {
+        document.getElementById("natalBtn").classList.add("active");
+    } else {
+        document.getElementById("overlayBtn").classList.add("active");
+    }
+
+    renderChartBlock();
+    renderPlanets();
+}
+
+function toggleTransitPanel(panel) {
+    document.getElementById("transitPanel").classList.remove("active");
+    document.getElementById("rectificationPanel").classList.remove("active");
+
+    if (panel === "transit") {
+        document.getElementById("transitPanel").classList.add("active");
+    } else {
+        document.getElementById("rectificationPanel").classList.add("active");
+    }
+}
+
+function getChartByMode() {
+    if (viewMode === "overlay" && transitChart) {
+        return transitChart;
+    }
+
+    return currentChart;
+}
+
+function getActiveChartObject(chart) {
+    if (!chart) return null;
 
     if (currentVarga === "D1") {
-        return currentChart.chart_view || [];
+        return {
+            chart_view: chart.chart_view || [],
+            planets: chart.planets || {},
+            aspects: chart.aspects || [],
+            houses: chart.houses || [],
+            special_points: chart.special_points || {}
+        };
     }
 
-    if (currentChart.vargas && currentChart.vargas[currentVarga]) {
-        return currentChart.vargas[currentVarga].chart_view || [];
+    if (chart.vargas && chart.vargas[currentVarga]) {
+        return chart.vargas[currentVarga];
     }
 
-    return currentChart.chart_view || [];
+    return {
+        chart_view: chart.chart_view || [],
+        planets: chart.planets || {},
+        aspects: chart.aspects || [],
+        houses: chart.houses || [],
+        special_points: chart.special_points || {}
+    };
 }
 
-function getAspectMap() {
-    const map = {};
-    if (!currentChart || !currentChart.aspects) return map;
+function getNatalActiveObject() {
+    return getActiveChartObject(currentChart);
+}
 
-    currentChart.aspects.forEach(a => {
+function getTransitActiveObject() {
+    if (!transitChart) return null;
+    return getActiveChartObject(transitChart);
+}
+
+function getAspectMap(activeObject) {
+    const map = {};
+    if (!activeObject || !activeObject.aspects) return map;
+
+    activeObject.aspects.forEach(a => {
         a.aspects_houses.forEach(house => {
             if (!map[house]) map[house] = [];
-            map[house].push(a.planet);
+            map[house].push(a.planet_short || PLANET_SHORT[a.planet] || a.planet);
         });
     });
 
@@ -879,34 +1057,61 @@ function renderChartBlock() {
     const block = document.getElementById("chartBlock");
     if (!block || !currentChart) return;
 
-    const chartView = getActiveChartView();
+    const natalObject = getNatalActiveObject();
+    const transitObject = getTransitActiveObject();
 
     if (chartStyle === "south") {
-        renderSouthIndianChart(block, chartView);
+        renderSouthIndianChart(block, natalObject, transitObject);
     } else {
-        renderNorthIndianChart(block, chartView);
+        renderNorthIndianChart(block, natalObject, transitObject);
     }
 }
 
-function renderNorthIndianChart(block, chartView) {
+function renderNorthIndianChart(block, natalObject, transitObject) {
     const positions = [
-        [50, 12], [74, 22], [88, 50], [74, 78],
-        [50, 88], [26, 78], [12, 50], [26, 22],
-        [50, 33], [67, 50], [50, 67], [33, 50]
+        [50, 22],
+        [28, 19],
+        [13, 36],
+        [27, 50],
+        [13, 66],
+        [28, 81],
+        [50, 78],
+        [72, 81],
+        [87, 66],
+        [73, 50],
+        [87, 36],
+        [72, 19]
     ];
 
-    const aspectMap = getAspectMap();
+    const aspectMap = getAspectMap(viewMode === "overlay" && transitObject ? transitObject : natalObject);
     let cells = "";
 
-    chartView.forEach((h, index) => {
+    natalObject.chart_view.forEach((h, index) => {
         const pos = positions[index];
-        const aspects = aspectMap[h.house] ? `<span class="aspect-mark">✦</span>` : "";
-        const planets = (h.planets || []).map(p => `<div class="chart-planets">${p}</div>`).join("");
+
+        const natalPlanets = (h.planets || [])
+            .map(p => `<div class="chart-planets">${p}</div>`)
+            .join("");
+
+        let transitPlanets = "";
+
+        if (viewMode === "overlay" && transitObject) {
+            const transitHouse = transitObject.chart_view.find(x => x.house === h.house);
+            transitPlanets = (transitHouse?.planets || [])
+                .map(p => `<div class="chart-planets transit-planet">T ${p}</div>`)
+                .join("");
+        }
+
+        const aspects = (aspectMap[h.house] || [])
+            .map(p => `<div class="chart-aspects">${p}</div>`)
+            .join("");
 
         cells += `
             <div class="chart-cell" style="left:${pos[0]}%;top:${pos[1]}%;">
-                <div class="sign-num">${h.sign}${aspects}</div>
-                ${planets}
+                <div class="sign-num">${h.sign}</div>
+                ${natalPlanets}
+                ${transitPlanets}
+                ${aspects}
             </div>
         `;
     });
@@ -915,14 +1120,14 @@ function renderNorthIndianChart(block, chartView) {
         <div class="chart-wrap">
             <div class="chart-lines">
                 <svg viewBox="0 0 100 100">
-                    <rect x="1" y="1" width="98" height="98" fill="none" stroke="rgba(37,47,110,.55)" stroke-width="1.5"/>
-                    <line x1="1" y1="1" x2="99" y2="99" stroke="rgba(37,47,110,.55)" stroke-width="1.5"/>
-                    <line x1="99" y1="1" x2="1" y2="99" stroke="rgba(37,47,110,.55)" stroke-width="1.5"/>
-                    <polygon points="50,1 99,50 50,99 1,50" fill="none" stroke="rgba(37,47,110,.55)" stroke-width="1.5"/>
-                    <line x1="1" y1="50" x2="50" y2="1" stroke="rgba(37,47,110,.55)" stroke-width="1"/>
-                    <line x1="50" y1="1" x2="99" y2="50" stroke="rgba(37,47,110,.55)" stroke-width="1"/>
-                    <line x1="99" y1="50" x2="50" y2="99" stroke="rgba(37,47,110,.55)" stroke-width="1"/>
-                    <line x1="50" y1="99" x2="1" y2="50" stroke="rgba(37,47,110,.55)" stroke-width="1"/>
+                    <rect x="1" y="1" width="98" height="98" fill="none" stroke="rgba(37,47,110,.58)" stroke-width="1.6"/>
+                    <line x1="1" y1="1" x2="99" y2="99" stroke="rgba(37,47,110,.58)" stroke-width="1.6"/>
+                    <line x1="99" y1="1" x2="1" y2="99" stroke="rgba(37,47,110,.58)" stroke-width="1.6"/>
+                    <polygon points="50,1 99,50 50,99 1,50" fill="none" stroke="rgba(37,47,110,.58)" stroke-width="1.6"/>
+                    <line x1="1" y1="50" x2="50" y2="1" stroke="rgba(37,47,110,.58)" stroke-width="1"/>
+                    <line x1="50" y1="1" x2="99" y2="50" stroke="rgba(37,47,110,.58)" stroke-width="1"/>
+                    <line x1="99" y1="50" x2="50" y2="99" stroke="rgba(37,47,110,.58)" stroke-width="1"/>
+                    <line x1="50" y1="99" x2="1" y2="50" stroke="rgba(37,47,110,.58)" stroke-width="1"/>
                 </svg>
             </div>
             ${cells}
@@ -930,11 +1135,20 @@ function renderNorthIndianChart(block, chartView) {
     `;
 }
 
-function renderSouthIndianChart(block, chartView) {
+function renderSouthIndianChart(block, natalObject, transitObject) {
     const bySign = {};
-    chartView.forEach(h => {
+    const transitBySign = {};
+    const aspectMap = getAspectMap(viewMode === "overlay" && transitObject ? transitObject : natalObject);
+
+    natalObject.chart_view.forEach(h => {
         bySign[h.sign] = h;
     });
+
+    if (viewMode === "overlay" && transitObject) {
+        transitObject.chart_view.forEach(h => {
+            transitBySign[h.sign] = h;
+        });
+    }
 
     const grid = [
         12, 1, 2, 3,
@@ -952,12 +1166,26 @@ function renderSouthIndianChart(block, chartView) {
         }
 
         const h = bySign[signNumber] || {house: "", planets: []};
-        const planets = (h.planets || []).map(p => `<div class="chart-planets">${p}</div>`).join("");
+        const t = transitBySign[signNumber] || {planets: []};
+
+        const natalPlanets = (h.planets || [])
+            .map(p => `<div class="chart-planets">${p}</div>`)
+            .join("");
+
+        const transitPlanets = (t.planets || [])
+            .map(p => `<div class="chart-planets transit-planet">T ${p}</div>`)
+            .join("");
+
+        const aspects = (aspectMap[h.house] || [])
+            .map(p => `<div class="chart-aspects">${p}</div>`)
+            .join("");
 
         html += `
             <div class="south-cell">
                 <div class="sign-num">${signNumber}</div>
-                ${planets}
+                ${natalPlanets}
+                ${transitPlanets}
+                ${aspects}
             </div>
         `;
     });
@@ -966,26 +1194,43 @@ function renderSouthIndianChart(block, chartView) {
     block.innerHTML = html;
 }
 
-function renderPlanets(chart) {
+function renderPlanets() {
+    const chartForTable = getChartByMode();
+    const activeObject = getActiveChartObject(chartForTable);
+
+    if (!activeObject) return;
+
     let html = `
         <table class="planet-table">
             <tr>
-                <th>Планета</th>
+                <th>Объект</th>
                 <th>Знак</th>
                 <th>Градусы</th>
                 <th>Накшатра</th>
             </tr>
     `;
 
-    Object.entries(chart.planets).forEach(([name, p]) => {
+    if (currentVarga === "D1" && chartForTable.lagna) {
+        html += `
+            <tr>
+                <td><b>Лагна</b></td>
+                <td>${chartForTable.lagna.sign_number}<br>${chartForTable.lagna.sign}<br>дом 1</td>
+                <td>${chartForTable.lagna.degree}</td>
+                <td>${chartForTable.lagna.nakshatra}<br>пада ${chartForTable.lagna.pada}</td>
+            </tr>
+        `;
+    }
+
+    Object.entries(activeObject.planets || {}).forEach(([name, p]) => {
         const karaka = p.karaka ? `<b>${p.karaka}</b> ` : "";
+        const nak = p.nakshatra ? `${p.nakshatra}<br>пада ${p.pada}` : "—";
 
         html += `
             <tr>
                 <td>${karaka}${name}</td>
                 <td>${p.sign_number}<br>${p.sign}<br>дом ${p.house}</td>
-                <td>${p.degree}</td>
-                <td>${p.nakshatra}<br>пада ${p.pada}</td>
+                <td>${p.degree || "—"}</td>
+                <td>${nak}</td>
             </tr>
         `;
     });
@@ -1069,23 +1314,23 @@ function containsCurrent(nodes) {
     return nodes.some(n => n.is_current || containsCurrent(n.children || []));
 }
 
-function renderAspects(chart) {
-    let html = `<div class="house-list">`;
+function renderCharaDashas(chart) {
+    let html = `<div class="client-box"><b>Чара Даша К.Н. Рао</b></div>`;
 
-    if (!chart.aspects || chart.aspects.length === 0) {
-        html += `<div class="house-item">Аспекты пока не рассчитаны.</div>`;
+    if (!chart.chara_dasha || chart.chara_dasha.length === 0) {
+        html += `<div class="house-item">Периоды пока не рассчитаны.</div>`;
     } else {
-        chart.aspects.forEach(a => {
+        chart.chara_dasha.forEach(item => {
             html += `
-                <div class="house-item">
-                    ${a.planet} из ${a.from_house} дома аспектирует дома: ${a.aspects_houses.join(", ")}
+                <div class="chara-row ${item.is_current ? "current" : ""}">
+                    <div>${item.sign_number}</div>
+                    <div>${item.sign}<br>${item.start} — ${item.end}</div>
                 </div>
             `;
         });
     }
 
-    html += `</div>`;
-    document.getElementById("aspectsSection").innerHTML = html;
+    document.getElementById("charaDashasSection").innerHTML = html;
 }
 
 function renderAnalysis(chart) {
@@ -1097,10 +1342,95 @@ function renderAnalysis(chart) {
             — хозяева домов в домах<br>
             — йоги<br>
             — аспекты Парашары<br>
-            — периоды Вимшоттари<br>
+            — периоды Вимшоттари и Чара Даша<br>
             — рекомендации по усилению сфер жизни
         </div>
     `;
+}
+
+async function calculateTransit() {
+    let date = document.getElementById("transitDate").value;
+    let time = document.getElementById("transitTime").value;
+    let city = document.getElementById("transitCity").value.trim();
+
+    date = normalizeDate(date);
+    time = normalizeTime(time);
+
+    document.getElementById("transitDate").value = date;
+    document.getElementById("transitTime").value = time;
+
+    if (!date || !time || !city) {
+        alert("Заполните дату, время и место транзита.");
+        return;
+    }
+
+    try {
+        const response = await fetch("/calculate_transit", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                date: date,
+                time: time,
+                city: city,
+                display_name: city
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            alert(data.error || "Ошибка расчёта транзита.");
+            return;
+        }
+
+        transitChart = data.transit;
+        viewMode = "overlay";
+        renderChartSection(currentChart);
+        renderPlanets();
+
+    } catch {
+        alert("Ошибка соединения с сервером.");
+    }
+}
+
+async function calculateRectification() {
+    let rectTime = document.getElementById("rectTime").value;
+    rectTime = normalizeTime(rectTime);
+    document.getElementById("rectTime").value = rectTime;
+
+    if (!rectTime) {
+        alert("Введите новое время рождения.");
+        return;
+    }
+
+    try {
+        const response = await fetch("/rectification", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                date: currentChart.input_date,
+                time: rectTime,
+                city: currentChart.city,
+                display_name: currentChart.city
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            alert(data.error || "Ошибка ректификации.");
+            return;
+        }
+
+        currentChart = data.chart;
+        transitChart = null;
+        viewMode = "natal";
+        currentVarga = "D1";
+        renderResult(currentChart);
+
+    } catch {
+        alert("Ошибка соединения с сервером.");
+    }
 }
 </script>
 

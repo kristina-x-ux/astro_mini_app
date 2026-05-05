@@ -108,14 +108,14 @@ input {
     margin-bottom: 12px;
     border-radius: 20px;
     border: 1px solid rgba(255,255,255,0.65);
-    background: rgba(255,255,255,0.68);
+    background: rgba(255,255,255,0.70);
     color: #1b2d52;
     font-size: 18px;
     outline: none;
 }
 
 input::placeholder {
-    color: rgba(27,45,82,0.65);
+    color: rgba(27,45,82,0.55);
 }
 
 .main-btn {
@@ -152,7 +152,7 @@ input::placeholder {
     border-radius: 18px;
     overflow: hidden;
     border: 1px solid rgba(255,255,255,0.35);
-    background: rgba(5, 22, 65, 0.92);
+    background: rgba(5, 22, 65, 0.94);
 }
 
 .suggestion-item {
@@ -178,6 +178,7 @@ input::placeholder {
 
 .back-btn {
     width: 46px;
+    min-width: 46px;
     height: 46px;
     border: none;
     border-radius: 16px;
@@ -192,82 +193,82 @@ input::placeholder {
     line-height: 1.15;
 }
 
-.tabs {
-    display: flex;
-    gap: 8px;
-    margin: 14px 0 18px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-}
-
-.tab {
-    padding: 10px 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.35);
-    background: rgba(255,255,255,0.08);
-    color: white;
-    font-weight: 750;
-    white-space: nowrap;
-}
-
-.tab.active {
-    background: linear-gradient(135deg, #52b5ff, #7257ff);
-}
-
-.section {
-    display: none;
-}
-
-.section.active {
-    display: block;
+.info-line {
+    padding: 13px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.23);
+    font-size: 16px;
+    line-height: 1.45;
 }
 
 .settings-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin: 10px 0 16px;
+    margin: 8px 0 16px;
 }
 
 .select-box {
-    background: white;
+    background: rgba(255,255,255,0.94);
     color: #111;
     border-radius: 18px;
     padding: 12px;
     font-size: 15px;
     border: none;
     width: 100%;
+    outline: none;
+}
+
+.drawer {
+    margin-bottom: 12px;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.22);
+    background: rgba(255,255,255,0.06);
+}
+
+.drawer-head {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    background: rgba(24, 16, 95, 0.62);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 17px;
+    font-weight: 850;
+    text-align: left;
+}
+
+.drawer-body {
+    display: none;
+    padding: 16px;
+}
+
+.drawer.open .drawer-body {
+    display: block;
+}
+
+.drawer-arrow {
+    transition: transform 0.2s ease;
+}
+
+.drawer.open .drawer-arrow {
+    transform: rotate(90deg);
 }
 
 .chart-wrap {
     width: 100%;
     aspect-ratio: 1 / 1;
-    background: #eeefff;
+    background: #eef2ff;
     border-radius: 22px;
     overflow: hidden;
     position: relative;
-    color: #2c2c5f;
-    box-shadow: inset 0 0 35px rgba(60, 80, 160, 0.16);
-}
-
-.chart-cell {
-    position: absolute;
-    font-weight: 750;
-    text-align: center;
-    font-size: 13px;
-    line-height: 1.25;
-}
-
-.chart-house-num {
-    font-size: 14px;
-    opacity: 0.65;
-    font-weight: 850;
-}
-
-.chart-planets {
-    font-size: 12px;
-    margin-top: 3px;
-    color: #303060;
+    color: #202852;
+    box-shadow:
+        inset 0 0 35px rgba(60, 80, 160, 0.16),
+        0 14px 30px rgba(0, 20, 80, 0.18);
+    margin-bottom: 16px;
 }
 
 .chart-lines svg {
@@ -277,11 +278,55 @@ input::placeholder {
     height: 100%;
 }
 
-.info-line {
-    padding: 13px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.23);
-    font-size: 16px;
-    line-height: 1.45;
+.chart-cell {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    min-width: 42px;
+    max-width: 74px;
+    overflow: hidden;
+}
+
+.sign-num {
+    font-size: 14px;
+    font-weight: 950;
+    color: #24306b;
+    line-height: 1;
+}
+
+.chart-planets {
+    font-size: 10.5px;
+    margin-top: 2px;
+    color: #202852;
+    font-weight: 800;
+    line-height: 1.12;
+    white-space: nowrap;
+}
+
+.aspect-mark {
+    display: inline-block;
+    margin-left: 2px;
+    color: #8f2cff;
+    font-size: 10px;
+}
+
+.south-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(38,48,106,0.50);
+}
+
+.south-cell {
+    border: 1px solid rgba(38,48,106,0.40);
+    padding: 5px;
+    overflow: hidden;
+}
+
+.south-empty {
+    background: rgba(255,255,255,0.36);
 }
 
 .planet-table {
@@ -295,14 +340,15 @@ input::placeholder {
 
 .planet-table th,
 .planet-table td {
-    padding: 12px 8px;
+    padding: 11px 7px;
     border-bottom: 1px solid rgba(255,255,255,0.12);
     text-align: left;
-    font-size: 14px;
+    font-size: 13px;
+    vertical-align: top;
 }
 
 .planet-table th {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 850;
     background: rgba(255,255,255,0.08);
 }
@@ -322,11 +368,11 @@ input::placeholder {
     border-radius: 16px;
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.18);
+    line-height: 1.45;
 }
 
 .client-box {
     padding: 16px;
-    margin-top: 12px;
     border-radius: 20px;
     background: rgba(255,255,255,0.10);
     border: 1px solid rgba(255,255,255,0.24);
@@ -347,7 +393,7 @@ input::placeholder {
     gap: 8px;
     align-items: center;
     background: rgba(31, 18, 88, 0.82);
-    font-size: 14px;
+    font-size: 13px;
     text-align: left;
 }
 
@@ -372,12 +418,12 @@ input::placeholder {
 
 .level-3 .dasha-row {
     padding-left: 38px;
-    background: rgba(120, 105, 175, 0.7);
+    background: rgba(120, 105, 175, 0.72);
 }
 
 .level-4 .dasha-row {
     padding-left: 54px;
-    background: rgba(160, 230, 235, 0.75);
+    background: rgba(160, 230, 235, 0.78);
     color: #233247;
 }
 
@@ -416,7 +462,6 @@ input::placeholder {
 <div class="page">
 
     <div id="inputScreen" class="screen active">
-
         <div class="header">
             <h1>AstroEngine</h1>
             <div class="subtitle">Джйотиш-анализ личности и натальной карты</div>
@@ -431,49 +476,74 @@ input::placeholder {
             </div>
 
             <label>Дата рождения</label>
-            <input id="date" type="tel" inputmode="numeric" maxlength="10" placeholder="16.05.1987" oninput="formatDateInput(this)">
+            <input id="date" type="tel" inputmode="numeric" maxlength="10" placeholder="00.00.0000" oninput="formatDateInput(this)">
 
             <label>Время рождения</label>
-            <input id="time" type="tel" inputmode="numeric" maxlength="8" placeholder="12:50:00" oninput="formatTimeInput(this)">
+            <input id="time" type="tel" inputmode="numeric" maxlength="8" placeholder="00:00:00" oninput="formatTimeInput(this)">
             <div class="time-help">Введите время цифрами, например 125000 → 12:50:00</div>
 
             <label>Место рождения</label>
-            <input id="city" type="text" placeholder="Киев, Украина" autocomplete="off" oninput="handlePlaceInput()">
+            <input id="city" type="text" placeholder="Город, страна" autocomplete="off" oninput="handlePlaceInput()">
 
             <div class="suggestions" id="suggestions"></div>
 
             <button class="main-btn" onclick="calculate()">Запустить анализ</button>
         </div>
-
     </div>
 
     <div id="resultScreen" class="screen">
-
         <div class="top-bar">
             <button class="back-btn" onclick="goBack()">‹</button>
             <div class="result-heading" id="resultHeading">Персональный разбор</div>
         </div>
 
-        <div class="tabs">
-            <button class="tab active" onclick="openTab(event, 'summary')">Карта</button>
-            <button class="tab" onclick="openTab(event, 'planets')">Планеты</button>
-            <button class="tab" onclick="openTab(event, 'houses')">Дома</button>
-            <button class="tab" onclick="openTab(event, 'dashas')">Периоды</button>
-            <button class="tab" onclick="openTab(event, 'aspects')">Аспекты</button>
-            <button class="tab" onclick="openTab(event, 'analysis')">Разбор</button>
-        </div>
-
         <div class="card">
-            <div id="summary" class="section active"></div>
-            <div id="planets" class="section"></div>
-            <div id="houses" class="section"></div>
-            <div id="dashas" class="section"></div>
-            <div id="aspects" class="section"></div>
-            <div id="analysis" class="section"></div>
+            <div id="summaryBlock"></div>
+
+            <div class="drawer open" id="drawerChart">
+                <button class="drawer-head" onclick="toggleDrawer('drawerChart')">
+                    <span>Карта</span><span class="drawer-arrow">›</span>
+                </button>
+                <div class="drawer-body" id="chartSection"></div>
+            </div>
+
+            <div class="drawer" id="drawerPlanets">
+                <button class="drawer-head" onclick="toggleDrawer('drawerPlanets')">
+                    <span>Планеты и накшатры</span><span class="drawer-arrow">›</span>
+                </button>
+                <div class="drawer-body" id="planetsSection"></div>
+            </div>
+
+            <div class="drawer" id="drawerHouses">
+                <button class="drawer-head" onclick="toggleDrawer('drawerHouses')">
+                    <span>Дома</span><span class="drawer-arrow">›</span>
+                </button>
+                <div class="drawer-body" id="housesSection"></div>
+            </div>
+
+            <div class="drawer" id="drawerDashas">
+                <button class="drawer-head" onclick="toggleDrawer('drawerDashas')">
+                    <span>Периоды Вимшоттари</span><span class="drawer-arrow">›</span>
+                </button>
+                <div class="drawer-body" id="dashasSection"></div>
+            </div>
+
+            <div class="drawer" id="drawerAspects">
+                <button class="drawer-head" onclick="toggleDrawer('drawerAspects')">
+                    <span>Аспекты Парашары</span><span class="drawer-arrow">›</span>
+                </button>
+                <div class="drawer-body" id="aspectsSection"></div>
+            </div>
+
+            <div class="drawer" id="drawerAnalysis">
+                <button class="drawer-head" onclick="toggleDrawer('drawerAnalysis')">
+                    <span>Разбор</span><span class="drawer-arrow">›</span>
+                </button>
+                <div class="drawer-body" id="analysisSection"></div>
+            </div>
         </div>
 
         <button class="secondary-btn" onclick="goBack()">Изменить данные</button>
-
     </div>
 
 </div>
@@ -484,6 +554,27 @@ let selectedPlace = null;
 let placeTimer = null;
 let currentChart = null;
 let chartStyle = "north";
+let currentVarga = "D1";
+
+const VARGA_LABELS = {
+    "D1": "D-1 Натальная",
+    "Moon": "Лунная",
+    "D2": "D-2 Хора",
+    "D3": "D-3 Дреккана",
+    "D5": "D-5 Панчамша",
+    "D6": "D-6 Шаштамша",
+    "D7": "D-7 Саптамша",
+    "D8": "D-8 Аштамша",
+    "D9": "D-9 Навамша",
+    "D10": "D-10 Дашамша",
+    "D11": "D-11 Рудрамша",
+    "D12": "D-12 Двадашамша",
+    "D16": "D-16 Шодашамша",
+    "D24": "D-24 Чатурвимшамша",
+    "D30": "D-30 Тримшамша",
+    "D60": "D-60 Шаштьямша",
+    "D81": "D-81"
+};
 
 function setMode(m) {
     mode = m;
@@ -499,10 +590,7 @@ function setMode(m) {
 
 function formatDateInput(input) {
     let value = input.value.replace(/\D/g, "");
-
-    if (value.length > 8) {
-        value = value.slice(0, 8);
-    }
+    if (value.length > 8) value = value.slice(0, 8);
 
     if (value.length >= 5) {
         value = value.slice(0, 2) + "." + value.slice(2, 4) + "." + value.slice(4);
@@ -515,10 +603,7 @@ function formatDateInput(input) {
 
 function formatTimeInput(input) {
     let value = input.value.replace(/\D/g, "");
-
-    if (value.length > 6) {
-        value = value.slice(0, 6);
-    }
+    if (value.length > 6) value = value.slice(0, 6);
 
     if (value.length >= 5) {
         value = value.slice(0, 2) + ":" + value.slice(2, 4) + ":" + value.slice(4);
@@ -531,25 +616,14 @@ function formatTimeInput(input) {
 
 function normalizeDate(value) {
     let digits = value.replace(/\D/g, "");
-
-    if (digits.length !== 8) {
-        return "";
-    }
-
+    if (digits.length !== 8) return "";
     return digits.slice(0, 2) + "." + digits.slice(2, 4) + "." + digits.slice(4, 8);
 }
 
 function normalizeTime(value) {
     let digits = value.replace(/\D/g, "");
-
-    if (digits.length === 4) {
-        digits = digits + "00";
-    }
-
-    if (digits.length !== 6) {
-        return "";
-    }
-
+    if (digits.length === 4) digits += "00";
+    if (digits.length !== 6) return "";
     return digits.slice(0, 2) + ":" + digits.slice(2, 4) + ":" + digits.slice(4, 6);
 }
 
@@ -558,9 +632,7 @@ function isValidDate(value) {
 }
 
 function isValidTime(value) {
-    if (!/^\d{2}:\d{2}:\d{2}$/.test(value)) {
-        return false;
-    }
+    if (!/^\d{2}:\d{2}:\d{2}$/.test(value)) return false;
 
     const parts = value.split(":");
     const h = Number(parts[0]);
@@ -640,12 +712,12 @@ async function calculate() {
     }
 
     if (!isValidDate(date)) {
-        alert("Введите дату в формате 16.05.1987.");
+        alert("Введите дату в формате 00.00.0000.");
         return;
     }
 
     if (!isValidTime(time)) {
-        alert("Введите время в формате 12:50:00.");
+        alert("Введите время в формате 00:00:00.");
         return;
     }
 
@@ -680,6 +752,8 @@ async function calculate() {
         }
 
         currentChart = data.chart;
+        currentVarga = "D1";
+        chartStyle = "north";
         renderResult(currentChart);
 
     } catch {
@@ -691,7 +765,11 @@ function showResultLoading() {
     document.getElementById("inputScreen").classList.remove("active");
     document.getElementById("resultScreen").classList.add("active");
 
-    document.getElementById("summary").innerHTML = `
+    document.getElementById("resultHeading").innerText =
+        mode === "client" ? "Персональный разбор" : "Технический расчёт";
+
+    document.getElementById("summaryBlock").innerHTML = "";
+    document.getElementById("chartSection").innerHTML = `
         <div class="loading-box">
             <div class="loader"></div>
             Выполняю расчёт карты...
@@ -700,7 +778,7 @@ function showResultLoading() {
 }
 
 function showError(message) {
-    document.getElementById("summary").innerHTML = `<div class="error">${message}</div>`;
+    document.getElementById("chartSection").innerHTML = `<div class="error">${message}</div>`;
 }
 
 function goBack() {
@@ -708,16 +786,13 @@ function goBack() {
     document.getElementById("inputScreen").classList.add("active");
 }
 
-function openTab(event, id) {
-    document.querySelectorAll(".section").forEach(el => el.classList.remove("active"));
-    document.querySelectorAll(".tab").forEach(el => el.classList.remove("active"));
-
-    document.getElementById(id).classList.add("active");
-    event.target.classList.add("active");
+function toggleDrawer(id) {
+    document.getElementById(id).classList.toggle("open");
 }
 
 function renderResult(chart) {
     renderSummary(chart);
+    renderChartSection(chart);
     renderPlanets(chart);
     renderHouses(chart);
     renderDashas(chart);
@@ -725,72 +800,113 @@ function renderResult(chart) {
     renderAnalysis(chart);
 }
 
-function changeChartStyle(value) {
-    chartStyle = value;
-    renderChartBlock();
-}
-
 function renderSummary(chart) {
-    document.getElementById("summary").innerHTML = `
-        <div class="settings-row">
-            <select class="select-box" onchange="changeChartStyle(this.value)">
-                <option value="north">Северо-индийская</option>
-                <option value="table">Табличная</option>
-            </select>
-
-            <select class="select-box">
-                <option>D-1 Натальная</option>
-                <option disabled>D-9 Навамша позже</option>
-                <option disabled>D-10 Дашамша позже</option>
-            </select>
-        </div>
-
-        <div id="chartBlock"></div>
-
+    document.getElementById("summaryBlock").innerHTML = `
         <div class="info-line">📍 ${chart.city}</div>
         <div class="info-line">Дата: ${chart.input_date} | Время: ${chart.input_time}</div>
         <div class="info-line">Координаты: ${chart.lat}, ${chart.lon}</div>
         <div class="info-line">Часовой пояс: ${chart.utc_offset}</div>
         <div class="info-line">Айанамша Лахири: ${chart.ayanamsha}°</div>
-        <div class="info-line">🌅 Лагна: <b>${chart.lagna.sign} ${chart.lagna.degree}</b><br>${chart.lagna.nakshatra}, пада ${chart.lagna.pada}</div>
-        <div class="info-line">🌙 Луна: <b>${chart.moon.sign} ${chart.moon.degree}</b><br>${chart.moon.nakshatra}, пада ${chart.moon.pada}</div>
+    `;
+}
+
+function renderChartSection(chart) {
+    const vargaOptions = Object.keys(VARGA_LABELS).map(key => {
+        const selected = key === currentVarga ? "selected" : "";
+        return `<option value="${key}" ${selected}>${VARGA_LABELS[key]}</option>`;
+    }).join("");
+
+    document.getElementById("chartSection").innerHTML = `
+        <div class="settings-row">
+            <select class="select-box" onchange="changeChartStyle(this.value)">
+                <option value="north" ${chartStyle === "north" ? "selected" : ""}>Северо-индийская</option>
+                <option value="south" ${chartStyle === "south" ? "selected" : ""}>Южно-индийская</option>
+            </select>
+
+            <select class="select-box" onchange="changeVarga(this.value)">
+                ${vargaOptions}
+            </select>
+        </div>
+
+        <div id="chartBlock"></div>
+
+        <div class="info-line">🌅 Лагна D-1: <b>${chart.lagna.sign_number}</b> (${chart.lagna.sign}) ${chart.lagna.degree}<br>${chart.lagna.nakshatra}, пада ${chart.lagna.pada}</div>
+        <div class="info-line">🌙 Луна D-1: <b>${chart.moon.sign_number}</b> (${chart.moon.sign}) ${chart.moon.degree}<br>${chart.moon.nakshatra}, пада ${chart.moon.pada}</div>
     `;
 
     renderChartBlock();
 }
 
-function renderChartBlock() {
-    if (!currentChart) return;
+function changeChartStyle(value) {
+    chartStyle = value;
+    renderChartSection(currentChart);
+}
 
-    const block = document.getElementById("chartBlock");
+function changeVarga(value) {
+    currentVarga = value;
+    renderChartSection(currentChart);
+}
 
-    if (chartStyle === "table") {
-        let html = `<div class="house-list">`;
+function getActiveChartView() {
+    if (!currentChart) return [];
 
-        currentChart.chart_view.forEach(h => {
-            html += `<div class="house-item">${h.house} дом — ${h.sign_full}<br>${h.planets.join(", ") || "—"}</div>`;
-        });
-
-        html += `</div>`;
-        block.innerHTML = html;
-        return;
+    if (currentVarga === "D1") {
+        return currentChart.chart_view || [];
     }
 
+    if (currentChart.vargas && currentChart.vargas[currentVarga]) {
+        return currentChart.vargas[currentVarga].chart_view || [];
+    }
+
+    return currentChart.chart_view || [];
+}
+
+function getAspectMap() {
+    const map = {};
+    if (!currentChart || !currentChart.aspects) return map;
+
+    currentChart.aspects.forEach(a => {
+        a.aspects_houses.forEach(house => {
+            if (!map[house]) map[house] = [];
+            map[house].push(a.planet);
+        });
+    });
+
+    return map;
+}
+
+function renderChartBlock() {
+    const block = document.getElementById("chartBlock");
+    if (!block || !currentChart) return;
+
+    const chartView = getActiveChartView();
+
+    if (chartStyle === "south") {
+        renderSouthIndianChart(block, chartView);
+    } else {
+        renderNorthIndianChart(block, chartView);
+    }
+}
+
+function renderNorthIndianChart(block, chartView) {
     const positions = [
-        [42, 8], [67, 18], [82, 42], [67, 68],
-        [42, 82], [18, 68], [6, 42], [18, 18],
-        [42, 30], [58, 42], [42, 58], [28, 42]
+        [50, 12], [74, 22], [88, 50], [74, 78],
+        [50, 88], [26, 78], [12, 50], [26, 22],
+        [50, 33], [67, 50], [50, 67], [33, 50]
     ];
 
+    const aspectMap = getAspectMap();
     let cells = "";
 
-    currentChart.chart_view.forEach((h, index) => {
+    chartView.forEach((h, index) => {
         const pos = positions[index];
+        const aspects = aspectMap[h.house] ? `<span class="aspect-mark">✦</span>` : "";
+        const planets = (h.planets || []).map(p => `<div class="chart-planets">${p}</div>`).join("");
 
         cells += `
-            <div class="chart-cell" style="left:${pos[0]}%;top:${pos[1]}%;transform:translate(-50%,-50%);">
-                <div class="chart-house-num">${h.house} / ${h.sign}</div>
-                <div class="chart-planets">${h.planets.join("<br>")}</div>
+            <div class="chart-cell" style="left:${pos[0]}%;top:${pos[1]}%;">
+                <div class="sign-num">${h.sign}${aspects}</div>
+                ${planets}
             </div>
         `;
     });
@@ -799,19 +915,55 @@ function renderChartBlock() {
         <div class="chart-wrap">
             <div class="chart-lines">
                 <svg viewBox="0 0 100 100">
-                    <rect x="0" y="0" width="100" height="100" fill="none" stroke="rgba(60,60,110,.22)" stroke-width="1"/>
-                    <line x1="0" y1="0" x2="100" y2="100" stroke="rgba(60,60,110,.22)" />
-                    <line x1="100" y1="0" x2="0" y2="100" stroke="rgba(60,60,110,.22)" />
-                    <polygon points="50,0 100,50 50,100 0,50" fill="none" stroke="rgba(60,60,110,.22)" />
-                    <line x1="0" y1="50" x2="50" y2="0" stroke="rgba(60,60,110,.22)" />
-                    <line x1="50" y1="0" x2="100" y2="50" stroke="rgba(60,60,110,.22)" />
-                    <line x1="100" y1="50" x2="50" y2="100" stroke="rgba(60,60,110,.22)" />
-                    <line x1="50" y1="100" x2="0" y2="50" stroke="rgba(60,60,110,.22)" />
+                    <rect x="1" y="1" width="98" height="98" fill="none" stroke="rgba(37,47,110,.55)" stroke-width="1.5"/>
+                    <line x1="1" y1="1" x2="99" y2="99" stroke="rgba(37,47,110,.55)" stroke-width="1.5"/>
+                    <line x1="99" y1="1" x2="1" y2="99" stroke="rgba(37,47,110,.55)" stroke-width="1.5"/>
+                    <polygon points="50,1 99,50 50,99 1,50" fill="none" stroke="rgba(37,47,110,.55)" stroke-width="1.5"/>
+                    <line x1="1" y1="50" x2="50" y2="1" stroke="rgba(37,47,110,.55)" stroke-width="1"/>
+                    <line x1="50" y1="1" x2="99" y2="50" stroke="rgba(37,47,110,.55)" stroke-width="1"/>
+                    <line x1="99" y1="50" x2="50" y2="99" stroke="rgba(37,47,110,.55)" stroke-width="1"/>
+                    <line x1="50" y1="99" x2="1" y2="50" stroke="rgba(37,47,110,.55)" stroke-width="1"/>
                 </svg>
             </div>
             ${cells}
         </div>
     `;
+}
+
+function renderSouthIndianChart(block, chartView) {
+    const bySign = {};
+    chartView.forEach(h => {
+        bySign[h.sign] = h;
+    });
+
+    const grid = [
+        12, 1, 2, 3,
+        11, 0, 0, 4,
+        10, 0, 0, 5,
+        9, 8, 7, 6
+    ];
+
+    let html = `<div class="chart-wrap"><div class="south-grid">`;
+
+    grid.forEach(signNumber => {
+        if (signNumber === 0) {
+            html += `<div class="south-cell south-empty"></div>`;
+            return;
+        }
+
+        const h = bySign[signNumber] || {house: "", planets: []};
+        const planets = (h.planets || []).map(p => `<div class="chart-planets">${p}</div>`).join("");
+
+        html += `
+            <div class="south-cell">
+                <div class="sign-num">${signNumber}</div>
+                ${planets}
+            </div>
+        `;
+    });
+
+    html += `</div></div>`;
+    block.innerHTML = html;
 }
 
 function renderPlanets(chart) {
@@ -831,7 +983,7 @@ function renderPlanets(chart) {
         html += `
             <tr>
                 <td>${karaka}${name}</td>
-                <td>${p.sign}<br>дом ${p.house}</td>
+                <td>${p.sign_number}<br>${p.sign}<br>дом ${p.house}</td>
                 <td>${p.degree}</td>
                 <td>${p.nakshatra}<br>пада ${p.pada}</td>
             </tr>
@@ -839,22 +991,22 @@ function renderPlanets(chart) {
     });
 
     html += "</table>";
-    document.getElementById("planets").innerHTML = html;
+    document.getElementById("planetsSection").innerHTML = html;
 }
 
 function renderHouses(chart) {
     let html = `<div class="house-list">`;
 
     chart.houses.forEach(h => {
-        html += `<div class="house-item">${h.house} дом — ${h.sign}</div>`;
+        html += `<div class="house-item">${h.house} дом — знак ${h.sign_number} (${h.sign})</div>`;
     });
 
     html += `</div>`;
-    document.getElementById("houses").innerHTML = html;
+    document.getElementById("housesSection").innerHTML = html;
 }
 
 function renderDashas(chart) {
-    document.getElementById("dashas").innerHTML = `
+    document.getElementById("dashasSection").innerHTML = `
         <div class="client-box">
             <b>Периоды Вимшоттари</b><br>
             Даша рождения: ${chart.dashas.birth_lord}
@@ -862,7 +1014,7 @@ function renderDashas(chart) {
         <div id="dashaTree"></div>
     `;
 
-    renderDashaNodes(chart.dashas.tree, document.getElementById("dashaTree"));
+    renderDashaNodes(chart.dashas.tree || [], document.getElementById("dashaTree"));
 }
 
 function renderDashaNodes(nodes, container) {
@@ -926,18 +1078,18 @@ function renderAspects(chart) {
         chart.aspects.forEach(a => {
             html += `
                 <div class="house-item">
-                    ${a.planet} из ${a.from_house} дома аспектирует: ${a.aspects_houses.join(", ")}
+                    ${a.planet} из ${a.from_house} дома аспектирует дома: ${a.aspects_houses.join(", ")}
                 </div>
             `;
         });
     }
 
     html += `</div>`;
-    document.getElementById("aspects").innerHTML = html;
+    document.getElementById("aspectsSection").innerHTML = html;
 }
 
 function renderAnalysis(chart) {
-    document.getElementById("analysis").innerHTML = `
+    document.getElementById("analysisSection").innerHTML = `
         <div class="client-box">
             Здесь будет ИИ-разбор по реальным данным карты:
             <br><br>

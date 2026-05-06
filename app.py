@@ -456,9 +456,9 @@ if __name__ == "__main__":
         Thread(target=run_bot, daemon=True).start()
 
     app.run(
-        host="0.0.0.0",
-        port=PORT,
-        debug=False,
-        use_reloader=False,
-        threaded=True
+    host="0.0.0.0",
+    port=80,
+    debug=False,
+    use_reloader=False,
+    threaded=True
     )

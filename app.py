@@ -21,7 +21,6 @@ app = Flask(__name__)
 
 TOKEN = os.getenv("BOT_TOKEN", "").strip()
 WEBAPP_URL = os.getenv("WEBAPP_URL", "").strip()
-PORT = int(os.getenv("PORT", 80))
 
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML") if TOKEN else None
 executor = ThreadPoolExecutor(max_workers=4)
@@ -44,7 +43,7 @@ def calculate_with_timeout(timeout_seconds=60, **kwargs):
     except TimeoutError:
         raise TimeoutError(
             "Расчёт занял слишком много времени. "
-            "Вероятно, завис геокодинг, расчёт восхода/заката или Манди/Гулика."
+            "Проверьте город, координаты или расчётные функции."
         )
 
 
@@ -69,14 +68,22 @@ def search_place_route():
     query = request.args.get("q", "").strip()
 
     if not query:
-        return jsonify({"success": True, "places": []})
+        return jsonify({
+            "success": True,
+            "places": []
+        })
 
     try:
         places = search_places(query)
-        return jsonify({"success": True, "places": places})
+
+        return jsonify({
+            "success": True,
+            "places": places
+        })
 
     except Exception as e:
         print(f"search_place error: {e}", flush=True)
+
         return jsonify({
             "success": False,
             "places": [],
@@ -230,10 +237,16 @@ def save_chart_route():
     telegram_user_id = data.get("telegram_user_id")
 
     if not name:
-        return jsonify({"success": False, "error": "Введите имя карты"})
+        return jsonify({
+            "success": False,
+            "error": "Введите имя карты"
+        })
 
     if not birth_date or not birth_time or not place_name:
-        return jsonify({"success": False, "error": "Не хватает данных для сохранения"})
+        return jsonify({
+            "success": False,
+            "error": "Не хватает данных для сохранения"
+        })
 
     try:
         saved = save_chart(
@@ -255,6 +268,7 @@ def save_chart_route():
 
     except Exception as e:
         print(f"save_chart error: {e}", flush=True)
+
         return jsonify({
             "success": False,
             "error": str(e)
@@ -349,7 +363,9 @@ def delete_chart_route(chart_id):
                 "error": "Карта не найдена"
             })
 
-        return jsonify({"success": True})
+        return jsonify({
+            "success": True
+        })
 
     except Exception as e:
         print(f"delete_chart error: {e}", flush=True)
@@ -456,9 +472,9 @@ if __name__ == "__main__":
         Thread(target=run_bot, daemon=True).start()
 
     app.run(
-    host="0.0.0.0",
-    port=80,
-    debug=False,
-    use_reloader=False,
-    threaded=True
+        host="0.0.0.0",
+        port=80,
+        debug=False,
+        use_reloader=False,
+        threaded=True
     )

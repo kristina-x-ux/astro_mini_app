@@ -6,9 +6,7 @@
 <title>AstroEngine</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
@@ -23,43 +21,45 @@ body {
 }
 
 .page {
-    max-width: 680px;
+    max-width: 720px;
     margin: 0 auto;
-    padding: 18px 12px 44px;
+    padding: 14px 10px 44px;
 }
 
-.screen {
-    display: none;
+.screen { display: none; }
+.screen.active { display: block; }
+
+.top-app-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
 }
 
-.screen.active {
-    display: block;
+.icon-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.16);
+    color: white;
+    font-size: 23px;
+    font-weight: 900;
 }
 
-.header {
+.header-title {
     text-align: center;
-    margin-bottom: 22px;
-}
-
-.header h1 {
-    margin: 0;
-    font-size: 38px;
-    font-weight: 850;
+    font-size: 26px;
+    font-weight: 900;
     text-shadow: 0 4px 20px rgba(0,0,0,0.45);
-}
-
-.subtitle {
-    margin-top: 8px;
-    font-size: 15px;
-    opacity: 0.9;
 }
 
 .card {
     background: rgba(0, 20, 70, 0.24);
     border: 1.5px solid rgba(255,255,255,0.45);
-    border-radius: 30px;
+    border-radius: 28px;
     padding: 18px;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     box-shadow:
@@ -69,80 +69,74 @@ body {
 
 .card-title {
     font-size: 22px;
-    font-weight: 800;
+    font-weight: 850;
     margin-bottom: 16px;
 }
 
-.mode-switch {
+.mode-switch, .settings-row, .action-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin-bottom: 18px;
 }
 
-.mode-btn {
+.mode-btn, .small-btn {
     padding: 13px;
     border-radius: 18px;
     border: 1px solid rgba(255,255,255,0.35);
     background: rgba(255,255,255,0.08);
     color: white;
-    font-weight: 700;
-    font-size: 15px;
+    font-weight: 800;
+    font-size: 14px;
 }
 
-.mode-btn.active {
+.mode-btn.active, .small-btn.active {
     background: linear-gradient(135deg, #52b5ff, #7257ff);
 }
 
 label {
     display: block;
-    margin-top: 15px;
+    margin-top: 14px;
     margin-bottom: 7px;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 650;
 }
 
-input {
+input, select {
     width: 100%;
-    padding: 16px;
-    margin-bottom: 12px;
-    border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 18px;
     border: 1px solid rgba(255,255,255,0.65);
-    background: rgba(255,255,255,0.70);
+    background: rgba(255,255,255,0.76);
     color: #1b2d52;
-    font-size: 18px;
+    font-size: 17px;
     outline: none;
 }
 
-input::placeholder {
-    color: rgba(27,45,82,0.55);
-}
+input::placeholder { color: rgba(27,45,82,0.55); }
 
 .main-btn {
     width: 100%;
-    margin-top: 18px;
+    margin-top: 16px;
     padding: 18px;
     border: none;
-    border-radius: 26px;
+    border-radius: 24px;
     background: linear-gradient(135deg, #4cc3ff, #6b5cff);
     color: white;
-    font-size: 20px;
-    font-weight: 800;
-    box-shadow:
-        0 10px 28px rgba(60,120,255,0.35),
-        inset 0 1px 0 rgba(255,255,255,0.3);
+    font-size: 19px;
+    font-weight: 900;
 }
 
 .secondary-btn {
     width: 100%;
-    margin-top: 12px;
+    margin-top: 10px;
     padding: 15px;
     border-radius: 22px;
     border: 1.5px solid rgba(255,255,255,0.55);
     background: rgba(255,255,255,0.08);
     color: white;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .suggestions {
@@ -159,45 +153,13 @@ input::placeholder {
     padding: 13px 14px;
     border-bottom: 1px solid rgba(255,255,255,0.12);
     font-size: 15px;
-    line-height: 1.35;
 }
 
 .time-help {
     font-size: 13px;
     opacity: 0.85;
-    margin-top: -4px;
+    margin-top: -3px;
     margin-bottom: 8px;
-}
-
-.top-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-.back-btn {
-    width: 46px;
-    min-width: 46px;
-    height: 46px;
-    border: none;
-    border-radius: 16px;
-    background: rgba(255,255,255,0.16);
-    color: white;
-    font-size: 24px;
-}
-
-.result-heading {
-    font-size: 28px;
-    font-weight: 850;
-    line-height: 1.15;
-}
-
-.info-line {
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.20);
-    font-size: 15px;
-    line-height: 1.45;
 }
 
 .compact-data {
@@ -208,85 +170,6 @@ input::placeholder {
     border: 1px solid rgba(255,255,255,0.20);
     font-size: 14px;
     line-height: 1.45;
-}
-
-.settings-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 8px 0 14px;
-}
-
-.action-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 10px 0 14px;
-}
-
-.select-box {
-    background: rgba(255,255,255,0.94);
-    color: #111;
-    border-radius: 18px;
-    padding: 12px;
-    font-size: 15px;
-    border: none;
-    width: 100%;
-    outline: none;
-}
-
-.small-btn {
-    padding: 12px;
-    border: none;
-    border-radius: 18px;
-    background: rgba(255,255,255,0.13);
-    color: white;
-    font-weight: 800;
-    font-size: 14px;
-    border: 1px solid rgba(255,255,255,0.22);
-}
-
-.small-btn.active {
-    background: linear-gradient(135deg, #52b5ff, #7257ff);
-}
-
-.drawer {
-    margin-bottom: 12px;
-    border-radius: 22px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.22);
-    background: rgba(255,255,255,0.06);
-}
-
-.drawer-head {
-    width: 100%;
-    padding: 16px;
-    border: none;
-    background: rgba(24, 16, 95, 0.62);
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 17px;
-    font-weight: 850;
-    text-align: left;
-}
-
-.drawer-body {
-    display: none;
-    padding: 14px;
-}
-
-.drawer.open .drawer-body {
-    display: block;
-}
-
-.drawer-arrow {
-    transition: transform 0.2s ease;
-}
-
-.drawer.open .drawer-arrow {
-    transform: rotate(90deg);
 }
 
 .chart-wrap {
@@ -315,7 +198,7 @@ input::placeholder {
     transform: translate(-50%, -50%);
     text-align: center;
     min-width: 46px;
-    max-width: 86px;
+    max-width: 90px;
     overflow: hidden;
 }
 
@@ -330,7 +213,7 @@ input::placeholder {
     font-size: 10.5px;
     margin-top: 2px;
     color: #202852;
-    font-weight: 800;
+    font-weight: 850;
     line-height: 1.12;
     white-space: nowrap;
 }
@@ -338,15 +221,13 @@ input::placeholder {
 .chart-aspects {
     font-size: 10px;
     margin-top: 1px;
-    color: rgba(35, 35, 50, 0.52);
-    font-weight: 800;
+    color: rgba(35,35,50,0.52);
+    font-weight: 850;
     line-height: 1.05;
     white-space: nowrap;
 }
 
-.transit-planet {
-    color: #0477ff;
-}
+.transit-planet { color: #0477ff; }
 
 .south-grid {
     display: grid;
@@ -363,9 +244,39 @@ input::placeholder {
     overflow: hidden;
 }
 
-.south-empty {
-    background: rgba(255,255,255,0.36);
+.south-empty { background: rgba(255,255,255,0.36); }
+
+.drawer {
+    margin-bottom: 12px;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.22);
+    background: rgba(255,255,255,0.06);
 }
+
+.drawer-head {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    background: rgba(24, 16, 95, 0.62);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 17px;
+    font-weight: 850;
+    text-align: left;
+}
+
+.drawer-body {
+    display: none;
+    padding: 14px;
+}
+
+.drawer.open .drawer-body { display: block; }
+.drawer.open .drawer-arrow { transform: rotate(90deg); }
+
+.drawer-arrow { transition: transform 0.2s ease; }
 
 .planet-table {
     width: 100%;
@@ -376,8 +287,7 @@ input::placeholder {
     background: rgba(22, 12, 74, 0.72);
 }
 
-.planet-table th,
-.planet-table td {
+.planet-table th, .planet-table td {
     padding: 10px 6px;
     border-bottom: 1px solid rgba(255,255,255,0.12);
     text-align: left;
@@ -391,109 +301,100 @@ input::placeholder {
     background: rgba(255,255,255,0.08);
 }
 
-.planet-table tr:nth-child(even) {
-    background: rgba(255,255,255,0.06);
+.planet-table tr:nth-child(even) { background: rgba(255,255,255,0.06); }
+
+.dasha-row, .chara-row {
+    padding: 11px 12px;
+    margin-bottom: 6px;
+    border-radius: 14px;
+    background: rgba(31, 18, 88, 0.82);
+    font-size: 13px;
+    line-height: 1.4;
 }
 
-.house-list {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
-}
-
-.house-item {
-    padding: 12px 14px;
-    border-radius: 16px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.18);
-    line-height: 1.45;
+.dasha-row.current, .chara-row.current {
+    background: #d2ffff;
+    color: #233247;
+    font-weight: 850;
 }
 
 .client-box {
-    padding: 16px;
+    padding: 15px;
     border-radius: 20px;
     background: rgba(255,255,255,0.10);
     border: 1px solid rgba(255,255,255,0.24);
     line-height: 1.5;
 }
 
-.dasha-node {
-    margin-bottom: 6px;
-}
-
-.dasha-row {
-    width: 100%;
-    padding: 12px 10px;
-    border: none;
-    color: white;
-    display: grid;
-    grid-template-columns: 24px 1fr auto;
-    gap: 8px;
-    align-items: center;
-    background: rgba(31, 18, 88, 0.82);
-    font-size: 13px;
-    text-align: left;
-}
-
-.dasha-row.current {
-    background: #d2ffff;
-    color: #233247;
-    font-weight: 850;
-}
-
-.dasha-children {
+.side-menu {
+    position: fixed;
+    inset: 0;
     display: none;
+    z-index: 20;
+    background: rgba(0,0,0,0.42);
 }
 
-.dasha-children.open {
-    display: block;
+.side-menu.active { display: block; }
+
+.side-panel {
+    width: min(86vw, 360px);
+    height: 100%;
+    padding: 18px;
+    background: rgba(8, 18, 62, 0.98);
+    border-right: 1px solid rgba(255,255,255,0.22);
+    overflow-y: auto;
 }
 
-.level-2 .dasha-row {
-    padding-left: 22px;
-    background: rgba(82, 62, 145, 0.82);
+.menu-title {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 16px;
 }
 
-.level-3 .dasha-row {
-    padding-left: 38px;
-    background: rgba(120, 105, 175, 0.72);
+.menu-item {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 8px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.08);
+    color: white;
+    text-align: left;
+    font-weight: 800;
 }
 
-.level-4 .dasha-row {
-    padding-left: 54px;
-    background: rgba(160, 230, 235, 0.78);
-    color: #233247;
+.settings-box, .saved-card {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.16);
 }
 
-.chara-row {
-    padding: 11px 12px;
-    margin-bottom: 6px;
-    border-radius: 14px;
-    background: rgba(31, 18, 88, 0.82);
-    display: grid;
-    grid-template-columns: 70px 1fr;
-    gap: 8px;
-    font-size: 13px;
+.toggle-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 14px;
 }
 
-.chara-row.current {
-    background: #d2ffff;
-    color: #233247;
-    font-weight: 850;
+.toggle-line input {
+    width: auto;
+    margin: 0;
 }
 
 .transit-panel {
     display: none;
     padding: 12px;
-    margin-bottom: 14px;
+    margin-top: 10px;
     border-radius: 20px;
     background: rgba(255,255,255,0.09);
     border: 1px solid rgba(255,255,255,0.20);
 }
 
-.transit-panel.active {
-    display: block;
-}
+.transit-panel.active { display: block; }
 
 .error {
     padding: 14px;
@@ -527,20 +428,65 @@ input::placeholder {
 
 <body>
 
+<div id="sideMenu" class="side-menu" onclick="closeMenuByBg(event)">
+    <div class="side-panel">
+        <div class="menu-title">AstroEngine</div>
+
+        <button class="menu-item" onclick="newChart()">＋ Новая карта</button>
+        <button class="menu-item" onclick="loadSavedCharts()">💾 Мои карты</button>
+
+        <div id="savedCardsBox"></div>
+
+        <div class="settings-box">
+            <b>Настройки</b>
+
+            <label>Язык</label>
+            <select id="languageSelect" onchange="applySettings()">
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+            </select>
+
+            <label>Режим</label>
+            <select id="workModeSelect" onchange="applySettings()">
+                <option value="professional">Профессиональный</option>
+                <option value="client">Клиентский</option>
+            </select>
+
+            <label>Чара Даша</label>
+            <select id="charaSystemSelect" onchange="applySettings()">
+                <option value="rao">К.Н. Рао</option>
+                <option value="parashara">Парашара</option>
+            </select>
+
+            <div class="toggle-line">Чаракараки <input type="checkbox" id="showKarakas" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Упаграхи <input type="checkbox" id="showUpagrahas" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Арудхи <input type="checkbox" id="showArudhas" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Доп. лагны <input type="checkbox" id="showSpecialLagnas" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Внешние планеты <input type="checkbox" id="showOuterPlanets" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Аспекты <input type="checkbox" id="showAspects" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Йоги <input type="checkbox" id="showYogas" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Градусы в карте <input type="checkbox" id="showDegreesInChart" onchange="applySettings()"></div>
+        </div>
+
+        <button class="menu-item" onclick="toggleMenu()">Закрыть</button>
+    </div>
+</div>
+
 <div class="page">
 
     <div id="inputScreen" class="screen active">
-        <div class="header">
-            <h1>AstroEngine</h1>
-            <div class="subtitle">Джйотиш-анализ личности и натальной карты</div>
+        <div class="top-app-bar">
+            <button class="icon-btn" onclick="toggleMenu()">☰</button>
+            <div class="header-title">AstroEngine</div>
+            <button class="icon-btn" onclick="loadSavedCharts()">💾</button>
         </div>
 
         <div class="card">
             <div class="card-title">Введите данные для анализа</div>
 
             <div class="mode-switch">
-                <button class="mode-btn active" id="clientBtn" onclick="setMode('client')">🌙 Клиент</button>
-                <button class="mode-btn" id="astroBtn" onclick="setMode('astro')">🧿 Астролог</button>
+                <button class="mode-btn active" id="clientBtn" onclick="setMode('client')">Клиент</button>
+                <button class="mode-btn" id="astroBtn" onclick="setMode('astro')">Астролог</button>
             </div>
 
             <label>Дата рождения</label>
@@ -560,36 +506,80 @@ input::placeholder {
     </div>
 
     <div id="resultScreen" class="screen">
-        <div class="top-bar">
-            <button class="back-btn" onclick="goBack()">‹</button>
-            <div class="result-heading" id="resultHeading">Персональный разбор</div>
+        <div class="top-app-bar">
+            <button class="icon-btn" onclick="toggleMenu()">☰</button>
+            <div class="header-title" id="resultHeading">Карта</div>
+            <button class="icon-btn" onclick="showSaveDialog()">💾</button>
         </div>
 
         <div class="card">
             <div id="summaryBlock"></div>
 
-            <div class="drawer open" id="drawerChart">
-                <button class="drawer-head" onclick="toggleDrawer('drawerChart')">
-                    <span>Карта</span><span class="drawer-arrow">›</span>
-                </button>
-                <div class="drawer-body" id="chartSection"></div>
+            <div id="chartBlock"></div>
+
+            <div class="settings-row">
+                <select id="chartStyleSelect" onchange="changeChartStyle(this.value)">
+                    <option value="north">Северо-индийская</option>
+                    <option value="south">Южно-индийская</option>
+                </select>
+
+                <select id="vargaSelect" onchange="changeVarga(this.value)">
+                    <option value="D1">D-1 Натальная</option>
+                    <option value="Moon">Лунная</option>
+                    <option value="D2">D-2</option>
+                    <option value="D3">D-3</option>
+                    <option value="D5">D-5</option>
+                    <option value="D6">D-6</option>
+                    <option value="D7">D-7</option>
+                    <option value="D8">D-8</option>
+                    <option value="D9">D-9</option>
+                    <option value="D10">D-10</option>
+                    <option value="D11">D-11</option>
+                    <option value="D12">D-12</option>
+                    <option value="D16">D-16</option>
+                    <option value="D24">D-24</option>
+                    <option value="D30">D-30</option>
+                    <option value="D60">D-60</option>
+                    <option value="D81">D-81</option>
+                </select>
             </div>
 
-            <div class="drawer" id="drawerPlanets">
+            <div class="action-row">
+                <button class="small-btn active" id="natalBtn" onclick="setViewMode('natal')">Натал</button>
+                <button class="small-btn" id="overlayBtn" onclick="setViewMode('overlay')">Наложение</button>
+            </div>
+
+            <div class="action-row">
+                <button class="small-btn" onclick="toggleTransitPanel('transit')">Транзиты</button>
+                <button class="small-btn" onclick="toggleTransitPanel('rectification')">Ректификация</button>
+            </div>
+
+            <div id="transitPanel" class="transit-panel">
+                <label>Дата транзита</label>
+                <input id="transitDate" type="tel" inputmode="numeric" maxlength="10" placeholder="00.00.0000" oninput="formatDateInput(this)">
+                <label>Время транзита</label>
+                <input id="transitTime" type="tel" inputmode="numeric" maxlength="8" placeholder="00:00:00" oninput="formatTimeInput(this)">
+                <label>Место транзита</label>
+                <input id="transitCity" type="text" placeholder="Город, страна">
+                <button class="main-btn" onclick="calculateTransit()">Рассчитать транзит</button>
+            </div>
+
+            <div id="rectificationPanel" class="transit-panel">
+                <label>Новое время рождения</label>
+                <input id="rectTime" type="tel" inputmode="numeric" maxlength="8" placeholder="00:00:00" oninput="formatTimeInput(this)">
+                <button class="main-btn" onclick="calculateRectification()">Пересчитать карту</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="drawer open" id="drawerPlanets">
                 <button class="drawer-head" onclick="toggleDrawer('drawerPlanets')">
                     <span>Планеты и накшатры</span><span class="drawer-arrow">›</span>
                 </button>
                 <div class="drawer-body" id="planetsSection"></div>
             </div>
 
-            <div class="drawer" id="drawerHouses">
-                <button class="drawer-head" onclick="toggleDrawer('drawerHouses')">
-                    <span>Дома</span><span class="drawer-arrow">›</span>
-                </button>
-                <div class="drawer-body" id="housesSection"></div>
-            </div>
-
-            <div class="drawer" id="drawerDashas">
+            <div class="drawer open" id="drawerDashas">
                 <button class="drawer-head" onclick="toggleDrawer('drawerDashas')">
                     <span>Периоды Вимшоттари</span><span class="drawer-arrow">›</span>
                 </button>
@@ -598,7 +588,7 @@ input::placeholder {
 
             <div class="drawer" id="drawerCharaDashas">
                 <button class="drawer-head" onclick="toggleDrawer('drawerCharaDashas')">
-                    <span>Чара Даша К.Н. Рао</span><span class="drawer-arrow">›</span>
+                    <span>Чара Даша</span><span class="drawer-arrow">›</span>
                 </button>
                 <div class="drawer-body" id="charaDashasSection"></div>
             </div>
@@ -613,107 +603,83 @@ input::placeholder {
 
         <button class="secondary-btn" onclick="goBack()">Изменить данные</button>
     </div>
-
 </div>
 
 <script>
 let mode = "client";
 let selectedPlace = null;
 let placeTimer = null;
-
 let currentChart = null;
 let transitChart = null;
-
 let chartStyle = "north";
 let currentVarga = "D1";
 let viewMode = "natal";
+let currentSavedId = null;
 
-const VARGA_LABELS = {
-    "D1": "D-1 Натальная",
-    "Moon": "Лунная",
-    "D2": "D-2 Хора",
-    "D3": "D-3 Дреккана",
-    "D5": "D-5 Панчамша",
-    "D6": "D-6 Шаштамша",
-    "D7": "D-7 Саптамша",
-    "D8": "D-8 Аштамша",
-    "D9": "D-9 Навамша",
-    "D10": "D-10 Дашамша",
-    "D11": "D-11 Рудрамша",
-    "D12": "D-12 Двадашамша",
-    "D16": "D-16 Шодашамша",
-    "D24": "D-24 Чатурвимшамша",
-    "D30": "D-30 Тримшамша",
-    "D60": "D-60 Шаштьямша",
-    "D81": "D-81"
-};
+const PLANET_ORDER = [
+    "Асцендент", "Солнце", "Луна", "Марс", "Меркурий",
+    "Венера", "Сатурн", "Юпитер", "Раху", "Кету",
+    "Плутон", "Нептун", "Уран", "Манди", "Гулика"
+];
 
 const PLANET_SHORT = {
-    "Солнце": "Со",
-    "Луна": "Лу",
-    "Марс": "Ма",
-    "Меркурий": "Ме",
-    "Юпитер": "Юп",
-    "Венера": "Ве",
-    "Сатурн": "Са",
-    "Уран": "Ур",
-    "Нептун": "Не",
-    "Плутон": "Пл",
-    "Раху": "Ра",
-    "Кету": "Ке",
-    "Манди": "Мн",
-    "Гулика": "Гу"
+    "Солнце": "Su", "Луна": "Mo", "Марс": "Ma", "Меркурий": "Me",
+    "Юпитер": "Ju", "Венера": "Ve", "Сатурн": "Sa",
+    "Раху": "Ra", "Кету": "Ke", "Уран": "Ur",
+    "Нептун": "Ne", "Плутон": "Pl", "Манди": "Md", "Гулика": "Gu"
 };
 
 function setMode(m) {
     mode = m;
     document.getElementById("clientBtn").classList.remove("active");
     document.getElementById("astroBtn").classList.remove("active");
+    document.getElementById(m === "client" ? "clientBtn" : "astroBtn").classList.add("active");
+}
 
-    if (m === "client") {
-        document.getElementById("clientBtn").classList.add("active");
-    } else {
-        document.getElementById("astroBtn").classList.add("active");
-    }
+function toggleMenu() {
+    document.getElementById("sideMenu").classList.toggle("active");
+}
+
+function closeMenuByBg(event) {
+    if (event.target.id === "sideMenu") toggleMenu();
+}
+
+function newChart() {
+    currentChart = null;
+    transitChart = null;
+    currentSavedId = null;
+    document.getElementById("resultScreen").classList.remove("active");
+    document.getElementById("inputScreen").classList.add("active");
+    document.getElementById("sideMenu").classList.remove("active");
 }
 
 function formatDateInput(input) {
     let value = input.value.replace(/\D/g, "");
     if (value.length > 8) value = value.slice(0, 8);
-
-    if (value.length >= 5) {
-        value = value.slice(0, 2) + "." + value.slice(2, 4) + "." + value.slice(4);
-    } else if (value.length >= 3) {
-        value = value.slice(0, 2) + "." + value.slice(2);
-    }
-
+    if (value.length >= 5) value = value.slice(0,2)+"."+value.slice(2,4)+"."+value.slice(4);
+    else if (value.length >= 3) value = value.slice(0,2)+"."+value.slice(2);
     input.value = value;
 }
 
 function formatTimeInput(input) {
     let value = input.value.replace(/\D/g, "");
     if (value.length > 6) value = value.slice(0, 6);
-
-    if (value.length >= 5) {
-        value = value.slice(0, 2) + ":" + value.slice(2, 4) + ":" + value.slice(4);
-    } else if (value.length >= 3) {
-        value = value.slice(0, 2) + ":" + value.slice(2);
-    }
-
+    if (value.length >= 5) value = value.slice(0,2)+":"+value.slice(2,4)+":"+value.slice(4);
+    else if (value.length >= 3) value = value.slice(0,2)+":"+value.slice(2);
     input.value = value;
 }
 
 function normalizeDate(value) {
     let digits = value.replace(/\D/g, "");
     if (digits.length !== 8) return "";
-    return digits.slice(0, 2) + "." + digits.slice(2, 4) + "." + digits.slice(4, 8);
+    return digits.slice(0,2)+"."+digits.slice(2,4)+"."+digits.slice(4,8);
 }
 
 function normalizeTime(value) {
     let digits = value.replace(/\D/g, "");
     if (digits.length === 4) digits += "00";
     if (digits.length !== 6) return "";
-    return digits.slice(0, 2) + ":" + digits.slice(2, 4) + ":" + digits.slice(4, 6);
+    return digits.slice(0,2)+":"+digits.slice(2,4)+":"+digits.slice(4,6);
 }
 
 function isValidDate(value) {
@@ -722,19 +688,14 @@ function isValidDate(value) {
 
 function isValidTime(value) {
     if (!/^\d{2}:\d{2}:\d{2}$/.test(value)) return false;
-
-    const parts = value.split(":");
-    const h = Number(parts[0]);
-    const m = Number(parts[1]);
-    const s = Number(parts[2]);
-
+    const [h,m,s] = value.split(":").map(Number);
     return h >= 0 && h <= 23 && m >= 0 && m <= 59 && s >= 0 && s <= 59;
 }
+
 
 function handlePlaceInput() {
     selectedPlace = null;
     clearTimeout(placeTimer);
-
     const query = document.getElementById("city").value.trim();
     const box = document.getElementById("suggestions");
 
@@ -756,41 +717,33 @@ async function searchPlaces(query) {
 
         if (!data.places || data.places.length === 0) {
             box.style.display = "none";
-            box.innerHTML = "";
             return;
         }
 
         box.innerHTML = "";
-
         data.places.forEach(place => {
             const item = document.createElement("div");
             item.className = "suggestion-item";
             item.innerText = "📍 " + place.name;
-
             item.onclick = () => {
                 selectedPlace = place;
                 document.getElementById("city").value = place.name;
                 box.style.display = "none";
                 box.innerHTML = "";
             };
-
             box.appendChild(item);
         });
 
         box.style.display = "block";
-
     } catch {
         box.style.display = "none";
     }
 }
 
 async function calculate() {
-    let date = document.getElementById("date").value;
-    let time = document.getElementById("time").value;
+    let date = normalizeDate(document.getElementById("date").value);
+    let time = normalizeTime(document.getElementById("time").value);
     const city = document.getElementById("city").value.trim();
-
-    date = normalizeDate(date);
-    time = normalizeTime(time);
 
     document.getElementById("date").value = date;
     document.getElementById("time").value = time;
@@ -800,26 +753,15 @@ async function calculate() {
         return;
     }
 
-    if (!isValidDate(date)) {
-        alert("Введите дату в формате 00.00.0000.");
-        return;
-    }
-
-    if (!isValidTime(time)) {
-        alert("Введите время в формате 00:00:00.");
+    if (!isValidDate(date) || !isValidTime(time)) {
+        alert("Проверьте формат даты и времени.");
         return;
     }
 
     showResultLoading();
 
     try {
-        const payload = {
-            date: date,
-            time: time,
-            city: city,
-            mode: mode,
-            display_name: city
-        };
+        const payload = { date, time, city, mode, display_name: city };
 
         if (selectedPlace) {
             payload.lat = selectedPlace.lat;
@@ -842,11 +784,10 @@ async function calculate() {
 
         currentChart = data.chart;
         transitChart = null;
+        currentSavedId = null;
         currentVarga = "D1";
-        chartStyle = "north";
         viewMode = "natal";
-        renderResult(currentChart);
-
+        renderResult();
     } catch {
         showError("Ошибка соединения с сервером.");
     }
@@ -855,12 +796,8 @@ async function calculate() {
 function showResultLoading() {
     document.getElementById("inputScreen").classList.remove("active");
     document.getElementById("resultScreen").classList.add("active");
-
-    document.getElementById("resultHeading").innerText =
-        mode === "client" ? "Персональный разбор" : "Технический расчёт";
-
     document.getElementById("summaryBlock").innerHTML = "";
-    document.getElementById("chartSection").innerHTML = `
+    document.getElementById("chartBlock").innerHTML = `
         <div class="loading-box">
             <div class="loader"></div>
             Выполняю расчёт карты...
@@ -869,7 +806,7 @@ function showResultLoading() {
 }
 
 function showError(message) {
-    document.getElementById("chartSection").innerHTML = `<div class="error">${message}</div>`;
+    document.getElementById("chartBlock").innerHTML = `<div class="error">${message}</div>`;
 }
 
 function goBack() {
@@ -881,172 +818,66 @@ function toggleDrawer(id) {
     document.getElementById(id).classList.toggle("open");
 }
 
-function renderResult(chart) {
-    renderSummary(chart);
-    renderChartSection(chart);
+function renderResult() {
+    renderSummary();
+    renderChartBlock();
     renderPlanets();
-    renderHouses(chart);
-    renderDashas(chart);
-    renderCharaDashas(chart);
-    renderAnalysis(chart);
+    renderDashas();
+    renderCharaDashas();
+    renderAnalysis();
 }
 
-function renderSummary(chart) {
-    const compact = `${chart.input_date} ${chart.input_time} ${chart.utc_offset}, ${chart.lat}, ${chart.lon}`;
-
+function renderSummary() {
+    if (!currentChart) return;
     document.getElementById("summaryBlock").innerHTML = `
         <div class="compact-data">
-            <b>${chart.city}</b><br>
-            ${compact}<br>
-            Айанамша Лахири: ${chart.ayanamsha}°
+            <b>${currentChart.city}</b><br>
+            ${currentChart.input_date} ${currentChart.input_time} ${currentChart.utc_offset}<br>
+            ${currentChart.lat}, ${currentChart.lon}<br>
+            Айанамша Лахири: ${currentChart.ayanamsha}°
         </div>
     `;
-}
-
-function renderChartSection(chart) {
-    const vargaOptions = Object.keys(VARGA_LABELS).map(key => {
-        const selected = key === currentVarga ? "selected" : "";
-        return `<option value="${key}" ${selected}>${VARGA_LABELS[key]}</option>`;
-    }).join("");
-
-    document.getElementById("chartSection").innerHTML = `
-        <div class="settings-row">
-            <select class="select-box" onchange="changeChartStyle(this.value)">
-                <option value="north" ${chartStyle === "north" ? "selected" : ""}>Северо-индийская</option>
-                <option value="south" ${chartStyle === "south" ? "selected" : ""}>Южно-индийская</option>
-            </select>
-
-            <select class="select-box" onchange="changeVarga(this.value)">
-                ${vargaOptions}
-            </select>
-        </div>
-
-        <div class="action-row">
-            <button class="small-btn active" id="natalBtn" onclick="setViewMode('natal')">Натал</button>
-            <button class="small-btn" id="overlayBtn" onclick="setViewMode('overlay')">Наложение</button>
-        </div>
-
-        <div class="action-row">
-            <button class="small-btn" onclick="toggleTransitPanel('transit')">Транзиты</button>
-            <button class="small-btn" onclick="toggleTransitPanel('rectification')">Ректификация</button>
-        </div>
-
-        <div id="transitPanel" class="transit-panel">
-            <label>Дата транзита</label>
-            <input id="transitDate" type="tel" inputmode="numeric" maxlength="10" placeholder="00.00.0000" oninput="formatDateInput(this)">
-
-            <label>Время транзита</label>
-            <input id="transitTime" type="tel" inputmode="numeric" maxlength="8" placeholder="00:00:00" oninput="formatTimeInput(this)">
-
-            <label>Место транзита</label>
-            <input id="transitCity" type="text" placeholder="Город, страна">
-
-            <button class="main-btn" onclick="calculateTransit()">Рассчитать транзит</button>
-        </div>
-
-        <div id="rectificationPanel" class="transit-panel">
-            <label>Новое время рождения</label>
-            <input id="rectTime" type="tel" inputmode="numeric" maxlength="8" placeholder="00:00:00" oninput="formatTimeInput(this)">
-
-            <button class="main-btn" onclick="calculateRectification()">Пересчитать карту</button>
-        </div>
-
-        <div id="chartBlock"></div>
-    `;
-
-    renderChartBlock();
 }
 
 function changeChartStyle(value) {
     chartStyle = value;
-    renderChartSection(currentChart);
-    renderPlanets();
+    renderChartBlock();
 }
 
 function changeVarga(value) {
     currentVarga = value;
-    renderChartSection(currentChart);
+    renderChartBlock();
     renderPlanets();
 }
 
 function setViewMode(value) {
     viewMode = value;
-
-    document.getElementById("natalBtn").classList.remove("active");
-    document.getElementById("overlayBtn").classList.remove("active");
-
-    if (value === "natal") {
-        document.getElementById("natalBtn").classList.add("active");
-    } else {
-        document.getElementById("overlayBtn").classList.add("active");
-    }
-
+    document.getElementById("natalBtn").classList.toggle("active", value === "natal");
+    document.getElementById("overlayBtn").classList.toggle("active", value === "overlay");
     renderChartBlock();
     renderPlanets();
 }
 
-function toggleTransitPanel(panel) {
-    document.getElementById("transitPanel").classList.remove("active");
-    document.getElementById("rectificationPanel").classList.remove("active");
-
-    if (panel === "transit") {
-        document.getElementById("transitPanel").classList.add("active");
-    } else {
-        document.getElementById("rectificationPanel").classList.add("active");
-    }
-}
-
-function getChartByMode() {
-    if (viewMode === "overlay" && transitChart) {
-        return transitChart;
-    }
-
-    return currentChart;
-}
-
 function getActiveChartObject(chart) {
     if (!chart) return null;
-
-    if (currentVarga === "D1") {
-        return {
-            chart_view: chart.chart_view || [],
-            planets: chart.planets || {},
-            aspects: chart.aspects || [],
-            houses: chart.houses || [],
-            special_points: chart.special_points || {}
-        };
-    }
-
-    if (chart.vargas && chart.vargas[currentVarga]) {
-        return chart.vargas[currentVarga];
-    }
-
-    return {
-        chart_view: chart.chart_view || [],
-        planets: chart.planets || {},
-        aspects: chart.aspects || [],
-        houses: chart.houses || [],
-        special_points: chart.special_points || {}
-    };
+    if (currentVarga === "D1") return chart;
+    if (chart.vargas && chart.vargas[currentVarga]) return chart.vargas[currentVarga];
+    return chart;
 }
 
-function getNatalActiveObject() {
-    return getActiveChartObject(currentChart);
-}
-
-function getTransitActiveObject() {
-    if (!transitChart) return null;
-    return getActiveChartObject(transitChart);
+function getChartForTable() {
+    if (viewMode === "overlay" && transitChart) return transitChart;
+    return currentChart;
 }
 
 function getAspectMap(activeObject) {
     const map = {};
-    if (!activeObject || !activeObject.aspects) return map;
+    if (!activeObject || !activeObject.aspects || !document.getElementById("showAspects").checked) return map;
 
     activeObject.aspects.forEach(a => {
-        a.aspects_houses.forEach(house => {
+        (a.aspects_houses || []).forEach(house => {
             if (!map[house]) map[house] = [];
-            map[house].push(a.planet_short || PLANET_SHORT[a.planet] || a.planet);
+            map[house].push(PLANET_SHORT[a.planet] || a.planet);
         });
     });
 
@@ -1057,36 +888,24 @@ function renderChartBlock() {
     const block = document.getElementById("chartBlock");
     if (!block || !currentChart) return;
 
-    const natalObject = getNatalActiveObject();
-    const transitObject = getTransitActiveObject();
+    const natalObject = getActiveChartObject(currentChart);
+    const transitObject = getActiveChartObject(transitChart);
 
-    if (chartStyle === "south") {
-        renderSouthIndianChart(block, natalObject, transitObject);
-    } else {
-        renderNorthIndianChart(block, natalObject, transitObject);
-    }
+    if (chartStyle === "south") renderSouthIndianChart(block, natalObject, transitObject);
+    else renderNorthIndianChart(block, natalObject, transitObject);
 }
 
 function renderNorthIndianChart(block, natalObject, transitObject) {
     const positions = [
-        [50, 22],
-        [28, 19],
-        [13, 36],
-        [27, 50],
-        [13, 66],
-        [28, 81],
-        [50, 78],
-        [72, 81],
-        [87, 66],
-        [73, 50],
-        [87, 36],
-        [72, 19]
+        [50,22], [28,19], [13,36], [27,50],
+        [13,66], [28,81], [50,78], [72,81],
+        [87,66], [73,50], [87,36], [72,19]
     ];
 
     const aspectMap = getAspectMap(viewMode === "overlay" && transitObject ? transitObject : natalObject);
     let cells = "";
 
-    natalObject.chart_view.forEach((h, index) => {
+    (natalObject.chart_view || []).forEach((h, index) => {
         const pos = positions[index];
 
         const natalPlanets = (h.planets || [])
@@ -1094,10 +913,9 @@ function renderNorthIndianChart(block, natalObject, transitObject) {
             .join("");
 
         let transitPlanets = "";
-
         if (viewMode === "overlay" && transitObject) {
-            const transitHouse = transitObject.chart_view.find(x => x.house === h.house);
-            transitPlanets = (transitHouse?.planets || [])
+            const th = (transitObject.chart_view || []).find(x => x.house === h.house);
+            transitPlanets = (th?.planets || [])
                 .map(p => `<div class="chart-planets transit-planet">T ${p}</div>`)
                 .join("");
         }
@@ -1140,23 +958,13 @@ function renderSouthIndianChart(block, natalObject, transitObject) {
     const transitBySign = {};
     const aspectMap = getAspectMap(viewMode === "overlay" && transitObject ? transitObject : natalObject);
 
-    natalObject.chart_view.forEach(h => {
-        bySign[h.sign] = h;
-    });
+    (natalObject.chart_view || []).forEach(h => bySign[h.sign] = h);
 
     if (viewMode === "overlay" && transitObject) {
-        transitObject.chart_view.forEach(h => {
-            transitBySign[h.sign] = h;
-        });
+        (transitObject.chart_view || []).forEach(h => transitBySign[h.sign] = h);
     }
 
-    const grid = [
-        12, 1, 2, 3,
-        11, 0, 0, 4,
-        10, 0, 0, 5,
-        9, 8, 7, 6
-    ];
-
+    const grid = [12,1,2,3, 11,0,0,4, 10,0,0,5, 9,8,7,6];
     let html = `<div class="chart-wrap"><div class="south-grid">`;
 
     grid.forEach(signNumber => {
@@ -1168,17 +976,9 @@ function renderSouthIndianChart(block, natalObject, transitObject) {
         const h = bySign[signNumber] || {house: "", planets: []};
         const t = transitBySign[signNumber] || {planets: []};
 
-        const natalPlanets = (h.planets || [])
-            .map(p => `<div class="chart-planets">${p}</div>`)
-            .join("");
-
-        const transitPlanets = (t.planets || [])
-            .map(p => `<div class="chart-planets transit-planet">T ${p}</div>`)
-            .join("");
-
-        const aspects = (aspectMap[h.house] || [])
-            .map(p => `<div class="chart-aspects">${p}</div>`)
-            .join("");
+        const natalPlanets = (h.planets || []).map(p => `<div class="chart-planets">${p}</div>`).join("");
+        const transitPlanets = (t.planets || []).map(p => `<div class="chart-planets transit-planet">T ${p}</div>`).join("");
+        const aspects = (aspectMap[h.house] || []).map(p => `<div class="chart-aspects">${p}</div>`).join("");
 
         html += `
             <div class="south-cell">
@@ -1195,9 +995,8 @@ function renderSouthIndianChart(block, natalObject, transitObject) {
 }
 
 function renderPlanets() {
-    const chartForTable = getChartByMode();
-    const activeObject = getActiveChartObject(chartForTable);
-
+    const chart = getChartForTable();
+    const activeObject = getActiveChartObject(chart);
     if (!activeObject) return;
 
     let html = `
@@ -1210,27 +1009,39 @@ function renderPlanets() {
             </tr>
     `;
 
-    if (currentVarga === "D1" && chartForTable.lagna) {
+    PLANET_ORDER.forEach(name => {
+        if (name === "Асцендент") {
+            const l = chart.lagna;
+            if (!l) return;
+            html += `
+                <tr>
+                    <td><b>Асцендент</b></td>
+                    <td>${l.sign || "—"}</td>
+                    <td>${l.degree || "—"}</td>
+                    <td>${l.nakshatra || "—"}<br>пада ${l.pada || "—"}</td>
+                </tr>
+            `;
+            return;
+        }
+
+        const p = (activeObject.planets || {})[name];
+        if (!p) return;
+
+        const isOuter = ["Плутон", "Нептун", "Уран"].includes(name);
+        const isUpa = ["Манди", "Гулика"].includes(name);
+
+        if (isOuter && !document.getElementById("showOuterPlanets").checked) return;
+        if (isUpa && !document.getElementById("showUpagrahas").checked) return;
+
+        const retro = p.retro ? " (R)" : "";
+        const karaka = p.karaka && document.getElementById("showKarakas").checked ? `<b>${p.karaka}</b> ` : "";
+
         html += `
             <tr>
-                <td><b>Лагна</b></td>
-                <td>${chartForTable.lagna.sign_number}<br>${chartForTable.lagna.sign}<br>дом 1</td>
-                <td>${chartForTable.lagna.degree}</td>
-                <td>${chartForTable.lagna.nakshatra}<br>пада ${chartForTable.lagna.pada}</td>
-            </tr>
-        `;
-    }
-
-    Object.entries(activeObject.planets || {}).forEach(([name, p]) => {
-        const karaka = p.karaka ? `<b>${p.karaka}</b> ` : "";
-        const nak = p.nakshatra ? `${p.nakshatra}<br>пада ${p.pada}` : "—";
-
-        html += `
-            <tr>
-                <td>${karaka}${name}</td>
-                <td>${p.sign_number}<br>${p.sign}<br>дом ${p.house}</td>
+                <td>${karaka}${name}${retro}</td>
+                <td>${p.sign || "—"}<br>дом ${p.house || "—"}</td>
                 <td>${p.degree || "—"}</td>
-                <td>${nak}</td>
+                <td>${p.nakshatra || "—"}<br>пада ${p.pada || "—"}</td>
             </tr>
         `;
     });
@@ -1239,198 +1050,226 @@ function renderPlanets() {
     document.getElementById("planetsSection").innerHTML = html;
 }
 
-function renderHouses(chart) {
-    let html = `<div class="house-list">`;
-
-    chart.houses.forEach(h => {
-        html += `<div class="house-item">${h.house} дом — знак ${h.sign_number} (${h.sign})</div>`;
-    });
-
-    html += `</div>`;
-    document.getElementById("housesSection").innerHTML = html;
+function parseRuDate(str) {
+    const [d,m,y] = str.split(".").map(Number);
+    return new Date(y, m - 1, d);
 }
 
-function renderDashas(chart) {
-    document.getElementById("dashasSection").innerHTML = `
-        <div class="client-box">
-            <b>Периоды Вимшоттари</b><br>
-            Даша рождения: ${chart.dashas.birth_lord}
-        </div>
-        <div id="dashaTree"></div>
-    `;
-
-    renderDashaNodes(chart.dashas.tree || [], document.getElementById("dashaTree"));
+function isCurrentPeriod(start, end) {
+    const now = new Date();
+    return parseRuDate(start) <= now && now < parseRuDate(end);
 }
 
-function renderDashaNodes(nodes, container) {
-    container.innerHTML = "";
+function renderDashas() {
+    const d = currentChart?.dashas || {};
+    const list = d.mahadashas || d.tree || [];
 
-    nodes.forEach((node, index) => {
-        container.appendChild(createDashaNode(node, index));
-    });
-}
+    let html = `<div class="client-box"><b>Вимшоттари</b><br>Даша рождения: ${d.birth_lord || "—"}</div>`;
 
-function createDashaNode(node, index) {
-    const wrap = document.createElement("div");
-    wrap.className = `dasha-node level-${node.level}`;
-
-    const row = document.createElement("button");
-    row.className = "dasha-row" + (node.is_current ? " current" : "");
-
-    const hasChildren = node.children && node.children.length > 0;
-
-    row.innerHTML = `
-        <span>${hasChildren ? "›" : ""}</span>
-        <span>${node.path.join(" / ")}</span>
-        <span>${node.start} — ${node.end}</span>
-    `;
-
-    const childrenBox = document.createElement("div");
-    childrenBox.className = "dasha-children";
-
-    if (hasChildren) {
-        node.children.forEach((child, childIndex) => {
-            childrenBox.appendChild(createDashaNode(child, childIndex));
-        });
-
-        row.onclick = () => {
-            childrenBox.classList.toggle("open");
-            row.querySelector("span").innerText = childrenBox.classList.contains("open") ? "⌄" : "›";
-        };
-
-        if (node.is_current || containsCurrent(node.children)) {
-            childrenBox.classList.add("open");
-            row.querySelector("span").innerText = "⌄";
-        }
-    }
-
-    wrap.appendChild(row);
-    wrap.appendChild(childrenBox);
-
-    return wrap;
-}
-
-function containsCurrent(nodes) {
-    return nodes.some(n => n.is_current || containsCurrent(n.children || []));
-}
-
-function renderCharaDashas(chart) {
-    let html = `<div class="client-box"><b>Чара Даша К.Н. Рао</b></div>`;
-
-    if (!chart.chara_dasha || chart.chara_dasha.length === 0) {
-        html += `<div class="house-item">Периоды пока не рассчитаны.</div>`;
+    if (!list.length) {
+        html += `<div class="dasha-row">Периоды пока не рассчитаны.</div>`;
     } else {
-        chart.chara_dasha.forEach(item => {
-            html += `
-                <div class="chara-row ${item.is_current ? "current" : ""}">
-                    <div>${item.sign_number}</div>
-                    <div>${item.sign}<br>${item.start} — ${item.end}</div>
-                </div>
-            `;
+        list.forEach(item => {
+            const lord = item.lord || (item.path ? item.path.join(" / ") : "—");
+            const current = isCurrentPeriod(item.start, item.end) ? "current" : "";
+            html += `<div class="dasha-row ${current}"><b>${lord}</b><br>${item.start} — ${item.end}</div>`;
         });
     }
 
     document.getElementById("charaDashasSection").innerHTML = html;
 }
 
-function renderAnalysis(chart) {
+function renderAnalysis() {
     document.getElementById("analysisSection").innerHTML = `
         <div class="client-box">
-            Здесь будет ИИ-разбор по реальным данным карты:
-            <br><br>
+            Здесь будет ИИ-разбор по реальным данным карты:<br><br>
             — сила и слабость планет<br>
             — хозяева домов в домах<br>
             — йоги<br>
             — аспекты Парашары<br>
-            — периоды Вимшоттари и Чара Даша<br>
+            — Вимшоттари и Чара Даша<br>
             — рекомендации по усилению сфер жизни
         </div>
     `;
 }
 
+function toggleTransitPanel(panel) {
+    document.getElementById("transitPanel").classList.remove("active");
+    document.getElementById("rectificationPanel").classList.remove("active");
+    document.getElementById(panel === "transit" ? "transitPanel" : "rectificationPanel").classList.add("active");
+}
+
 async function calculateTransit() {
-    let date = document.getElementById("transitDate").value;
-    let time = document.getElementById("transitTime").value;
+    let date = normalizeDate(document.getElementById("transitDate").value);
+    let time = normalizeTime(document.getElementById("transitTime").value);
     let city = document.getElementById("transitCity").value.trim();
-
-    date = normalizeDate(date);
-    time = normalizeTime(time);
-
-    document.getElementById("transitDate").value = date;
-    document.getElementById("transitTime").value = time;
 
     if (!date || !time || !city) {
         alert("Заполните дату, время и место транзита.");
         return;
     }
 
-    try {
-        const response = await fetch("/calculate_transit", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                date: date,
-                time: time,
-                city: city,
-                display_name: city
-            })
-        });
+    const response = await fetch("/calculate_transit", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({date, time, city, display_name: city})
+    });
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if (!data.success) {
-            alert(data.error || "Ошибка расчёта транзита.");
-            return;
-        }
-
-        transitChart = data.transit;
-        viewMode = "overlay";
-        renderChartSection(currentChart);
-        renderPlanets();
-
-    } catch {
-        alert("Ошибка соединения с сервером.");
+    if (!data.success) {
+        alert(data.error || "Ошибка транзита.");
+        return;
     }
+
+    transitChart = data.transit;
+    setViewMode("overlay");
 }
 
 async function calculateRectification() {
-    let rectTime = document.getElementById("rectTime").value;
-    rectTime = normalizeTime(rectTime);
-    document.getElementById("rectTime").value = rectTime;
+    let rectTime = normalizeTime(document.getElementById("rectTime").value);
 
     if (!rectTime) {
         alert("Введите новое время рождения.");
         return;
     }
 
-    try {
-        const response = await fetch("/rectification", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                date: currentChart.input_date,
-                time: rectTime,
-                city: currentChart.city,
-                display_name: currentChart.city
-            })
-        });
+    const response = await fetch("/rectification", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            date: currentChart.input_date,
+            time: rectTime,
+            city: currentChart.city,
+            display_name: currentChart.city
+        })
+    });
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if (!data.success) {
-            alert(data.error || "Ошибка ректификации.");
-            return;
-        }
-
-        currentChart = data.chart;
-        transitChart = null;
-        viewMode = "natal";
-        currentVarga = "D1";
-        renderResult(currentChart);
-
-    } catch {
-        alert("Ошибка соединения с сервером.");
+    if (!data.success) {
+        alert(data.error || "Ошибка ректификации.");
+        return;
     }
+
+    currentChart = data.chart;
+    transitChart = null;
+    viewMode = "natal";
+    renderResult();
+}
+
+function applySettings() {
+    renderChartBlock();
+    renderPlanets();
+    renderCharaDashas();
+}
+
+function showSaveDialog() {
+    if (!currentChart) {
+        alert("Сначала рассчитайте карту.");
+        return;
+    }
+
+    const name = prompt("Имя карты:", currentChart.city || "Новая карта");
+    if (!name) return;
+
+    saveCurrentChart(name);
+}
+
+async function saveCurrentChart(name) {
+    const response = await fetch("/save_chart", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            name,
+            birth_date: currentChart.input_date,
+            birth_time: currentChart.input_time,
+            place_name: currentChart.city,
+            lat: currentChart.lat,
+            lon: currentChart.lon,
+            timezone: currentChart.timezone || "",
+            comment: ""
+        })
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+        alert(data.error || "Ошибка сохранения.");
+        return;
+    }
+
+    alert("Карта сохранена.");
+    currentSavedId = data.chart?.id || null;
+}
+
+async function loadSavedCharts() {
+    toggleMenu();
+
+    const box = document.getElementById("savedCardsBox");
+    box.innerHTML = `<div class="settings-box">Загружаю сохранённые карты...</div>`;
+
+    const response = await fetch("/saved_charts");
+    const data = await response.json();
+
+    if (!data.success) {
+        box.innerHTML = `<div class="settings-box">${data.error || "Ошибка загрузки карт."}</div>`;
+        return;
+    }
+
+    if (!data.charts || !data.charts.length) {
+        box.innerHTML = `<div class="settings-box">Сохранённых карт пока нет.</div>`;
+        return;
+    }
+
+    box.innerHTML = "";
+    data.charts.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "saved-card";
+        div.innerHTML = `
+            <b>${c.name}</b><br>
+            ${c.birth_date} ${c.birth_time}<br>
+            ${c.place_name}<br>
+            <button class="secondary-btn" onclick="openSavedChart(${c.id})">Открыть</button>
+            <button class="secondary-btn" onclick="deleteSavedChart(${c.id})">Удалить</button>
+        `;
+        box.appendChild(div);
+    });
+}
+
+async function openSavedChart(id) {
+    const response = await fetch(`/open_chart/${id}`);
+    const data = await response.json();
+
+    if (!data.success) {
+        alert(data.error || "Ошибка открытия карты.");
+        return;
+    }
+
+    currentChart = data.chart;
+    currentSavedId = id;
+    transitChart = null;
+    viewMode = "natal";
+
+    document.getElementById("inputScreen").classList.remove("active");
+    document.getElementById("resultScreen").classList.add("active");
+    document.getElementById("sideMenu").classList.remove("active");
+
+    renderResult();
+}
+
+async function deleteSavedChart(id) {
+    if (!confirm("Удалить карту?")) return;
+
+    const response = await fetch(`/delete_chart/${id}`, { method: "DELETE" });
+    const data = await response.json();
+
+    if (!data.success) {
+        alert(data.error || "Ошибка удаления.");
+        return;
+    }
+
+    loadSavedCharts();
 }
 </script>
 

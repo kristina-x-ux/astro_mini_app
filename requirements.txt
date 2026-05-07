@@ -5,3 +5,4 @@ geopy
 timezonefinder
 pytz
 psycopg2-binary
+requests

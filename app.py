@@ -279,8 +279,8 @@ def ai_astrologer():
 
     try:
         url = (
-    "https://generativelanguage.googleapis.com/v1/"
-    f"models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    "https://generativelanguage.googleapis.com/v1beta/"
+    f"models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
         )
 
         payload = {

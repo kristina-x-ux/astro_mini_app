@@ -278,20 +278,17 @@ def ai_astrologer():
 """
 
     try:
-        url = (
-    "https://generativelanguage.googleapis.com/v1beta/"
-    f"models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
-        )
+        url = "https://openrouter.ai/api/v1/chat/completions"
 
         payload = {
-            "contents": [
-                {
-                    "parts": [
-                        {
-                            "text": prompt
-                        }
-                    ]
-                }
+    "model": "openrouter/auto",
+    "messages": [
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
+        }
             ]
         }
 

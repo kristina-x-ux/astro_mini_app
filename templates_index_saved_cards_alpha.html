@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AstroEngine</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: white;
+    background:
+        linear-gradient(rgba(15, 30, 95, 0.12), rgba(15, 30, 95, 0.18)),
+        url('/static/file_000000009a0072438087f62e212a4232.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 14px 10px 44px;
+}
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+.top-app-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.icon-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.16);
+    color: white;
+    font-size: 23px;
+    font-weight: 900;
+}
+
+.header-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 900;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.45);
+}
+
+.card {
+    background: rgba(0, 20, 70, 0.24);
+    border: 1.5px solid rgba(255,255,255,0.45);
+    border-radius: 28px;
+    padding: 18px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.10),
+        0 18px 45px rgba(0, 40, 120, 0.22);
+}
+
+.card-title {
+    font-size: 22px;
+    font-weight: 850;
+    margin-bottom: 16px;
+}
+
+.mode-switch, .settings-row, .action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.mode-btn, .small-btn {
+    padding: 13px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.08);
+    color: white;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.mode-btn.active, .small-btn.active {
+    background: linear-gradient(135deg, #52b5ff, #7257ff);
+}
+
+label {
+    display: block;
+    margin-top: 14px;
+    margin-bottom: 7px;
+    font-size: 15px;
+    font-weight: 650;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.65);
+    background: rgba(255,255,255,0.76);
+    color: #1b2d52;
+    font-size: 17px;
+    outline: none;
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+input::placeholder, textarea::placeholder { color: rgba(27,45,82,0.55); }
+
+.main-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 18px;
+    border: none;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #4cc3ff, #6b5cff);
+    color: white;
+    font-size: 19px;
+    font-weight: 900;
+}
+
+.secondary-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 15px;
+    border-radius: 22px;
+    border: 1.5px solid rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.08);
+    color: white;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.suggestions {
+    display: none;
+    margin-top: -6px;
+    margin-bottom: 10px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.35);
+    background: rgba(5, 22, 65, 0.94);
+}
+
+.suggestion-item {
+    padding: 13px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    font-size: 15px;
+}
+
+.time-help {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-top: -3px;
+    margin-bottom: 8px;
+}
+
+.compact-data {
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.20);
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.chart-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.98) 0%, rgba(242,244,255,0.94) 48%, rgba(215,220,255,0.88) 100%);
+    border-radius: 22px;
+    overflow: hidden;
+    position: relative;
+    color: #2d2b58;
+    box-shadow:
+        inset 0 0 55px rgba(120, 120, 210, 0.22),
+        0 18px 40px rgba(0, 12, 60, 0.26);
+    margin: 10px 0 16px;
+    border: 1px solid rgba(255,255,255,0.72);
+}
+
+.chart-lines svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.chart-cell {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    min-width: 42px;
+    max-width: 92px;
+    overflow: visible;
+    padding: 2px 3px;
+}
+
+.sign-num {
+    font-size: 14px;
+    font-weight: 850;
+    color: rgba(60, 58, 120, 0.82);
+    line-height: 1;
+    margin-bottom: 3px;
+}
+
+.chart-planets {
+    font-size: 10.2px;
+    margin-top: 1px;
+    color: #30305f;
+    font-weight: 780;
+    line-height: 1.15;
+    white-space: nowrap;
+    letter-spacing: -0.1px;
+}
+
+.chart-planets .karaka-mark {
+    color: #8055a8;
+    font-weight: 850;
+}
+
+.chart-aspects {
+    font-size: 9.4px;
+    margin-top: 1px;
+    color: rgba(58,58,95,0.46);
+    font-weight: 760;
+    line-height: 1.05;
+    white-space: nowrap;
+}
+
+.transit-planet { color: #1b79d5; }
+
+.south-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(38,48,106,0.50);
+}
+
+.south-cell {
+    border: 1px solid rgba(38,48,106,0.40);
+    padding: 5px;
+    overflow: hidden;
+}
+
+.south-empty { background: rgba(255,255,255,0.36); }
+
+.drawer {
+    margin-bottom: 12px;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.22);
+    background: rgba(255,255,255,0.06);
+}
+
+.drawer-head {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    background: rgba(24, 16, 95, 0.62);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 17px;
+    font-weight: 850;
+    text-align: left;
+}
+
+.drawer-body {
+    display: none;
+    padding: 14px;
+}
+
+.drawer.open .drawer-body { display: block; }
+.drawer.open .drawer-arrow { transform: rotate(90deg); }
+
+.drawer-arrow { transition: transform 0.2s ease; }
+
+.planet-table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 18px;
+    margin-top: 12px;
+    background: rgba(22, 12, 74, 0.72);
+}
+
+.planet-table th, .planet-table td {
+    padding: 10px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    text-align: left;
+    font-size: 12.5px;
+    vertical-align: top;
+}
+
+.planet-table th {
+    font-size: 11.5px;
+    font-weight: 850;
+    background: rgba(255,255,255,0.08);
+}
+
+.planet-table tr:nth-child(even) { background: rgba(255,255,255,0.06); }
+
+.dasha-row, .chara-row {
+    padding: 11px 12px;
+    margin-bottom: 6px;
+    border-radius: 14px;
+    background: rgba(31, 18, 88, 0.82);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.dasha-row.current, .chara-row.current {
+    background: #d2ffff;
+    color: #233247;
+    font-weight: 850;
+}
+
+.active-period-box {
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(255, 215, 120, 0.24), rgba(255,255,255,0.10));
+    border: 1px solid rgba(255, 220, 145, 0.55);
+    line-height: 1.45;
+}
+
+.dasha-row.level-2, .chara-row.level-2 { margin-left: 14px; opacity: .94; }
+.dasha-row.level-3, .chara-row.level-3 { margin-left: 28px; opacity: .88; }
+
+.dasha-row.clickable, .chara-row.clickable {
+    cursor: pointer;
+}
+
+.inline-note {
+    font-size: 13px;
+    opacity: .82;
+    line-height: 1.4;
+    margin-top: 6px;
+}
+
+.period-children { display: none; margin-top: 6px; }
+.period-node.open > .period-children { display: block; }
+.period-card {
+    width: 100%;
+    text-align: left;
+    border: none;
+    color: inherit;
+    position: relative;
+}
+.period-card::after {
+    content: "›";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    opacity: .75;
+    transition: transform .18s ease;
+}
+.period-node.open > .period-card::after { transform: translateY(-50%) rotate(90deg); }
+.period-card.no-children::after { display: none; }
+.period-title-line { display:flex; justify-content:space-between; gap:10px; padding-right:20px; }
+.period-date-line { opacity:.86; margin-top:3px; }
+.period-level-label { font-size:11px; opacity:.72; font-weight:700; }
+.copy-btn {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 13px 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.34);
+    background: rgba(255,255,255,0.12);
+    color: white;
+    font-weight: 850;
+}
+.save-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%);
+    z-index: 50;
+    padding: 13px 18px;
+    border-radius: 18px;
+    background: rgba(10, 22, 60, .94);
+    border: 1px solid rgba(255,255,255,.32);
+    color: white;
+    font-weight: 850;
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+}
+
+.client-box {
+    padding: 15px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.24);
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.side-menu {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 20;
+    background: rgba(0,0,0,0.42);
+}
+
+.side-menu.active { display: block; }
+
+.side-panel {
+    width: min(86vw, 360px);
+    height: 100%;
+    padding: 18px;
+    background: rgba(8, 18, 62, 0.98);
+    border-right: 1px solid rgba(255,255,255,0.22);
+    overflow-y: auto;
+}
+
+.menu-title {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 16px;
+}
+
+.menu-item {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 8px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.08);
+    color: white;
+    text-align: left;
+    font-weight: 800;
+}
+
+.settings-box, .saved-card {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.16);
+}
+
+.toggle-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 14px;
+}
+
+.toggle-line input {
+    width: auto;
+    margin: 0;
+}
+
+.transit-panel {
+    display: none;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.09);
+    border: 1px solid rgba(255,255,255,0.20);
+}
+
+.transit-panel.active { display: block; }
+
+.error {
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(255, 80, 80, 0.20);
+    border: 1px solid rgba(255,255,255,0.25);
+    line-height: 1.4;
+}
+
+.loader {
+    width: 42px;
+    height: 42px;
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    animation: spin 1s linear infinite;
+}
+
+.loading-box {
+    text-align: center;
+    padding: 30px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+
+<div id="sideMenu" class="side-menu" onclick="closeMenuByBg(event)">
+    <div class="side-panel">
+        <div class="menu-title">AstroEngine</div>
+
+        <button class="menu-item" onclick="newChart()">＋ Новая карта</button>
+        <button class="menu-item" onclick="loadSavedCharts()">💾 Мои карты</button>
+
+        <div id="savedCardsBox"></div>
+
+        <div class="settings-box">
+            <b>Настройки</b>
+
+            <label>Язык</label>
+            <select id="languageSelect" onchange="applySettings()">
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+            </select>
+
+            <label>Режим</label>
+            <select id="workModeSelect" onchange="applySettings()">
+                <option value="professional">Профессиональный</option>
+                <option value="client">Клиентский</option>
+            </select>
+
+            <label>Чара Даша</label>
+            <select id="charaSystemSelect" onchange="applySettings()">
+                <option value="rao">К.Н. Рао</option>
+                <option value="parashara">Парашара</option>
+            </select>
+
+            <div class="toggle-line">Чаракараки <input type="checkbox" id="showKarakas" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Упаграхи <input type="checkbox" id="showUpagrahas" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Арудхи <input type="checkbox" id="showArudhas" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Доп. лагны <input type="checkbox" id="showSpecialLagnas" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Внешние планеты <input type="checkbox" id="showOuterPlanets" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Аспекты <input type="checkbox" id="showAspects" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Йоги <input type="checkbox" id="showYogas" checked onchange="applySettings()"></div>
+            <div class="toggle-line">Градусы в карте <input type="checkbox" id="showDegreesInChart" onchange="applySettings()"></div>
+        </div>
+
+        <button class="menu-item" onclick="toggleMenu()">Закрыть</button>
+    </div>
+</div>
+
+<div class="page">
+
+    <div id="inputScreen" class="screen active">
+        <div class="top-app-bar">
+            <button class="icon-btn" onclick="toggleMenu()">☰</button>
+            <div class="header-title">AstroEngine</div>
+            <button class="icon-btn" onclick="loadSavedCharts()">💾</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Введите данные для анализа</div>
+
+            <div class="mode-switch">
+                <button class="mode-btn active" id="clientBtn" onclick="setMode('client')">Клиент</button>
+                <button class="mode-btn" id="astroBtn" onclick="setMode('astro')">Астролог</button>
+            </div>
+
+            <label>Имя, фамилия, отчество</label>
+            <input id="fullName" type="text" placeholder="Например: Иванова Мария Петровна" autocomplete="name">
+
+            <label>Дата рождения</label>
+            <input id="date" type="tel" inputmode="numeric" maxlength="10" placeholder="00.00.0000" oninput="formatDateInput(this)">
+
+            <label>Время рождения</label>
+            <input id="time" type="tel" inputmode="numeric" maxlength="8" placeholder="00:00:00" oninput="formatTimeInput(this)">
+            <div class="time-help">Введите время цифрами, например 125000 → 12:50:00</div>
+
+            <label>Место рождения</label>
+            <input id="city" type="text" placeholder="Город, страна" autocomplete="off" oninput="handlePlaceInput()">
+
+            <div class="suggestions" id="suggestions"></div>
+
+            <button class="main-btn" onclick="calculate()">Запустить анализ</button>
+        </div>
+    </div>
+
+    <div id="resultScreen" class="screen">
+        <div class="top-app-bar">
+            <button class="icon-btn" onclick="toggleMenu()">☰</button>
+            <div class="header-title" id="resultHeading">Карта</div>
+            <button class="icon-btn" onclick="showSaveDialog()">💾</button>
+        </div>
+
+        <div class="card">
+            <div id="summaryBlock"></div>
+
+            <div id="chartBlock"></div>
+
+            <div class="settings-row">
+                <select id="chartStyleSelect" onchange="changeChartStyle(this.value)">
+                    <option value="north">Северо-индийская</option>
+                    <option value="south">Южно-индийская</option>
+                </select>
+
+                <select id="vargaSelect" onchange="changeVarga(this.value)">
+                    <option value="D1">D-1 Натальная</option>
+                    <option value="Moon">Лунная</option>
+                    <option value="D2">D-2</option>
+                    <option value="D3">D-3</option>
+                    <option value="D5">D-5</option>
+                    <option value="D6">D-6</option>
+                    <option value="D7">D-7</option>
+                    <option value="D8">D-8</option>
+                    <option value="D9">D-9</option>
+                    <option value="D10">D-10</option>
+                    <option value="D11">D-11</option>
+                    <option value="D12">D-12</option>
+                    <option value="D16">D-16</option>
+                    <option value="D24">D-24</option>
+                    <option value="D30">D-30</option>
+                    <option value="D60">D-60</option>
+                    <option value="D81">D-81</option>
+                </select>
+            </div>
+
+            <div class="action-row">
+                <button class="small-btn" onclick="toggleTransitPanel('transit')">Транзиты</button>
+                <button class="small-btn" onclick="toggleTransitPanel('rectification')">Ректификация</button>
+            </div>
+
+            <div id="transitPanel" class="transit-panel">
+                <label>Дата транзита</label>
+                <input id="transitDate" type="tel" inputmode="numeric" maxlength="10" placeholder="00.00.0000" oninput="formatDateInput(this)">
+                <label>Время транзита</label>
+                <input id="transitTime" type="tel" inputmode="numeric" maxlength="8" placeholder="00:00:00" oninput="formatTimeInput(this)">
+                <label>Место транзита</label>
+                <input id="transitCity" type="text" placeholder="Город, страна" autocomplete="off" oninput="handleTransitPlaceInput()">
+                <div class="suggestions" id="transitSuggestions"></div>
+                <button class="main-btn" onclick="calculateTransit()">Рассчитать транзит</button>
+            </div>
+
+            <div id="rectificationPanel" class="transit-panel">
+                <label>Коридор времени рождения: от</label>
+                <input id="rectStartTime" type="tel" inputmode="numeric" maxlength="8" placeholder="00:00:00" oninput="formatTimeInput(this)">
+
+                <label>Коридор времени рождения: до</label>
+                <input id="rectEndTime" type="tel" inputmode="numeric" maxlength="8" placeholder="00:00:00" oninput="formatTimeInput(this)">
+
+                <label>Шаг проверки</label>
+                <select id="rectStepMinutes">
+                    <option value="15">15 минут</option>
+                    <option value="10">10 минут</option>
+                    <option value="5">5 минут</option>
+                </select>
+
+                <label>События жизни</label>
+                <textarea id="rectEvents" placeholder="Каждое событие с новой строки. Можно по-русски:
+25.04.2012 брак
+21.06.2012 рождение дочки
+01.09.2020 новая работа
+
+Или технически:
+marriage | 15.06.2012 | Брак"></textarea>
+                <div class="time-help">Система сама распознаёт: брак, ребёнок, работа, обучение, переезд, болезнь, развод.</div>
+
+                <button id="rectificationRunBtn" type="button" class="main-btn" onclick="calculateRectification()">Запустить ректификацию</button>
+                <button id="rectificationAiBtn" type="button" class="secondary-btn" style="display:none;" onclick="askAiRectification()">AI-анализ ректификации</button>
+                <div id="rectificationResult" class="compact-data" style="display:none; margin-top:12px;"></div>
+                <div id="rectificationAiAnswer" class="client-box" style="display:none; margin-top:12px;"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="drawer open" id="drawerPlanets">
+                <button class="drawer-head" onclick="toggleDrawer('drawerPlanets')">
+                    <span>Планеты и накшатры</span><span class="drawer-arrow">›</span>
+                </button>
+                <div class="drawer-body" id="planetsSection"></div>
+            </div>
+
+            <div class="drawer" id="drawerDashas">
+                <button class="drawer-head" onclick="toggleDrawer('drawerDashas')">
+                    <span>Периоды Вимшоттари</span><span class="drawer-arrow">›</span>
+                </button>
+                <div class="drawer-body" id="dashasSection"></div>
+            </div>
+
+            <div class="drawer" id="drawerCharaDashas">
+                <button class="drawer-head" onclick="toggleDrawer('drawerCharaDashas')">
+                    <span>Чара Даша</span><span class="drawer-arrow">›</span>
+                </button>
+                <div class="drawer-body" id="charaDashasSection"></div>
+            </div>
+
+            <div class="drawer" id="drawerAnalysis">
+                <button class="drawer-head" onclick="toggleDrawer('drawerAnalysis')">
+                    <span>Разбор</span><span class="drawer-arrow">›</span>
+                </button>
+                <div class="drawer-body" id="analysisSection"></div>
+            </div>
+        </div>
+
+        <button class="secondary-btn" onclick="goBack()">Изменить данные</button>
+    </div>
+</div>
+
+<script>
+let mode = "client";
+let selectedPlace = null;
+let selectedTransitPlace = null;
+let placeTimer = null;
+let transitPlaceTimer = null;
+let currentChart = null;
+let transitChart = null;
+let chartStyle = "north";
+let currentVarga = "D1";
+let viewMode = "natal";
+let currentSavedId = null;
+let currentFullName = "";
+let lastRectificationResult = null;
+const openPeriodKeys = new Set();
+
+const PLANET_ORDER = [
+    "Асцендент", "Солнце", "Луна", "Марс", "Меркурий",
+    "Венера", "Сатурн", "Юпитер", "Раху", "Кету",
+    "Плутон", "Нептун", "Уран", "Манди", "Гулика"
+];
+
+const PLANET_SHORT = {
+    "Солнце": "Su", "Луна": "Mo", "Марс": "Ma", "Меркурий": "Me",
+    "Юпитер": "Ju", "Венера": "Ve", "Сатурн": "Sa",
+    "Раху": "Ra", "Кету": "Ke", "Уран": "Ur",
+    "Нептун": "Ne", "Плутон": "Pl", "Манди": "Md", "Гулика": "Gu"
+};
+
+function setMode(m) {
+    mode = m;
+    document.getElementById("clientBtn").classList.remove("active");
+    document.getElementById("astroBtn").classList.remove("active");
+    document.getElementById(m === "client" ? "clientBtn" : "astroBtn").classList.add("active");
+}
+
+function toggleMenu() {
+    document.getElementById("sideMenu").classList.toggle("active");
+}
+
+function closeMenuByBg(event) {
+    if (event.target.id === "sideMenu") toggleMenu();
+}
+
+function newChart() {
+    currentChart = null;
+    transitChart = null;
+    currentSavedId = null;
+    document.getElementById("resultScreen").classList.remove("active");
+    document.getElementById("inputScreen").classList.add("active");
+    document.getElementById("sideMenu").classList.remove("active");
+}
+
+function formatDateInput(input) {
+    let value = input.value.replace(/\D/g, "");
+    if (value.length > 8) value = value.slice(0, 8);
+    if (value.length >= 5) value = value.slice(0,2)+"."+value.slice(2,4)+"."+value.slice(4);
+    else if (value.length >= 3) value = value.slice(0,2)+"."+value.slice(2);
+    input.value = value;
+}
+
+function formatTimeInput(input) {
+    let value = input.value.replace(/\D/g, "");
+    if (value.length > 6) value = value.slice(0, 6);
+    if (value.length >= 5) value = value.slice(0,2)+":"+value.slice(2,4)+":"+value.slice(4);
+    else if (value.length >= 3) value = value.slice(0,2)+":"+value.slice(2);
+    input.value = value;
+}
+
+function normalizeDate(value) {
+    let digits = value.replace(/\D/g, "");
+    if (digits.length !== 8) return "";
+    return digits.slice(0,2)+"."+digits.slice(2,4)+"."+digits.slice(4,8);
+}
+
+function normalizeTime(value) {
+    let digits = value.replace(/\D/g, "");
+    if (digits.length === 4) digits += "00";
+    if (digits.length !== 6) return "";
+    return digits.slice(0,2)+":"+digits.slice(2,4)+":"+digits.slice(4,6);
+}
+
+function isValidDate(value) {
+    return /^\d{2}\.\d{2}\.\d{4}$/.test(value);
+}
+
+function isValidTime(value) {
+    if (!/^\d{2}:\d{2}:\d{2}$/.test(value)) return false;
+    const [h,m,s] = value.split(":").map(Number);
+    return h >= 0 && h <= 23 && m >= 0 && m <= 59 && s >= 0 && s <= 59;
+}
+
+function handlePlaceInput() {
+    selectedPlace = null;
+    const query = document.getElementById("city").value.trim();
+    const box = document.getElementById("suggestions");
+
+    clearTimeout(placeTimer);
+
+    if (query.length < 2) {
+        box.style.display = "none";
+        box.innerHTML = "";
+        return;
+    }
+
+    placeTimer = setTimeout(() => searchPlaces(query), 450);
+}
+
+async function searchPlaces(query) {
+    const box = document.getElementById("suggestions");
+
+    try {
+        const response = await fetch(`/search_place?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        if (!data.places || data.places.length === 0) {
+            box.style.display = "none";
+            return;
+        }
+
+        box.innerHTML = "";
+        data.places.forEach(place => {
+            const item = document.createElement("div");
+            item.className = "suggestion-item";
+            item.innerText = "📍 " + place.name;
+            item.onclick = () => {
+                selectedPlace = place;
+                document.getElementById("city").value = place.name;
+                box.style.display = "none";
+                box.innerHTML = "";
+            };
+            box.appendChild(item);
+        });
+
+        box.style.display = "block";
+    } catch {
+        box.style.display = "none";
+    }
+}
+
+function handleTransitPlaceInput() {
+    selectedTransitPlace = null;
+    const query = document.getElementById("transitCity").value.trim();
+    const box = document.getElementById("transitSuggestions");
+
+    clearTimeout(transitPlaceTimer);
+
+    if (query.length < 2) {
+        box.style.display = "none";
+        box.innerHTML = "";
+        return;
+    }
+
+    transitPlaceTimer = setTimeout(() => searchTransitPlaces(query), 450);
+}
+
+async function searchTransitPlaces(query) {
+    const box = document.getElementById("transitSuggestions");
+
+    try {
+        const response = await fetch(`/search_place?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        if (!data.places || data.places.length === 0) {
+            box.style.display = "none";
+            return;
+        }
+
+        box.innerHTML = "";
+        data.places.forEach(place => {
+            const item = document.createElement("div");
+            item.className = "suggestion-item";
+            item.innerText = "📍 " + place.name;
+            item.onclick = () => {
+                selectedTransitPlace = place;
+                document.getElementById("transitCity").value = place.name;
+                box.style.display = "none";
+                box.innerHTML = "";
+            };
+            box.appendChild(item);
+        });
+
+        box.style.display = "block";
+    } catch {
+        box.style.display = "none";
+    }
+}
+
+function getTelegramUserId() {
+    try {
+        const tg = window.Telegram?.WebApp;
+        const user = tg?.initDataUnsafe?.user;
+        return user?.id ? String(user.id) : "";
+    } catch {
+        return "";
+    }
+}
+
+function showToast(message) {
+    const old = document.querySelector(".save-toast");
+    if (old) old.remove();
+
+    const box = document.createElement("div");
+    box.className = "save-toast";
+    box.textContent = message;
+    document.body.appendChild(box);
+
+    setTimeout(() => box.remove(), 2200);
+}
+
+async function calculate() {
+    let date = normalizeDate(document.getElementById("date").value);
+    let time = normalizeTime(document.getElementById("time").value);
+    const city = document.getElementById("city").value.trim();
+    const fullName = document.getElementById("fullName").value.trim();
+
+    document.getElementById("date").value = date;
+    document.getElementById("time").value = time;
+
+    if (!fullName) {
+        alert("Введите имя, фамилию и отчество.");
+        return;
+    }
+
+    if (!date || !time || !city) {
+        alert("Заполните дату, время и место рождения.");
+        return;
+    }
+
+    if (!isValidDate(date) || !isValidTime(time)) {
+        alert("Проверьте формат даты и времени.");
+        return;
+    }
+
+    showResultLoading();
+
+    try {
+        currentFullName = fullName;
+        const telegramUserId = getTelegramUserId();
+        const payload = { date, time, city, mode, display_name: city, full_name: fullName, name: fullName, telegram_user_id: telegramUserId };
+
+        if (selectedPlace) {
+            payload.lat = selectedPlace.lat;
+            payload.lon = selectedPlace.lon;
+            payload.display_name = selectedPlace.name;
+        }
+
+        const response = await fetch("/calculate", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            showError(data.error || "Ошибка расчёта.");
+            return;
+        }
+
+        currentChart = data.chart;
+        transitChart = null;
+        currentSavedId = null;
+        currentVarga = "D1";
+        viewMode = "natal";
+        renderResult();
+    } catch {
+        showError("Ошибка соединения с сервером.");
+    }
+}
+
+function showResultLoading() {
+    document.getElementById("inputScreen").classList.remove("active");
+    document.getElementById("resultScreen").classList.add("active");
+    document.getElementById("summaryBlock").innerHTML = "";
+    document.getElementById("chartBlock").innerHTML = `
+        <div class="loading-box">
+            <div class="loader"></div>
+            Выполняю расчёт карты...
+        </div>
+    `;
+}
+
+function showError(message) {
+    document.getElementById("chartBlock").innerHTML = `<div class="error">${message}</div>`;
+}
+
+function goBack() {
+    document.getElementById("resultScreen").classList.remove("active");
+    document.getElementById("inputScreen").classList.add("active");
+}
+
+function toggleDrawer(id) {
+    document.getElementById(id).classList.toggle("open");
+}
+
+function renderResult() {
+    renderSummary();
+    renderChartBlock();
+    renderPlanets();
+    renderDashas();
+    renderCharaDashas();
+    renderAnalysis();
+}
+
+function renderSummary() {
+    if (!currentChart) return;
+    document.getElementById("summaryBlock").innerHTML = `
+        <div class="compact-data">
+            <b>${currentChart.full_name || currentFullName || "Без имени"}</b><br>
+            ${currentChart.city || "—"}<br>
+            ${currentChart.input_date || "—"} ${currentChart.input_time || "—"} ${currentChart.utc_offset || ""}<br>
+            ${currentChart.lat || "—"}, ${currentChart.lon || "—"}<br>
+            Айанамша Лахири: ${currentChart.ayanamsha || "—"}°<br>
+            <span class="inline-note">Вимшоттари: ${getCurrentPathText(currentChart.dashas)}</span><br>
+            <span class="inline-note">Чара Даша: ${getCurrentPathText(currentChart.chara_dasha || currentChart.chara_dashas)}</span>
+        </div>
+    `;
+}
+
+function changeChartStyle(value) {
+    chartStyle = value;
+    renderChartBlock();
+}
+
+function changeVarga(value) {
+    currentVarga = value;
+    renderChartBlock();
+    renderPlanets();
+}
+
+function setViewMode(value) {
+    viewMode = value;
+    document.getElementById("natalBtn").classList.toggle("active", value === "natal");
+    document.getElementById("overlayBtn").classList.toggle("active", value === "overlay");
+    renderChartBlock();
+    renderPlanets();
+}
+
+function getActiveChartObject(chart) {
+    if (!chart) return null;
+    if (currentVarga === "D1") return chart;
+    if (chart.vargas && chart.vargas[currentVarga]) return chart.vargas[currentVarga];
+    return chart;
+}
+
+function getChartForTable() {
+    if (viewMode === "overlay" && transitChart) return transitChart;
+    return currentChart;
+}
+
+function getAspectMap(activeObject) {
+    const map = {};
+    if (!activeObject || !activeObject.aspects || !document.getElementById("showAspects").checked) return map;
+
+    activeObject.aspects.forEach(a => {
+        (a.aspects_houses || []).forEach(house => {
+            if (!map[house]) map[house] = [];
+            map[house].push(PLANET_SHORT[a.planet] || a.planet);
+        });
+    });
+
+    return map;
+}
+
+function renderChartBlock() {
+    const block = document.getElementById("chartBlock");
+    if (!block || !currentChart) return;
+
+    const natalObject = getActiveChartObject(currentChart);
+    const transitObject = getActiveChartObject(transitChart);
+
+    if (chartStyle === "south") renderSouthIndianChart(block, natalObject, transitObject);
+    else renderNorthIndianChart(block, natalObject, transitObject);
+}
+
+function formatChartPlanetText(text) {
+    if (!text) return "";
+    return String(text).replace(/\s+(АК|АмК|БК|МК|ПК|ГК|ДК)$/g, ' <span class="karaka-mark">$1</span>');
+}
+
+function renderNorthIndianChart(block, natalObject, transitObject) {
+    const positions = [
+        [50,18], [30,18], [17,34], [30,50],
+        [17,66], [30,82], [50,82], [70,82],
+        [83,66], [70,50], [83,34], [70,18]
+    ];
+
+    const aspectMap = getAspectMap(viewMode === "overlay" && transitObject ? transitObject : natalObject);
+    let cells = "";
+
+    (natalObject.chart_view || []).forEach((h, index) => {
+        const pos = positions[index];
+
+        const natalPlanets = (h.planets || [])
+            .map(p => `<div class="chart-planets">${formatChartPlanetText(p)}</div>`)
+            .join("");
+
+        let transitPlanets = "";
+        if (viewMode === "overlay" && transitObject) {
+            const th = (transitObject.chart_view || []).find(x => x.house === h.house);
+            transitPlanets = (th?.planets || [])
+                .map(p => `<div class="chart-planets transit-planet">T ${formatChartPlanetText(p)}</div>`)
+                .join("");
+        }
+
+        const aspects = (aspectMap[h.house] || [])
+            .map(p => `<div class="chart-aspects">${p}</div>`)
+            .join("");
+
+        cells += `
+            <div class="chart-cell" style="left:${pos[0]}%;top:${pos[1]}%;">
+                <div class="sign-num">${h.sign}</div>
+                ${natalPlanets}
+                ${transitPlanets}
+                ${aspects}
+            </div>
+        `;
+    });
+
+    block.innerHTML = `
+        <div class="chart-wrap">
+            <div class="chart-lines">
+                <svg viewBox="0 0 100 100">
+                    <rect x="1" y="1" width="98" height="98" fill="none" stroke="rgba(88,87,142,.25)" stroke-width="0.65"/>
+                    <line x1="1" y1="1" x2="99" y2="99" stroke="rgba(88,87,142,.30)" stroke-width="0.75"/>
+                    <line x1="99" y1="1" x2="1" y2="99" stroke="rgba(88,87,142,.30)" stroke-width="0.75"/>
+                    <polygon points="50,1 99,50 50,99 1,50" fill="none" stroke="rgba(88,87,142,.34)" stroke-width="0.75"/>
+                    <line x1="1" y1="50" x2="50" y2="1" stroke="rgba(88,87,142,.22)" stroke-width="0.45"/>
+                    <line x1="50" y1="1" x2="99" y2="50" stroke="rgba(88,87,142,.22)" stroke-width="0.45"/>
+                    <line x1="99" y1="50" x2="50" y2="99" stroke="rgba(88,87,142,.22)" stroke-width="0.45"/>
+                    <line x1="50" y1="99" x2="1" y2="50" stroke="rgba(88,87,142,.22)" stroke-width="0.45"/>
+                </svg>
+            </div>
+            ${cells}
+        </div>
+    `;
+}
+
+function renderSouthIndianChart(block, natalObject, transitObject) {
+    const bySign = {};
+    const transitBySign = {};
+    const aspectMap = getAspectMap(viewMode === "overlay" && transitObject ? transitObject : natalObject);
+
+    (natalObject.chart_view || []).forEach(h => bySign[h.sign] = h);
+
+    if (viewMode === "overlay" && transitObject) {
+        (transitObject.chart_view || []).forEach(h => transitBySign[h.sign] = h);
+    }
+
+    const grid = [12,1,2,3, 11,0,0,4, 10,0,0,5, 9,8,7,6];
+    let html = `<div class="chart-wrap"><div class="south-grid">`;
+
+    grid.forEach(signNumber => {
+        if (signNumber === 0) {
+            html += `<div class="south-cell south-empty"></div>`;
+            return;
+        }
+
+        const h = bySign[signNumber] || {house: "", planets: []};
+        const t = transitBySign[signNumber] || {planets: []};
+
+        const natalPlanets = (h.planets || []).map(p => `<div class="chart-planets">${p}</div>`).join("");
+        const transitPlanets = (t.planets || []).map(p => `<div class="chart-planets transit-planet">T ${p}</div>`).join("");
+        const aspects = (aspectMap[h.house] || []).map(p => `<div class="chart-aspects">${p}</div>`).join("");
+
+        html += `
+            <div class="south-cell">
+                <div class="sign-num">${signNumber}</div>
+                ${natalPlanets}
+                ${transitPlanets}
+                ${aspects}
+            </div>
+        `;
+    });
+
+    html += `</div></div>`;
+    block.innerHTML = html;
+}
+
+function renderPlanets() {
+    const chart = getChartForTable();
+    const activeObject = getActiveChartObject(chart);
+    if (!activeObject) return;
+
+    let html = `
+        <table class="planet-table">
+            <tr>
+                <th>Объект</th>
+                <th>Знак</th>
+                <th>Градусы</th>
+                <th>Накшатра</th>
+            </tr>
+    `;
+
+    PLANET_ORDER.forEach(name => {
+        if (name === "Асцендент") {
+            const l = chart.lagna;
+            if (!l) return;
+            html += `
+                <tr>
+                    <td><b>Асцендент</b></td>
+                    <td>${l.sign || "—"}</td>
+                    <td>${l.degree || "—"}</td>
+                    <td>${l.nakshatra || "—"}<br>пада ${l.pada || "—"}</td>
+                </tr>
+            `;
+            return;
+        }
+
+        const p = (activeObject.planets || {})[name];
+        if (!p) return;
+
+        const isOuter = ["Плутон", "Нептун", "Уран"].includes(name);
+        const isUpa = ["Манди", "Гулика"].includes(name);
+
+        if (isOuter && !document.getElementById("showOuterPlanets").checked) return;
+        if (isUpa && !document.getElementById("showUpagrahas").checked) return;
+
+        const retro = p.retro ? " (R)" : "";
+        const karaka = p.karaka && document.getElementById("showKarakas").checked ? `<b>${p.karaka}</b> ` : "";
+
+        html += `
+            <tr>
+                <td>${karaka}${name}${retro}</td>
+                <td>${p.sign || "—"}<br>дом ${p.house || "—"}</td>
+                <td>${p.degree || "—"}</td>
+                <td>${p.nakshatra || "—"}<br>пада ${p.pada || "—"}</td>
+            </tr>
+        `;
+    });
+
+    html += "</table>";
+    document.getElementById("planetsSection").innerHTML = html;
+}
+
+function parseRuDate(str) {
+    if (!str || typeof str !== "string") return null;
+    const [d,m,y] = str.split(".").map(Number);
+    if (!d || !m || !y) return null;
+    return new Date(y, m - 1, d);
+}
+
+function isCurrentPeriod(start, end) {
+    const now = new Date();
+    const s = parseRuDate(start);
+    const e = parseRuDate(end);
+    if (!s || !e) return false;
+    return s <= now && now < e;
+}
+
+function getCurrentPathText(dashaData) {
+    if (!dashaData) return "—";
+    if (dashaData.current_path_text) return dashaData.current_path_text;
+    if (Array.isArray(dashaData.current_path) && dashaData.current_path.length) return dashaData.current_path.join(" / ");
+    if (dashaData.current_periods?.path_text) return dashaData.current_periods.path_text;
+    return "—";
+}
+
+function renderActivePeriodBox(title, dashaData) {
+    const pathText = getCurrentPathText(dashaData);
+    const current = dashaData?.current_periods || {};
+
+    let dates = "";
+    const maha = current.mahadasha;
+    const antar = current.antardasha;
+    const praty = current.pratyantardasha;
+
+    if (maha?.start && maha?.end) dates += `<br>Махадаша: ${maha.start} — ${maha.end}`;
+    if (antar?.start && antar?.end) dates += `<br>Антардаша: ${antar.start} — ${antar.end}`;
+    if (praty?.start && praty?.end) dates += `<br>Пратьянтардаша: ${praty.start} — ${praty.end}`;
+
+    return `
+        <div class="active-period-box">
+            <b>${title}</b><br>
+            Сейчас: ${pathText || "—"}${dates}
+            <div class="inline-note">Ниже раскрывайте нужный период нажатием на карточку.</div>
+        </div>
+    `;
+}
+
+function periodDisplayName(item, type) {
+    if (!item) return "—";
+    if (type === "chara") return item.sign || item.rashi || item.name || item.lord || "—";
+    return item.lord || item.name || item.sign || "—";
+}
+
+function periodKey(item, type, level, index, parentKey) {
+    const name = periodDisplayName(item, type);
+    return `${type}:${parentKey || "root"}:${level}:${index}:${name}:${item.start || ""}:${item.end || ""}`;
+}
+
+function hasCurrentInside(item) {
+    if (!item) return false;
+    if (item.is_current || isCurrentPeriod(item.start, item.end)) return true;
+    const children = item.children || item.antardashas || item.pratyantardashas || item.subperiods || [];
+    return children.some(child => hasCurrentInside(child));
+}
+
+function levelName(type, level) {
+    if (type === "chara") {
+        if (level === 1) return "период";
+        if (level === 2) return "подпериод";
+        return "подподпериод";
+    }
+    if (level === 1) return "махадаша";
+    if (level === 2) return "антардаша";
+    return "пратьянтардаша";
+}
+
+function togglePeriodNode(key) {
+    if (openPeriodKeys.has(key)) openPeriodKeys.delete(key);
+    else openPeriodKeys.add(key);
+    renderDashas();
+    renderCharaDashas();
+}
+
+function renderPeriodTree(items, type, level = 1, parentKey = "") {
+    if (!items || !items.length) return "";
+
+    let html = "";
+
+    items.forEach((item, index) => {
+        const name = periodDisplayName(item, type);
+        const rowClass = type === "chara" ? "chara-row" : "dasha-row";
+        const current = (item.is_current || isCurrentPeriod(item.start, item.end)) ? "current" : "";
+        const children = item.children || item.antardashas || item.pratyantardashas || item.subperiods || [];
+        const key = periodKey(item, type, level, index, parentKey);
+        const activeBranch = hasCurrentInside(item);
+        if (activeBranch) openPeriodKeys.add(key);
+        const isOpen = openPeriodKeys.has(key);
+        const canOpen = level < 3 && children.length;
+
+        html += `
+            <div class="period-node ${isOpen ? "open" : ""}">
+                <button class="period-card ${rowClass} ${current} level-${level} ${canOpen ? "" : "no-children"}" ${canOpen ? `onclick="togglePeriodNode('${key.replace(/'/g, "\\'")}')"` : ""}>
+                    <div class="period-title-line">
+                        <span>${level > 1 ? "↳ " : ""}<b>${name}</b></span>
+                        <span class="period-level-label">${levelName(type, level)}</span>
+                    </div>
+                    <div class="period-date-line">${item.start || "—"} — ${item.end || "—"}</div>
+                </button>
+                ${canOpen ? `<div class="period-children">${renderPeriodTree(children, type, level + 1, key)}</div>` : ""}
+            </div>
+        `;
+    });
+
+    return html;
+}
+
+function renderDashas() {
+    const d = currentChart?.dashas || {};
+    const list = d.mahadashas || d.tree || [];
+
+    let html = renderActivePeriodBox("Вимшоттари", d);
+    html += `<div class="client-box"><b>Вимшоттари</b><br>Показан один цикл. Нажмите на махадашу, чтобы открыть антардаши и пратьянтардаши.</div>`;
+
+    if (!list.length) html += `<div class="dasha-row">Периоды пока не рассчитаны.</div>`;
+    else html += renderPeriodTree(list, "vimshottari", 1);
+
+    document.getElementById("dashasSection").innerHTML = html;
+}
+
+function renderCharaDashas() {
+    const c = currentChart?.chara_dasha || currentChart?.chara_dashas || currentChart?.chara || {};
+    const list = c.periods || c.dashas || c.tree || c.mahadashas || [];
+
+    let title = "Чара Даша";
+    const system = document.getElementById("charaSystemSelect")?.value || "rao";
+    if (system === "rao") title += " · К.Н. Рао";
+    if (system === "parashara") title += " · Парашара";
+
+    let html = renderActivePeriodBox(title, c);
+    html += `<div class="client-box"><b>${title}</b><br>Нажмите на период, чтобы открыть подпериоды и подподпериоды.</div>`;
+
+    if (!list.length) {
+        html += `<div class="chara-row">Чара Даша пока не рассчитана backend-частью.</div>`;
+    } else {
+        html += renderPeriodTree(list, "chara", 1);
+        if (c.needs_next_cycle) {
+            html += `<button class="secondary-btn" onclick="requestNextCharaCycle()">Рассчитать Чара Дашу дальше</button>`;
+        }
+    }
+
+    document.getElementById("charaDashasSection").innerHTML = html;
+}
+
+function requestNextCharaCycle() {
+    alert("Следующий цикл Чара Даши будет подключён после backend-обработчика следующего цикла.");
+}
+
+function renderAnalysis() {
+    document.getElementById("analysisSection").innerHTML = `
+        <div class="client-box">
+            <b>Аная · AI-разбор</b><br><br>
+            Разбор создаётся отдельно и не сохраняется вместе с картой.
+        </div>
+        <textarea id="aiQuestion" placeholder="Задайте вопрос Анае по этой карте..."></textarea>
+        <button class="main-btn" onclick="askAiAstrologer()">Спросить AI-астролога</button>
+        <button id="copyAiBtn" class="copy-btn" style="display:none; margin-top:12px;" onclick="copyAiAnalysis()">Скопировать разбор</button>
+        <div id="aiAnswer" class="client-box" style="display:none; margin-top:12px;"></div>
+    `;
+}
+
+async function askAiAstrologer() {
+    const question = document.getElementById("aiQuestion")?.value?.trim();
+    const answerBox = document.getElementById("aiAnswer");
+
+    if (!question) {
+        alert("Введите вопрос для AI-астролога.");
+        return;
+    }
+
+    answerBox.style.display = "block";
+    document.getElementById("copyAiBtn").style.display = "none";
+    answerBox.innerHTML = "Аная анализирует карту...";
+
+    try {
+        const response = await fetch("/api/ai_astrologer", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                question,
+                chart: currentChart,
+                mode
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            answerBox.innerHTML = `<div class="error">${typeof data.error === "string" ? data.error : JSON.stringify(data.error)}</div>`;
+            document.getElementById("copyAiBtn").style.display = "none";
+            return;
+        }
+
+        answerBox.innerHTML = (data.answer || "Ответ пустой.").replace(/\n/g, "<br>");
+        document.getElementById("copyAiBtn").style.display = "block";
+    } catch {
+        answerBox.innerHTML = `<div class="error">Ошибка соединения с AI-сервером.</div>`;
+        document.getElementById("copyAiBtn").style.display = "none";
+    }
+}
+
+function copyAiAnalysis() {
+    const answerBox = document.getElementById("aiAnswer");
+    const text = answerBox?.innerText || "";
+
+    if (!text.trim()) {
+        alert("Пока нечего копировать.");
+        return;
+    }
+
+    navigator.clipboard.writeText(text).then(() => {
+        showToast("Разбор скопирован");
+    }).catch(() => {
+        alert("Не удалось скопировать автоматически. Выделите текст вручную.");
+    });
+}
+
+function toggleTransitPanel(panel) {
+    document.getElementById("transitPanel").classList.remove("active");
+    document.getElementById("rectificationPanel").classList.remove("active");
+    document.getElementById(panel === "transit" ? "transitPanel" : "rectificationPanel").classList.add("active");
+}
+
+async function calculateTransit() {
+    let date = normalizeDate(document.getElementById("transitDate").value);
+    let time = normalizeTime(document.getElementById("transitTime").value);
+    let city = document.getElementById("transitCity").value.trim();
+
+    if (!date || !time || !city) {
+        alert("Заполните дату, время и место транзита.");
+        return;
+    }
+
+    const payload = {date, time, city, display_name: city};
+
+    if (selectedTransitPlace) {
+        payload.lat = selectedTransitPlace.lat;
+        payload.lon = selectedTransitPlace.lon;
+        payload.display_name = selectedTransitPlace.name;
+    }
+
+    const response = await fetch("/calculate_transit", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+        alert(data.error || "Ошибка транзита.");
+        return;
+    }
+
+    transitChart = data.transit;
+    viewMode = "overlay";
+    renderChartBlock();
+    renderPlanets();
+}
+
+function detectRectificationEventType(text) {
+    const t = (text || "").toLowerCase();
+
+    if (t.includes("брак") || t.includes("свад") || t.includes("замуж") || t.includes("женил") || t.includes("marriage")) return "marriage";
+    if (t.includes("реб") || t.includes("доч") || t.includes("сын") || t.includes("родил") || t.includes("child")) return "child";
+    if (t.includes("работ") || t.includes("карьер") || t.includes("должн") || t.includes("business") || t.includes("career")) return "career";
+    if (t.includes("учеб") || t.includes("образ") || t.includes("универс") || t.includes("education")) return "education";
+    if (t.includes("переезд") || t.includes("переех") || t.includes("эмигра") || t.includes("relocation")) return "relocation";
+    if (t.includes("болез") || t.includes("операц") || t.includes("illness")) return "illness";
+    if (t.includes("развод") || t.includes("расст") || t.includes("разрыв") || t.includes("divorce")) return "divorce";
+
+    return "other";
+}
+
+function parseRectificationEvents() {
+    const raw = document.getElementById("rectEvents").value.trim();
+    if (!raw) return [];
+
+    return raw.split("\n")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+            const parts = line.split("|").map(x => x.trim());
+
+            if (parts.length >= 2 && /^\d{2}\.\d{2}\.\d{4}$/.test(parts[1])) {
+                return {
+                    type: parts[0] || detectRectificationEventType(line),
+                    date: parts[1] || "",
+                    description: parts[2] || line
+                };
+            }
+
+            const dateMatch = line.match(/(\d{2}\.\d{2}\.\d{4})/);
+            const date = dateMatch ? dateMatch[1] : "";
+
+            return {
+                type: detectRectificationEventType(line),
+                date: date,
+                description: line
+            };
+        });
+}
+
+function renderRectificationResult(result) {
+    const box = document.getElementById("rectificationResult");
+    const aiBtn = document.getElementById("rectificationAiBtn");
+    if (!box) return;
+
+    lastRectificationResult = result;
+    if (aiBtn) aiBtn.style.display = "block";
+
+    const top = result.top_variants || [];
+    const corridors = result.best_corridors || result.corridors || [];
+
+    const rows = top.slice(0, 7).map(item => {
+        const lagnas = item.summary?.varga_lagnas || {};
+        const eventLines = (item.event_scores || []).map(es => {
+            const ev = es.event || {};
+            return `<div class="inline-note">${ev.date || "—"} ${ev.description || es.event_label || "событие"}: ${es.score || 0} б.</div>`;
+        }).join("");
+        return `
+            <div style="margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,.18);">
+                <b>${item.time}</b> — баллы: <b>${item.total_score}</b><br>
+                D1: ${lagnas.D1?.lagna_sign || "-"};
+                D9: ${lagnas.D9?.lagna_sign || "-"};
+                D7: ${lagnas.D7?.lagna_sign || "-"};
+                D10: ${lagnas.D10?.lagna_sign || "-"};
+                D24: ${lagnas.D24?.lagna_sign || "-"}
+                ${eventLines}
+            </div>
+        `;
+    }).join("");
+
+    const corridorRows = corridors.slice(0, 5).map(c => `
+        <div style="margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,.12);">
+            <b>${c.start_time} — ${c.end_time}</b><br>
+            Средний балл: ${c.average_score ?? "—"}; максимум: ${c.max_score ?? "—"}<br>
+            D1: ${c.varga_lagnas?.D1 || "-"}; D9: ${c.varga_lagnas?.D9 || "-"}; D7: ${c.varga_lagnas?.D7 || "-"}; D10: ${c.varga_lagnas?.D10 || "-"}; D24: ${c.varga_lagnas?.D24 || "-"}
+        </div>
+    `).join("");
+
+    box.style.display = "block";
+    box.innerHTML = `
+        <b>Ректификация рассчитана</b><br>
+        Лучшее время: <b>${result.best_time || "не найдено"}</b><br>
+        Уверенность: <b>${result.confidence || 0}%</b><br>
+        Проверено вариантов: ${result.variants_count || 0}<br>
+        <div class="inline-note">Это технический скоринг по рассчитанным картам, варгам и Вимшоттари. Финальный вывод уточняется AI-анализом и живой астрологической проверкой.</div>
+        <br><b>Лучшие коридоры дробных карт</b>
+        <div style="margin-top:8px;">${corridorRows || "Коридоры не найдены"}</div>
+        <br><b>Топ вариантов времени</b>
+        <div style="margin-top:8px;">${rows || "Нет вариантов"}</div>
+    `;
+}
+
+async function askAiRectification() {
+    const box = document.getElementById("rectificationAiAnswer");
+    const btn = document.getElementById("rectificationAiBtn");
+
+    if (!lastRectificationResult) {
+        alert("Сначала запустите ректификацию.");
+        return;
+    }
+
+    if (box) {
+        box.style.display = "block";
+        box.innerHTML = "Аная анализирует ректификацию...";
+    }
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = "AI анализирует...";
+    }
+
+    try {
+        const response = await fetch("/api/ai_rectification", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                rectification: lastRectificationResult,
+                question: "Проанализируй ректификацию, лучший коридор времени и совпадение лагн D1/D9/D7/D10/D24 по событиям."
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            if (box) box.innerHTML = "Ошибка AI-анализа: " + (typeof data.error === "string" ? data.error : JSON.stringify(data.error));
+            return;
+        }
+
+        if (box) box.innerHTML = formatAiAnswer(data.answer || "AI не вернул ответ.");
+    } catch (error) {
+        if (box) box.innerHTML = "Ошибка соединения с AI-анализом.";
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = "AI-анализ ректификации";
+        }
+    }
+}
+
+async function calculateRectification() {
+    let startTime = normalizeTime(document.getElementById("rectStartTime").value);
+    let endTime = normalizeTime(document.getElementById("rectEndTime").value);
+    let stepMinutes = Number(document.getElementById("rectStepMinutes").value || 15);
+    const runBtn = document.getElementById("rectificationRunBtn");
+    const resultBox = document.getElementById("rectificationResult");
+    const aiBtn = document.getElementById("rectificationAiBtn");
+    const aiBox = document.getElementById("rectificationAiAnswer");
+    lastRectificationResult = null;
+    if (aiBtn) aiBtn.style.display = "none";
+    if (aiBox) { aiBox.style.display = "none"; aiBox.innerHTML = ""; }
+
+    if (!currentChart) {
+        alert("Сначала рассчитайте основную карту.");
+        return;
+    }
+
+    if (!startTime || !endTime) {
+        alert("Введите начало и конец коридора времени рождения.");
+        return;
+    }
+
+    try {
+        if (runBtn) {
+            runBtn.disabled = true;
+            runBtn.innerText = "Ректификация считается...";
+        }
+        if (resultBox) {
+            resultBox.style.display = "block";
+            resultBox.innerHTML = "Идёт проверка вариантов времени. Подождите...";
+        }
+
+        const response = await fetch("/rectification", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                date: currentChart.input_date,
+                start_time: startTime,
+                end_time: endTime,
+                step_minutes: stepMinutes,
+                events: parseRectificationEvents(),
+                city: currentChart.city,
+                lat: currentChart.lat,
+                lon: currentChart.lon,
+                display_name: currentChart.city,
+                full_name: currentChart.full_name || currentFullName
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            alert(data.error || "Ошибка ректификации.");
+            if (resultBox) resultBox.innerHTML = "Ошибка ректификации.";
+            return;
+        }
+
+        renderRectificationResult(data.rectification);
+    } catch (error) {
+        alert("Ошибка соединения при запуске ректификации.");
+        if (resultBox) resultBox.innerHTML = "Ошибка соединения.";
+    } finally {
+        if (runBtn) {
+            runBtn.disabled = false;
+            runBtn.innerText = "Запустить ректификацию";
+        }
+    }
+}
+
+function applySettings() {
+    renderChartBlock();
+    renderPlanets();
+    renderDashas();
+    renderCharaDashas();
+    renderAnalysis();
+}
+
+function showSaveDialog() {
+    if (!currentChart) {
+        alert("Сначала рассчитайте карту.");
+        return;
+    }
+
+    const name = currentChart.full_name || currentFullName || document.getElementById("fullName")?.value?.trim();
+
+    if (!name) {
+        alert("Введите имя клиента перед сохранением карты.");
+        return;
+    }
+
+    saveCurrentChart(name);
+}
+
+async function saveCurrentChart(name) {
+    try {
+        const response = await fetch("/save_chart", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                name,
+                full_name: name,
+                birth_date: currentChart.input_date,
+                birth_time: currentChart.input_time,
+                place_name: currentChart.city,
+                lat: currentChart.lat,
+                lon: currentChart.lon,
+                timezone: currentChart.timezone || "",
+                comment: ""
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            alert(data.error || "Ошибка сохранения.");
+            return;
+        }
+
+        showToast("Карта сохранена");
+        currentSavedId = data.chart?.id || null;
+        await loadSavedCharts(false);
+    } catch (e) {
+        alert("Ошибка соединения с сервером при сохранении карты.");
+    }
+}
+
+async function loadSavedCharts(openMenu = true) {
+    if (openMenu) toggleMenu();
+
+    const box = document.getElementById("savedCardsBox");
+    box.innerHTML = `<div class="settings-box">Загружаю сохранённые карты...</div>`;
+
+    const response = await fetch("/saved_charts");
+    const data = await response.json();
+
+    if (!data.success) {
+        box.innerHTML = `<div class="settings-box">${data.error || "Ошибка загрузки карт."}</div>`;
+        return;
+    }
+
+    if (!data.charts || !data.charts.length) {
+        box.innerHTML = `<div class="settings-box">Сохранённых карт пока нет.</div>`;
+        return;
+    }
+
+    box.innerHTML = "";
+    data.charts.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "saved-card";
+
+        const timezoneText = c.timezone ? `, ${c.timezone}` : "";
+        const coordsText = (c.lat && c.lon) ? `${Number(c.lon).toFixed(2)}, ${Number(c.lat).toFixed(2)}` : "";
+
+        div.innerHTML = `
+            <b>${c.name || "Без имени"}, ${c.birth_date || "—"}, ${c.birth_time || "—"}${timezoneText}</b><br>
+            ${c.place_name || "—"}${coordsText ? `, ${coordsText}` : ""}<br>
+            <button class="secondary-btn" onclick="openSavedChart(${c.id})">Открыть</button>
+            <button class="secondary-btn" onclick="deleteSavedChart(${c.id})">Удалить</button>
+        `;
+        box.appendChild(div);
+    });
+}
+
+async function openSavedChart(id) {
+    const response = await fetch(`/open_chart/${id}`);
+    const data = await response.json();
+
+    if (!data.success) {
+        alert(data.error || "Ошибка открытия карты.");
+        return;
+    }
+
+    currentChart = data.chart;
+    currentSavedId = id;
+    transitChart = null;
+    viewMode = "natal";
+
+    document.getElementById("inputScreen").classList.remove("active");
+    document.getElementById("resultScreen").classList.add("active");
+    document.getElementById("sideMenu").classList.remove("active");
+
+    renderResult();
+}
+
+async function deleteSavedChart(id) {
+    if (!confirm("Удалить карту?")) return;
+
+    const response = await fetch(`/delete_chart/${id}`, { method: "DELETE" });
+    const data = await response.json();
+
+    if (!data.success) {
+        alert(data.error || "Ошибка удаления.");
+        return;
+    }
+
+    loadSavedCharts();
+}
+</script>
+
+</body>
+</html>
